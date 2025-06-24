@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { Play, Plus, Share, ArrowLeft } from 'lucide-react';
 import { Button, Loading } from '../components';
 import VideoPlayer from '../components/VideoPlayer';
+import tmdbApi from '../services/tmdbApi';
+import { utils } from '../utils/config';
 
 const ContentDetail = () => {
   const { type, id } = useParams();
@@ -11,62 +13,44 @@ const ContentDetail = () => {
   const [error, setError] = useState(null);
   const [showPlayer, setShowPlayer] = useState(false);
 
-  // Mock content data
-  const mockContent = {
-    movie: {
-      299534: {
-        id: 299534,
-        title: "Avengers: Endgame",
-        poster_path: "/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
-        backdrop_path: "/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg",
-        overview: "After the devastating events of Avengers: Infinity War, the universe is in ruins due to the efforts of the Mad Titan, Thanos. With the help of remaining allies, the Avengers must assemble once more in order to undo Thanos' actions and restore order to the universe once and for all, no matter what consequences may be in store.",
-        release_date: "2019-04-24",
-        vote_average: 8.3,
-        runtime: 181,
-        genres: ["Action", "Adventure", "Drama"],
-        type: "movie"
+  const loadContent = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      let contentData;
+      if (type === 'movie') {
+        contentData = await tmdbApi.getMovieDetails(id);
+      } else if (type === 'tv' || type === 'anime') {
+        contentData = await tmdbApi.getTVShowDetails(id);
+      } else {
+        throw new Error('Invalid content type');
       }
-    },
-    tv: {
-      1399: {
-        id: 1399,
-        name: "Game of Thrones",
-        poster_path: "/7WUHnWGx5OO145IRxPDUkQSh4C7.jpg",
-        backdrop_path: "/suopoADq0k8YZr4dQXcU6pToj6s.jpg",
-        overview: "Seven noble families fight for control of the mythical land of Westeros. Friction between the houses leads to full-scale war. All while a very ancient evil awakens in the farthest north. Amidst the war, a neglected military order of misfits, the Night's Watch, is all that stands between the realms of men and icy horrors beyond.",
-        first_air_date: "2011-04-17",
-        vote_average: 8.3,
-        number_of_seasons: 8,
-        number_of_episodes: 73,
-        genres: ["Drama", "Action & Adventure", "Sci-Fi & Fantasy"],
-        type: "tv"
-      }
+
+      // Transform the data to our format
+      const transformedContent = {
+        ...tmdbApi.transformContent(contentData),
+        runtime: contentData.runtime,
+        number_of_seasons: contentData.number_of_seasons,
+        number_of_episodes: contentData.number_of_episodes,
+        genres: contentData.genres?.map(g => g.name) || [],
+        type: type
+      };
+
+      setContent(transformedContent);
+
+    } catch (err) {
+      console.error('Failed to load content details:', err);
+      setError(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    const loadContent = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        const contentData = mockContent[type]?.[id];
-        if (contentData) {
-          setContent(contentData);
-        } else {
-          setError(new Error('Content not found'));
-        }
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadContent();
+    if (type && id) {
+      loadContent();
+    }
   }, [type, id]);
 
   if (loading) {
@@ -120,13 +104,8 @@ const ContentDetail = () => {
     );
   }
 
-  const backdropUrl = content.backdrop_path 
-    ? `https://image.tmdb.org/t/p/original${content.backdrop_path}`
-    : null;
-  
-  const posterUrl = content.poster_path 
-    ? `https://image.tmdb.org/t/p/w500${content.poster_path}`
-    : null;
+  const backdropUrl = utils.getBackdropUrl(content.backdrop_path);
+  const posterUrl = utils.getPosterUrl(content.poster_path);
 
   const formatDate = (date) => {
     if (!date) return '';

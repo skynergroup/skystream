@@ -19,23 +19,35 @@ const VideoPlayer = ({
   const [showSettings, setShowSettings] = useState(false);
   const iframeRef = useRef(null);
 
-  const playerUrl = utils.generatePlayerUrl(
-    currentPlayer,
-    contentId,
-    contentType,
-    season,
-    episode,
-    { autoplay: autoPlay ? 'true' : 'false' }
-  );
+  // Generate player URL with error handling
+  const generateSafePlayerUrl = () => {
+    try {
+      return utils.generatePlayerUrl(
+        currentPlayer,
+        contentId,
+        contentType,
+        season,
+        episode,
+        { autoplay: autoPlay ? 'true' : 'false' }
+      );
+    } catch (error) {
+      utils.error('Failed to generate player URL:', error);
+      return '';
+    }
+  };
+
+  const playerUrl = generateSafePlayerUrl();
 
   const handleIframeLoad = () => {
+    utils.log('Video player loaded successfully:', playerUrl);
     setIsLoading(false);
     setError(null);
   };
 
   const handleIframeError = () => {
+    utils.error('Video player failed to load:', playerUrl);
     setIsLoading(false);
-    setError(new Error(`Failed to load ${currentPlayer} player`));
+    setError(new Error(`Failed to load ${currentPlayer} player. The content might not be available.`));
   };
 
   const switchPlayer = (newPlayer) => {
@@ -184,30 +196,45 @@ const VideoPlayer = ({
             </div>
           )}
           
-          {error && (
+          {(error || !playerUrl) && (
             <div className="video-player-error">
               <h3>Player Error</h3>
-              <p>{error.message}</p>
-              <Button
-                variant="primary"
-                onClick={() => switchPlayer(currentPlayer === 'videasy' ? 'vidsrc' : 'videasy')}
-              >
-                Try {currentPlayer === 'videasy' ? 'VidSrc' : 'Videasy'} Player
-              </Button>
+              <p>{error?.message || 'Unable to generate player URL. This content might not be available for streaming.'}</p>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Button
+                  variant="primary"
+                  onClick={() => switchPlayer(currentPlayer === 'videasy' ? 'vidsrc' : 'videasy')}
+                >
+                  Try {currentPlayer === 'videasy' ? 'VidSrc' : 'Videasy'} Player
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={onClose}
+                >
+                  Close Player
+                </Button>
+              </div>
+              {playerUrl && (
+                <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--netflix-text-gray)' }}>
+                  Player URL: {playerUrl}
+                </p>
+              )}
             </div>
           )}
           
-          <iframe
-            ref={iframeRef}
-            src={playerUrl}
-            className="video-player-iframe"
-            frameBorder="0"
-            allowFullScreen
-            allow="encrypted-media; autoplay; picture-in-picture"
-            onLoad={handleIframeLoad}
-            onError={handleIframeError}
-            style={{ display: isLoading || error ? 'none' : 'block' }}
-          />
+          {playerUrl && (
+            <iframe
+              ref={iframeRef}
+              src={playerUrl}
+              className="video-player-iframe"
+              frameBorder="0"
+              allowFullScreen
+              allow="encrypted-media; autoplay; picture-in-picture"
+              onLoad={handleIframeLoad}
+              onError={handleIframeError}
+              style={{ display: isLoading || error || !playerUrl ? 'none' : 'block' }}
+            />
+          )}
         </div>
       </div>
     </div>

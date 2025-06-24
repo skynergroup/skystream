@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon } from 'lucide-react';
 import { ContentGrid, Loading } from '../components';
+import tmdbApi from '../services/tmdbApi';
 
 const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -11,39 +12,7 @@ const Search = () => {
   const [error, setError] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
 
-  // Mock search results
-  const mockSearchResults = [
-    {
-      id: 299534,
-      title: "Avengers: Endgame",
-      poster_path: "/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
-      backdrop_path: "/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg",
-      overview: "After the devastating events of Avengers: Infinity War...",
-      release_date: "2019-04-24",
-      vote_average: 8.3,
-      type: "movie"
-    },
-    {
-      id: 299536,
-      title: "Avengers: Infinity War",
-      poster_path: "/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg",
-      backdrop_path: "/lmZFxXgJE3vgrciwuDib0N8CfQo.jpg",
-      overview: "As the Avengers and their allies have continued to protect the world...",
-      release_date: "2018-04-25",
-      vote_average: 8.3,
-      type: "movie"
-    },
-    {
-      id: 1399,
-      name: "Game of Thrones",
-      poster_path: "/7WUHnWGx5OO145IRxPDUkQSh4C7.jpg",
-      backdrop_path: "/suopoADq0k8YZr4dQXcU6pToj6s.jpg",
-      overview: "Seven noble families fight for control of the mythical land of Westeros...",
-      first_air_date: "2011-04-17",
-      vote_average: 8.3,
-      type: "tv"
-    }
-  ];
+
 
   const performSearch = async (searchQuery) => {
     if (!searchQuery.trim()) return;
@@ -52,20 +21,21 @@ const Search = () => {
       setLoading(true);
       setError(null);
       setHasSearched(true);
-      
+
       // Update URL
       setSearchParams({ q: searchQuery });
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Filter mock results based on query
-      const filteredResults = mockSearchResults.filter(item => 
-        (item.title || item.name).toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      
-      setResults(filteredResults);
+
+      // Search using TMDB API
+      const searchResults = await tmdbApi.search(searchQuery);
+
+      // Transform and filter results
+      const transformedResults = searchResults.results
+        .filter(item => item.media_type !== 'person') // Filter out people
+        .map(item => tmdbApi.transformContent(item));
+
+      setResults(transformedResults);
     } catch (err) {
+      console.error('Search failed:', err);
       setError(err);
     } finally {
       setLoading(false);

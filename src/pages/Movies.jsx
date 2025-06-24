@@ -1,92 +1,41 @@
 import { useState, useEffect } from 'react';
 import { ContentGrid, Loading } from '../components';
+import tmdbApi from '../services/tmdbApi';
 
 const Movies = () => {
-  const [movies, setMovies] = useState([]);
+  const [popularMovies, setPopularMovies] = useState([]);
+  const [topRatedMovies, setTopRatedMovies] = useState([]);
+  const [nowPlayingMovies, setNowPlayingMovies] = useState([]);
+  const [upcomingMovies, setUpcomingMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Mock movie data
-  const mockMovies = [
-    {
-      id: 299534,
-      title: "Avengers: Endgame",
-      poster_path: "/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
-      backdrop_path: "/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg",
-      overview: "After the devastating events of Avengers: Infinity War, the universe is in ruins due to the efforts of the Mad Titan, Thanos.",
-      release_date: "2019-04-24",
-      vote_average: 8.3,
-      type: "movie"
-    },
-    {
-      id: 299536,
-      title: "Avengers: Infinity War",
-      poster_path: "/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg",
-      backdrop_path: "/lmZFxXgJE3vgrciwuDib0N8CfQo.jpg",
-      overview: "As the Avengers and their allies have continued to protect the world from threats too large for any one hero to handle.",
-      release_date: "2018-04-25",
-      vote_average: 8.3,
-      type: "movie"
-    },
-    {
-      id: 155,
-      title: "The Dark Knight",
-      poster_path: "/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
-      backdrop_path: "/hqkIcbrOHL86UncnHIsHVcVmzue.jpg",
-      overview: "Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent.",
-      release_date: "2008-07-16",
-      vote_average: 9.0,
-      type: "movie"
-    },
-    {
-      id: 238,
-      title: "The Godfather",
-      poster_path: "/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
-      backdrop_path: "/tmU7GeKVybMWFButWEGl2M4GeiP.jpg",
-      overview: "Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family.",
-      release_date: "1972-03-14",
-      vote_average: 8.7,
-      type: "movie"
-    },
-    {
-      id: 424,
-      title: "Schindler's List",
-      poster_path: "/sF1U4EUQS8YHUYjNl3pMGNIQyr0.jpg",
-      backdrop_path: "/loRmRzQXZeqG78TqZuyvSlEQfZb.jpg",
-      overview: "The true story of how businessman Oskar Schindler saved over a thousand Jewish lives from the Nazis.",
-      release_date: "1993-11-30",
-      vote_average: 8.6,
-      type: "movie"
-    },
-    {
-      id: 240,
-      title: "The Godfather: Part II",
-      poster_path: "/hek3koDUyRQk7FIhPXsa6mT2Zc3.jpg",
-      backdrop_path: "/kGzFbGhp99zva6oZODW5atUtnqi.jpg",
-      overview: "In the continuing saga of the Corleone crime family, a young Vito Corleone grows up in Sicily.",
-      release_date: "1974-12-20",
-      vote_average: 8.6,
-      type: "movie"
+  const loadMovies = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [popular, topRated, nowPlaying, upcoming] = await Promise.all([
+        tmdbApi.getPopularMovies(),
+        tmdbApi.getTopRatedMovies(),
+        tmdbApi.getNowPlayingMovies(),
+        tmdbApi.getUpcomingMovies()
+      ]);
+
+      setPopularMovies(popular.results.map(movie => tmdbApi.transformContent(movie)));
+      setTopRatedMovies(topRated.results.map(movie => tmdbApi.transformContent(movie)));
+      setNowPlayingMovies(nowPlaying.results.map(movie => tmdbApi.transformContent(movie)));
+      setUpcomingMovies(upcoming.results.map(movie => tmdbApi.transformContent(movie)));
+
+    } catch (err) {
+      console.error('Failed to load movies:', err);
+      setError(err);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   useEffect(() => {
-    const loadMovies = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        setMovies(mockMovies);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadMovies();
   }, []);
 
@@ -112,11 +61,34 @@ const Movies = () => {
 
       <ContentGrid
         title="Popular Movies"
-        items={movies}
+        items={popularMovies}
         loading={loading}
         error={error}
         cardSize="medium"
-        showTitle={false}
+      />
+
+      <ContentGrid
+        title="Top Rated Movies"
+        items={topRatedMovies}
+        loading={loading}
+        error={error}
+        cardSize="medium"
+      />
+
+      <ContentGrid
+        title="Now Playing"
+        items={nowPlayingMovies}
+        loading={loading}
+        error={error}
+        cardSize="medium"
+      />
+
+      <ContentGrid
+        title="Upcoming Movies"
+        items={upcomingMovies}
+        loading={loading}
+        error={error}
+        cardSize="medium"
       />
     </div>
   );
