@@ -3,21 +3,19 @@ import Loading from './Loading';
 import { utils } from '../utils/config';
 import './ContentGrid.css';
 
-const ContentGrid = ({ 
-  title, 
-  items = [], 
-  loading = false, 
+const ContentGrid = ({
+  title,
+  items = [],
+  loading = false,
   error = null,
   cardSize = 'medium',
   showTitle = true,
-  className = ''
+  className = '',
 }) => {
   if (loading) {
     return (
       <div className={`content-grid ${className}`}>
-        {showTitle && title && (
-          <h2 className="content-grid__title">{title}</h2>
-        )}
+        {showTitle && title && <h2 className="content-grid__title">{title}</h2>}
         <div className="content-grid__loading">
           <Loading text="Loading content..." />
         </div>
@@ -28,9 +26,7 @@ const ContentGrid = ({
   if (error) {
     return (
       <div className={`content-grid ${className}`}>
-        {showTitle && title && (
-          <h2 className="content-grid__title">{title}</h2>
-        )}
+        {showTitle && title && <h2 className="content-grid__title">{title}</h2>}
         <div className="content-grid__error">
           <p className="content-grid__error-text">
             {error.message || 'Failed to load content. Please try again later.'}
@@ -43,9 +39,7 @@ const ContentGrid = ({
   if (!items || items.length === 0) {
     return (
       <div className={`content-grid ${className}`}>
-        {showTitle && title && (
-          <h2 className="content-grid__title">{title}</h2>
-        )}
+        {showTitle && title && <h2 className="content-grid__title">{title}</h2>}
         <div className="content-grid__empty">
           <p className="content-grid__empty-text">No content available</p>
         </div>
@@ -55,11 +49,9 @@ const ContentGrid = ({
 
   return (
     <div className={`content-grid ${className}`}>
-      {showTitle && title && (
-        <h2 className="content-grid__title">{title}</h2>
-      )}
+      {showTitle && title && <h2 className="content-grid__title">{title}</h2>}
       <div className={`content-grid__container content-grid__container--${cardSize}`}>
-        {items.map((item) => (
+        {items.map(item => (
           <ContentCard
             key={`${item.type || 'movie'}-${item.id}`}
             id={item.id}

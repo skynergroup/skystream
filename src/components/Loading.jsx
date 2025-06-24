@@ -2,7 +2,7 @@ import './Loading.css';
 
 const Loading = ({ size = 'medium', text = 'Loading...' }) => {
   const sizeClass = `loading--${size}`;
-  
+
   return (
     <div className={`loading ${sizeClass}`}>
       <div className="loading__spinner">

@@ -19,14 +19,13 @@ const TVShows = () => {
         tmdbApi.getPopularTVShows(),
         tmdbApi.getTopRatedTVShows(),
         tmdbApi.getAiringTodayTVShows(),
-        tmdbApi.getOnTheAirTVShows()
+        tmdbApi.getOnTheAirTVShows(),
       ]);
 
       setPopularTVShows(popular.results.map(show => tmdbApi.transformContent(show)));
       setTopRatedTVShows(topRated.results.map(show => tmdbApi.transformContent(show)));
       setAiringTodayTVShows(airingToday.results.map(show => tmdbApi.transformContent(show)));
       setOnTheAirTVShows(onTheAir.results.map(show => tmdbApi.transformContent(show)));
-
     } catch (err) {
       console.error('Failed to load TV shows:', err);
       setError(err);
@@ -42,19 +41,23 @@ const TVShows = () => {
   return (
     <div className="tv-shows-page" style={{ padding: '2rem 0' }}>
       <div style={{ padding: '0 2rem', marginBottom: '2rem' }}>
-        <h1 style={{ 
-          fontSize: '2.5rem', 
-          fontWeight: '700', 
-          color: 'var(--netflix-white)',
-          margin: '0 0 0.5rem 0'
-        }}>
+        <h1
+          style={{
+            fontSize: '2.5rem',
+            fontWeight: '700',
+            color: 'var(--netflix-white)',
+            margin: '0 0 0.5rem 0',
+          }}
+        >
           TV Shows
         </h1>
-        <p style={{ 
-          color: 'var(--netflix-text-gray)', 
-          fontSize: '1.1rem',
-          margin: 0
-        }}>
+        <p
+          style={{
+            color: 'var(--netflix-text-gray)',
+            fontSize: '1.1rem',
+            margin: 0,
+          }}
+        >
           Binge-watch the best TV series and shows from around the world.
         </p>
       </div>

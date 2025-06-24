@@ -1,15 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components';
-import {
-  Home,
-  Movies,
-  TVShows,
-  Anime,
-  Search,
-  Library,
-  ContentDetail,
-  NotFound
-} from './pages';
+import { Home, Movies, TVShows, Anime, Search, Library, ContentDetail, NotFound } from './pages';
 
 function App() {
   return (

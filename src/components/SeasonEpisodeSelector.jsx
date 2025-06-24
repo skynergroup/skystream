@@ -5,12 +5,12 @@ import Loading from './Loading';
 import tmdbApi from '../services/tmdbApi';
 import './SeasonEpisodeSelector.css';
 
-const SeasonEpisodeSelector = ({ 
-  contentId, 
-  contentType, 
+const SeasonEpisodeSelector = ({
+  contentId,
+  contentType,
   totalSeasons = 1,
   onEpisodeSelect,
-  onPlayClick 
+  onPlayClick,
 }) => {
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [episodes, setEpisodes] = useState([]);
@@ -27,17 +27,16 @@ const SeasonEpisodeSelector = ({
     }
   }, [selectedSeason, contentId, contentType]);
 
-  const loadEpisodes = async (seasonNumber) => {
+  const loadEpisodes = async seasonNumber => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const seasonData = await tmdbApi.getTVSeasonDetails(contentId, seasonNumber);
       setEpisodes(seasonData.episodes || []);
-      
+
       // Reset to first episode when changing seasons
       setSelectedEpisode(1);
-      
     } catch (err) {
       console.error('Failed to load episodes:', err);
       setError(err);
@@ -47,15 +46,15 @@ const SeasonEpisodeSelector = ({
     }
   };
 
-  const handleSeasonChange = (season) => {
+  const handleSeasonChange = season => {
     setSelectedSeason(season);
     setShowSeasonDropdown(false);
   };
 
-  const handleEpisodeChange = (episode) => {
+  const handleEpisodeChange = episode => {
     setSelectedEpisode(episode);
     setShowEpisodeDropdown(false);
-    
+
     // Notify parent component
     if (onEpisodeSelect) {
       onEpisodeSelect(selectedSeason, episode);
@@ -104,7 +103,7 @@ const SeasonEpisodeSelector = ({
             <span>Season {selectedSeason}</span>
             <ChevronDown size={16} className={showSeasonDropdown ? 'rotated' : ''} />
           </button>
-          
+
           {showSeasonDropdown && (
             <div className="selector-menu">
               {Array.from({ length: totalSeasons }, (_, i) => i + 1).map(season => (
@@ -130,7 +129,7 @@ const SeasonEpisodeSelector = ({
             <span>Episode {selectedEpisode}</span>
             <ChevronDown size={16} className={showEpisodeDropdown ? 'rotated' : ''} />
           </button>
-          
+
           {showEpisodeDropdown && (
             <div className="selector-menu">
               {episodes.map(episode => (
@@ -141,9 +140,7 @@ const SeasonEpisodeSelector = ({
                 >
                   <div className="episode-option">
                     <span className="episode-number">Episode {episode.episode_number}</span>
-                    {episode.name && (
-                      <span className="episode-name">{episode.name}</span>
-                    )}
+                    {episode.name && <span className="episode-name">{episode.name}</span>}
                   </div>
                 </button>
               ))}
@@ -185,9 +182,7 @@ const SeasonEpisodeSelector = ({
             S{selectedSeason}E{selectedEpisode}: {selectedEpisodeData.name}
           </h4>
           {selectedEpisodeData.overview && (
-            <p className="episode-overview">
-              {selectedEpisodeData.overview}
-            </p>
+            <p className="episode-overview">{selectedEpisodeData.overview}</p>
           )}
           <div className="episode-meta">
             {selectedEpisodeData.air_date && (
@@ -196,9 +191,7 @@ const SeasonEpisodeSelector = ({
               </span>
             )}
             {selectedEpisodeData.runtime && (
-              <span className="episode-runtime">
-                {selectedEpisodeData.runtime} min
-              </span>
+              <span className="episode-runtime">{selectedEpisodeData.runtime} min</span>
             )}
             {selectedEpisodeData.vote_average > 0 && (
               <span className="episode-rating">

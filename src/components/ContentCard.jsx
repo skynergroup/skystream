@@ -3,26 +3,26 @@ import { Link } from 'react-router-dom';
 import { Play, Plus, Info } from 'lucide-react';
 import './ContentCard.css';
 
-const ContentCard = ({ 
-  id, 
-  title, 
-  poster, 
-  backdrop, 
-  overview, 
-  releaseDate, 
-  rating, 
+const ContentCard = ({
+  id,
+  title,
+  poster,
+  backdrop,
+  overview,
+  releaseDate,
+  rating,
   type = 'movie',
-  size = 'medium' 
+  size = 'medium',
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const formatDate = (date) => {
+  const formatDate = date => {
     if (!date) return '';
     return new Date(date).getFullYear();
   };
 
-  const formatRating = (rating) => {
+  const formatRating = rating => {
     if (!rating) return '';
     return Math.round(rating * 10) / 10;
   };
@@ -62,19 +62,14 @@ const ContentCard = ({
               </span>
             </div>
           )}
-          
-          {!imageLoaded && !imageError && (
-            <div className="content-card__image-skeleton"></div>
-          )}
+
+          {!imageLoaded && !imageError && <div className="content-card__image-skeleton"></div>}
         </Link>
 
         {/* Hover Overlay */}
         <div className="content-card__overlay">
           <div className="content-card__actions">
-            <Link
-              to={getContentUrl()}
-              className="content-card__action content-card__action--play"
-            >
+            <Link to={getContentUrl()} className="content-card__action content-card__action--play">
               <Play size={20} fill="currentColor" />
             </Link>
             <button className="content-card__action content-card__action--add">
@@ -84,7 +79,7 @@ const ContentCard = ({
               <Info size={20} />
             </Link>
           </div>
-          
+
           <div className="content-card__info">
             <h3 className="content-card__title">{title}</h3>
             {overview && (
@@ -93,12 +88,8 @@ const ContentCard = ({
               </p>
             )}
             <div className="content-card__meta">
-              {releaseDate && (
-                <span className="content-card__year">{formatDate(releaseDate)}</span>
-              )}
-              {rating && (
-                <span className="content-card__rating">★ {formatRating(rating)}</span>
-              )}
+              {releaseDate && <span className="content-card__year">{formatDate(releaseDate)}</span>}
+              {rating && <span className="content-card__rating">★ {formatRating(rating)}</span>}
               <span className="content-card__type">{type.toUpperCase()}</span>
             </div>
           </div>

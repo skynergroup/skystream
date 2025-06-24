@@ -184,28 +184,28 @@
   .video-player-overlay {
     padding: 0.5rem;
   }
-  
+
   .video-player-container {
     height: 95vh;
     border-radius: 4px;
   }
-  
+
   .video-player-header {
     padding: 0.75rem 1rem;
   }
-  
+
   .video-player-title {
     font-size: 1rem;
   }
-  
+
   .video-player-settings {
     padding: 1rem;
   }
-  
+
   .player-options {
     flex-direction: column;
   }
-  
+
   .player-option {
     text-align: center;
   }
@@ -215,20 +215,20 @@
   .video-player-overlay {
     padding: 0;
   }
-  
+
   .video-player-container {
     height: 100vh;
     border-radius: 0;
   }
-  
+
   .video-player-header {
     padding: 0.5rem 0.75rem;
   }
-  
+
   .video-player-controls {
     gap: 0.25rem;
   }
-  
+
   .video-player-settings {
     padding: 0.75rem;
   }
@@ -247,8 +247,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Focus States */

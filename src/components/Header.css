@@ -91,7 +91,7 @@
 }
 
 .header__nav-link--active::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -2px;
   left: 0;
@@ -279,19 +279,19 @@
   .header__container {
     padding: 1rem;
   }
-  
+
   .header__nav {
     display: none;
   }
-  
+
   .header__search {
     display: none;
   }
-  
+
   .header__mobile-toggle {
     display: block;
   }
-  
+
   .header__logo-text {
     font-size: 1.5rem;
   }
@@ -301,7 +301,7 @@
   .header__container {
     padding: 0.75rem;
   }
-  
+
   .header__mobile-nav {
     padding: 1rem;
   }

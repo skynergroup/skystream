@@ -19,9 +19,12 @@ const getBooleanEnvVar = (key, defaultValue = false) => {
 export const APP_CONFIG = {
   name: getEnvVar('VITE_APP_NAME', 'SkyStream'),
   version: getEnvVar('VITE_APP_VERSION', '2.0.0'),
-  description: getEnvVar('VITE_APP_DESCRIPTION', 'Your ultimate destination for streaming movies and TV shows'),
+  description: getEnvVar(
+    'VITE_APP_DESCRIPTION',
+    'Your ultimate destination for streaming movies and TV shows'
+  ),
   isDev: getBooleanEnvVar('VITE_DEV_MODE', import.meta.env.DEV),
-  enableLogs: getBooleanEnvVar('VITE_ENABLE_CONSOLE_LOGS', import.meta.env.DEV)
+  enableLogs: getBooleanEnvVar('VITE_ENABLE_CONSOLE_LOGS', import.meta.env.DEV),
 };
 
 // API Configuration
@@ -31,34 +34,34 @@ export const API_CONFIG = {
     baseUrl: getEnvVar('VITE_TMDB_BASE_URL', 'https://api.themoviedb.org/3'),
     imageBaseUrl: getEnvVar('VITE_TMDB_IMAGE_BASE_URL', 'https://image.tmdb.org/t/p'),
     defaultPosterSize: getEnvVar('VITE_DEFAULT_POSTER_SIZE', 'w500'),
-    defaultBackdropSize: getEnvVar('VITE_DEFAULT_BACKDROP_SIZE', 'w1280')
-  }
+    defaultBackdropSize: getEnvVar('VITE_DEFAULT_BACKDROP_SIZE', 'w1280'),
+  },
 };
 
 // Video Player Configuration
 export const PLAYER_CONFIG = {
   videasy: {
-    baseUrl: getEnvVar('VITE_VIDEASY_BASE_URL', 'https://player.videasy.net')
+    baseUrl: getEnvVar('VITE_VIDEASY_BASE_URL', 'https://player.videasy.net'),
   },
   vidsrc: {
     baseUrl: getEnvVar('VITE_VIDSRC_BASE_URL', 'https://v2.vidsrc.me/embed'),
-    downloadUrl: getEnvVar('VITE_VIDSRC_DOWNLOAD_URL', 'https://dl.vidsrc.me')
+    downloadUrl: getEnvVar('VITE_VIDSRC_DOWNLOAD_URL', 'https://dl.vidsrc.me'),
   },
   godrive: {
-    baseUrl: 'https://godriveplayer.com/player.php'
+    baseUrl: 'https://godriveplayer.com/player.php',
   },
   defaults: {
     player: getEnvVar('VITE_DEFAULT_PLAYER', 'godrive'),
     color: getEnvVar('VITE_PLAYER_COLOR', 'e50914'),
     autoPlay: getBooleanEnvVar('VITE_AUTO_PLAY', true),
-    language: 'en'
-  }
+    language: 'en',
+  },
 };
 
 // Analytics Configuration
 export const ANALYTICS_CONFIG = {
   enabled: getBooleanEnvVar('VITE_ENABLE_ANALYTICS', false),
-  trackingId: getEnvVar('VITE_GA_TRACKING_ID')
+  trackingId: getEnvVar('VITE_GA_TRACKING_ID'),
 };
 
 // Utility Functions
@@ -70,22 +73,29 @@ export const utils = {
   },
 
   // Generate poster URL
-  getPosterUrl: (path) => {
+  getPosterUrl: path => {
     return utils.getTMDBImageUrl(path, API_CONFIG.tmdb.defaultPosterSize);
   },
 
   // Generate backdrop URL
-  getBackdropUrl: (path) => {
+  getBackdropUrl: path => {
     return utils.getTMDBImageUrl(path, API_CONFIG.tmdb.defaultBackdropSize);
   },
 
   // Generate video player URL (synchronous version)
-  generatePlayerUrl: (player, contentId, contentType, season = null, episode = null, options = {}) => {
+  generatePlayerUrl: (
+    player,
+    contentId,
+    contentType,
+    season = null,
+    episode = null,
+    options = {}
+  ) => {
     const playerOptions = {
       color: PLAYER_CONFIG.defaults.color,
       autoplay: PLAYER_CONFIG.defaults.autoPlay ? 'true' : 'false',
       language: PLAYER_CONFIG.defaults.language,
-      ...options
+      ...options,
     };
 
     if (player === 'videasy') {
@@ -106,7 +116,7 @@ export const utils = {
           url = `${PLAYER_CONFIG.videasy.baseUrl}/anime/${contentId}`;
         }
         // Default to subtitled for English
-        if (!playerOptions.hasOwnProperty('dub')) {
+        if (!Object.prototype.hasOwnProperty.call(playerOptions, 'dub')) {
           playerOptions.dub = playerOptions.language === 'en' ? 'false' : 'true';
         }
       }
@@ -143,7 +153,14 @@ export const utils = {
   },
 
   // Generate video player URL with IMDB support (async version)
-  generatePlayerUrlAsync: async (player, contentId, contentType, season = null, episode = null, options = {}) => {
+  generatePlayerUrlAsync: async (
+    player,
+    contentId,
+    contentType,
+    season = null,
+    episode = null,
+    options = {}
+  ) => {
     if (player === 'godrive' && contentType === 'movie') {
       // For GoDrive movies, try to get IMDB ID
       try {
@@ -188,7 +205,7 @@ export const utils = {
   },
 
   // Generate download URL
-  getDownloadUrl: (contentId) => {
+  getDownloadUrl: contentId => {
     return `${PLAYER_CONFIG.vidsrc.downloadUrl}/${contentId}`;
   },
 
@@ -211,7 +228,7 @@ export const utils = {
     if (APP_CONFIG.enableLogs) {
       console.warn('[SkyStream Warning]', ...args);
     }
-  }
+  },
 };
 
 // Export all configurations as default
@@ -220,5 +237,5 @@ export default {
   API_CONFIG,
   PLAYER_CONFIG,
   ANALYTICS_CONFIG,
-  utils
+  utils,
 };

@@ -4,14 +4,14 @@ import Button from './Button';
 import { PLAYER_CONFIG, utils } from '../utils/config';
 import './VideoPlayer.css';
 
-const VideoPlayer = ({ 
-  contentId, 
-  contentType = 'movie', 
-  season = null, 
+const VideoPlayer = ({
+  contentId,
+  contentType = 'movie',
+  season = null,
   episode = null,
   onClose,
   autoPlay = true,
-  preferredPlayer = PLAYER_CONFIG.defaults.player // 'videasy' or 'vidsrc'
+  preferredPlayer = PLAYER_CONFIG.defaults.player, // 'videasy' or 'vidsrc'
 }) => {
   const [currentPlayer, setCurrentPlayer] = useState(preferredPlayer);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,14 +38,9 @@ const VideoPlayer = ({
           );
         } else {
           // Use synchronous version for other players
-          url = utils.generatePlayerUrl(
-            currentPlayer,
-            contentId,
-            contentType,
-            season,
-            episode,
-            { autoplay: autoPlay ? 'true' : 'false' }
-          );
+          url = utils.generatePlayerUrl(currentPlayer, contentId, contentType, season, episode, {
+            autoplay: autoPlay ? 'true' : 'false',
+          });
         }
         setPlayerUrl(url);
         console.log('Generated player URL:', url);
@@ -79,7 +74,7 @@ const VideoPlayer = ({
     }
   };
 
-  const switchPlayer = async (newPlayer) => {
+  const switchPlayer = async newPlayer => {
     setCurrentPlayer(newPlayer);
     setIsLoading(true);
     setError(null);
@@ -100,14 +95,9 @@ const VideoPlayer = ({
         );
       } else {
         // Use synchronous version for other players
-        url = utils.generatePlayerUrl(
-          newPlayer,
-          contentId,
-          contentType,
-          season,
-          episode,
-          { autoplay: autoPlay ? 'true' : 'false' }
-        );
+        url = utils.generatePlayerUrl(newPlayer, contentId, contentType, season, episode, {
+          autoplay: autoPlay ? 'true' : 'false',
+        });
       }
       setPlayerUrl(url);
       console.log('Switched to player:', newPlayer, 'URL:', url);
@@ -135,7 +125,7 @@ const VideoPlayer = ({
   // Set up progress tracking for Videasy
   useEffect(() => {
     if (currentPlayer === 'videasy') {
-      const handleMessage = (event) => {
+      const handleMessage = event => {
         if (typeof event.data === 'string') {
           try {
             const progressData = JSON.parse(event.data);
@@ -159,12 +149,11 @@ const VideoPlayer = ({
         {/* Header */}
         <div className="video-player-header">
           <div className="video-player-title">
-            {contentType === 'tv' && season && episode 
-              ? `S${season}E${episode}` 
-              : contentType.toUpperCase()
-            }
+            {contentType === 'tv' && season && episode
+              ? `S${season}E${episode}`
+              : contentType.toUpperCase()}
           </div>
-          
+
           <div className="video-player-controls">
             <Button
               variant="ghost"
@@ -173,7 +162,7 @@ const VideoPlayer = ({
               onClick={handleDownload}
               title="Download"
             />
-            
+
             <Button
               variant="ghost"
               size="small"
@@ -181,7 +170,7 @@ const VideoPlayer = ({
               onClick={() => setShowSettings(!showSettings)}
               title="Settings"
             />
-            
+
             <Button
               variant="ghost"
               size="small"
@@ -189,7 +178,7 @@ const VideoPlayer = ({
               onClick={toggleFullscreen}
               title="Fullscreen"
             />
-            
+
             <Button
               variant="ghost"
               size="small"
@@ -204,7 +193,7 @@ const VideoPlayer = ({
         {showSettings && (
           <div className="video-player-settings">
             <h4>Player Settings</h4>
-            
+
             <div className="setting-group">
               <label>Video Player:</label>
               <div className="player-options">
@@ -228,7 +217,7 @@ const VideoPlayer = ({
                 </button>
               </div>
             </div>
-            
+
             <div className="setting-group">
               <label>Language Preference:</label>
               <div className="player-options">
@@ -257,9 +246,7 @@ const VideoPlayer = ({
               <div className="setting-group">
                 <label>Audio:</label>
                 <div className="player-options">
-                  <button className="player-option active">
-                    Subtitled (English)
-                  </button>
+                  <button className="player-option active">Subtitled (English)</button>
                   <button
                     className="player-option"
                     onClick={() => {
@@ -286,83 +273,94 @@ const VideoPlayer = ({
               <p>Loading {currentPlayer} player...</p>
             </div>
           )}
-          
+
           {(error || !playerUrl) && (
             <div className="video-player-error">
               <h3>Player Error</h3>
-              <p>{error?.message || 'Unable to generate player URL. This content might not be available for streaming.'}</p>
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <p>
+                {error?.message ||
+                  'Unable to generate player URL. This content might not be available for streaming.'}
+              </p>
+              <div
+                style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}
+              >
                 {currentPlayer !== 'godrive' && (
-                  <Button
-                    variant="primary"
-                    onClick={() => switchPlayer('godrive')}
-                  >
+                  <Button variant="primary" onClick={() => switchPlayer('godrive')}>
                     Try GoDrive Player
                   </Button>
                 )}
                 {currentPlayer !== 'videasy' && (
-                  <Button
-                    variant="primary"
-                    onClick={() => switchPlayer('videasy')}
-                  >
+                  <Button variant="primary" onClick={() => switchPlayer('videasy')}>
                     Try Videasy Player
                   </Button>
                 )}
                 {currentPlayer !== 'vidsrc' && (
-                  <Button
-                    variant="primary"
-                    onClick={() => switchPlayer('vidsrc')}
-                  >
+                  <Button variant="primary" onClick={() => switchPlayer('vidsrc')}>
                     Try VidSrc Player
                   </Button>
                 )}
-                <Button
-                  variant="secondary"
-                  onClick={onClose}
-                >
+                <Button variant="secondary" onClick={onClose}>
                   Close Player
                 </Button>
               </div>
               {playerUrl && (
-                <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--netflix-text-gray)' }}>
+                <p
+                  style={{
+                    marginTop: '1rem',
+                    fontSize: '0.8rem',
+                    color: 'var(--netflix-text-gray)',
+                  }}
+                >
                   Player URL: {playerUrl}
                 </p>
               )}
             </div>
           )}
-          
+
           {currentPlayer === 'godrive' && playerUrl && !error ? (
             // GoDrive player opens in new tab due to iframe restrictions
             <div className="godrive-player-notice">
               <div className="notice-content">
                 <h3>🎬 GoDrive Player</h3>
                 <p>GoDrive player will open in a new tab for the best viewing experience.</p>
-                <div className="notice-actions" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', margin: '1rem 0' }}>
+                <div
+                  className="notice-actions"
+                  style={{
+                    display: 'flex',
+                    gap: '1rem',
+                    justifyContent: 'center',
+                    margin: '1rem 0',
+                  }}
+                >
                   <Button
                     variant="primary"
                     size="large"
                     onClick={() => {
-                      window.open(playerUrl, '_blank', 'width=1280,height=720,scrollbars=yes,resizable=yes');
+                      window.open(
+                        playerUrl,
+                        '_blank',
+                        'width=1280,height=720,scrollbars=yes,resizable=yes'
+                      );
                       setIsLoading(false);
                     }}
                   >
                     Open GoDrive Player
                   </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => switchPlayer('videasy')}
-                  >
+                  <Button variant="secondary" onClick={() => switchPlayer('videasy')}>
                     Try Videasy Instead
                   </Button>
                 </div>
                 <div className="debug-info" style={{ textAlign: 'center', marginTop: '1rem' }}>
-                  <small style={{ color: 'var(--netflix-text-gray)' }}>Player URL: {playerUrl}</small>
+                  <small style={{ color: 'var(--netflix-text-gray)' }}>
+                    Player URL: {playerUrl}
+                  </small>
                 </div>
               </div>
             </div>
           ) : (
             // Other players use iframe
-            playerUrl && !error && (
+            playerUrl &&
+            !error && (
               <iframe
                 ref={iframeRef}
                 src={playerUrl}

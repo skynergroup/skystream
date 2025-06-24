@@ -19,7 +19,7 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleSearchSubmit = (e) => {
+  const handleSearchSubmit = e => {
     e.preventDefault();
     if (searchQuery.trim()) {
       // Navigate to search page with query
@@ -32,7 +32,7 @@ const Header = () => {
     { path: '/browse/movies', label: 'Movies' },
     { path: '/browse/tv', label: 'TV Shows' },
     { path: '/browse/anime', label: 'Anime' },
-    { path: '/library', label: 'My Library' }
+    { path: '/library', label: 'My Library' },
   ];
 
   return (
@@ -46,7 +46,7 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="header__nav">
           <ul className="header__nav-list">
-            {navItems.map((item) => (
+            {navItems.map(item => (
               <li key={item.path} className="header__nav-item">
                 <Link
                   to={item.path}
@@ -70,7 +70,7 @@ const Header = () => {
                 type="text"
                 placeholder="Search movies, TV shows, anime..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
                 className="header__search-input"
               />
               <button
@@ -98,7 +98,7 @@ const Header = () => {
       {/* Mobile Navigation */}
       <nav className={`header__mobile-nav ${isMobileMenuOpen ? 'header__mobile-nav--open' : ''}`}>
         <ul className="header__mobile-nav-list">
-          {navItems.map((item) => (
+          {navItems.map(item => (
             <li key={item.path} className="header__mobile-nav-item">
               <Link
                 to={item.path}
@@ -112,7 +112,7 @@ const Header = () => {
             </li>
           ))}
         </ul>
-        
+
         {/* Mobile Search */}
         <div className="header__mobile-search">
           <form onSubmit={handleSearchSubmit} className="header__mobile-search-form">
@@ -120,7 +120,7 @@ const Header = () => {
               type="text"
               placeholder="Search movies, TV shows, anime..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="header__mobile-search-input"
             />
             <button type="submit" className="header__mobile-search-btn">

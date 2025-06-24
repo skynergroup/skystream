@@ -189,13 +189,13 @@
     font-size: 0.8rem;
     min-height: 32px;
   }
-  
+
   .btn--medium {
     padding: 0.625rem 1.25rem;
     font-size: 0.9rem;
     min-height: 40px;
   }
-  
+
   .btn--large {
     padding: 0.875rem 1.75rem;
     font-size: 1rem;
@@ -205,7 +205,9 @@
 
 /* Animations */
 @keyframes btn-spinner {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     transform: scale(0);
     opacity: 0.5;
   }
@@ -217,7 +219,7 @@
 
 /* Ripple effect */
 .btn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -226,7 +228,9 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.3);
   transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+  transition:
+    width 0.6s,
+    height 0.6s;
 }
 
 .btn:active:not(.btn--disabled):not(.btn--loading)::before {

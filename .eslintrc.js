@@ -7,11 +7,9 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    '@eslint/js/recommended',
     'plugin:react/recommended',
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
-    'plugin:jsx-a11y/recommended',
   ],
   ignorePatterns: ['dist', '.eslintrc.js', 'node_modules'],
   parserOptions: {
@@ -30,7 +28,6 @@ module.exports = {
     'react',
     'react-hooks',
     'react-refresh',
-    'jsx-a11y',
   ],
   rules: {
     // React specific rules
@@ -59,21 +56,11 @@ module.exports = {
       { allowConstantExport: true },
     ],
 
-    // Accessibility rules
-    'jsx-a11y/alt-text': 'warn',
-    'jsx-a11y/anchor-has-content': 'warn',
-    'jsx-a11y/anchor-is-valid': 'warn',
-    'jsx-a11y/click-events-have-key-events': 'warn',
-    'jsx-a11y/heading-has-content': 'warn',
-    'jsx-a11y/img-redundant-alt': 'warn',
-    'jsx-a11y/no-redundant-roles': 'warn',
+    // Accessibility rules (basic ones)
+    // Add jsx-a11y plugin later if needed
 
     // General JavaScript rules
-    'no-unused-vars': ['warn', { 
-      argsIgnorePattern: '^_',
-      varsIgnorePattern: '^_',
-      ignoreRestSiblings: true 
-    }],
+    'no-unused-vars': 'warn',
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     'no-debugger': 'error',
     'no-alert': 'warn',

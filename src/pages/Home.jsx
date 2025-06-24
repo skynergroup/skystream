@@ -24,7 +24,6 @@ const Home = () => {
       setPopularMovies(homeContent.popularMovies);
       setPopularTV(homeContent.popularTV);
       setTopRated(homeContent.topRated);
-
     } catch (err) {
       console.error('Failed to load content:', err);
       setError(err);
@@ -39,12 +38,14 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '60vh'
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '60vh',
+        }}
+      >
         <Loading size="large" text="Loading amazing content..." />
       </div>
     );
@@ -52,15 +53,17 @@ const Home = () => {
 
   if (error) {
     return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '60vh',
-        textAlign: 'center',
-        padding: '2rem'
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '60vh',
+          textAlign: 'center',
+          padding: '2rem',
+        }}
+      >
         <h2 style={{ color: 'var(--netflix-red)', marginBottom: '1rem' }}>
           Failed to Load Content
         </h2>
@@ -75,7 +78,7 @@ const Home = () => {
             border: 'none',
             padding: '0.75rem 1.5rem',
             borderRadius: '4px',
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
         >
           Retry

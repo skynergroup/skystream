@@ -171,21 +171,21 @@
     gap: 2rem;
     text-align: center;
   }
-  
+
   .footer__brand {
     align-items: center;
   }
-  
+
   .footer__description {
     max-width: 500px;
   }
-  
+
   .footer__bottom-container {
     grid-template-columns: 1fr;
     gap: 1.5rem;
     text-align: center;
   }
-  
+
   .footer__copyright {
     text-align: center;
   }
@@ -195,20 +195,20 @@
   .footer__container {
     padding: 2rem 1rem 1.5rem;
   }
-  
+
   .footer__links {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .footer__bottom-container {
     padding: 1.5rem 1rem;
   }
-  
+
   .footer__section-title {
     font-size: 1rem;
   }
-  
+
   .footer__section-link {
     font-size: 0.9rem;
   }
@@ -218,27 +218,27 @@
   .footer__container {
     padding: 1.5rem 0.75rem 1rem;
   }
-  
+
   .footer__bottom-container {
     padding: 1rem 0.75rem;
   }
-  
+
   .footer__logo-img {
     height: 40px;
   }
-  
+
   .footer__title {
     font-size: 1.25rem;
   }
-  
+
   .footer__description {
     font-size: 0.9rem;
   }
-  
+
   .footer__disclaimer-text {
     font-size: 0.85rem;
   }
-  
+
   .footer__copyright-text,
   .footer__version {
     font-size: 0.8rem;

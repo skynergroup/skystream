@@ -132,7 +132,7 @@ class TMDBApi {
    */
   async getMovieDetails(movieId) {
     return this.makeRequest(`/movie/${movieId}`, {
-      append_to_response: 'videos,credits,similar,recommendations'
+      append_to_response: 'videos,credits,similar,recommendations',
     });
   }
 
@@ -141,7 +141,7 @@ class TMDBApi {
    */
   async getTVShowDetails(tvId) {
     return this.makeRequest(`/tv/${tvId}`, {
-      append_to_response: 'videos,credits,similar,recommendations'
+      append_to_response: 'videos,credits,similar,recommendations',
     });
   }
 
@@ -188,7 +188,7 @@ class TMDBApi {
     // Get animation genre ID first
     const genres = await this.getTVGenres();
     const animationGenre = genres.genres.find(g => g.name === 'Animation');
-    
+
     if (!animationGenre) {
       return { results: [], total_pages: 0, total_results: 0 };
     }
@@ -198,7 +198,7 @@ class TMDBApi {
       with_genres: animationGenre.id,
       with_origin_country: 'JP',
       sort_by: 'popularity.desc',
-      page
+      page,
     });
   }
 
@@ -208,7 +208,7 @@ class TMDBApi {
   transformContent(item) {
     const isMovie = item.media_type === 'movie' || item.title;
     const isTVShow = item.media_type === 'tv' || item.name;
-    
+
     return {
       id: item.id,
       title: item.title || item.name,
@@ -227,7 +227,7 @@ class TMDBApi {
       original_title: item.original_title || item.original_name,
       original_name: item.original_name || item.original_title,
       type: isMovie ? 'movie' : isTVShow ? 'tv' : 'unknown',
-      media_type: item.media_type || (isMovie ? 'movie' : 'tv')
+      media_type: item.media_type || (isMovie ? 'movie' : 'tv'),
     };
   }
 
@@ -240,7 +240,7 @@ class TMDBApi {
         this.getTrending('all', 'week'),
         this.getPopularMovies(),
         this.getPopularTVShows(),
-        this.getTopRatedMovies()
+        this.getTopRatedMovies(),
       ]);
 
       return {
@@ -248,7 +248,7 @@ class TMDBApi {
         trending: trending.results.slice(0, 20).map(item => this.transformContent(item)),
         popularMovies: popularMovies.results.slice(0, 20).map(item => this.transformContent(item)),
         popularTV: popularTV.results.slice(0, 20).map(item => this.transformContent(item)),
-        topRated: topRatedMovies.results.slice(0, 20).map(item => this.transformContent(item))
+        topRated: topRatedMovies.results.slice(0, 20).map(item => this.transformContent(item)),
       };
     } catch (error) {
       utils.error('Failed to fetch homepage content:', error);

@@ -185,32 +185,32 @@
     padding: 1rem;
     margin: 1rem 0;
   }
-  
+
   .selector-controls {
     flex-direction: column;
     align-items: stretch;
     gap: 0.75rem;
   }
-  
+
   .selector-dropdown {
     min-width: auto;
   }
-  
+
   .play-episode-btn,
   .play-movie-btn {
     min-width: auto;
     width: 100%;
   }
-  
+
   .episode-meta {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .selected-episode-info {
     padding: 1rem;
   }
-  
+
   .episode-title {
     font-size: 1.1rem;
   }
@@ -220,21 +220,21 @@
   .season-episode-selector {
     padding: 0.75rem;
   }
-  
+
   .selector-button {
     padding: 0.625rem 0.75rem;
     font-size: 0.9rem;
   }
-  
+
   .selector-option {
     padding: 0.625rem 0.75rem;
     font-size: 0.85rem;
   }
-  
+
   .episode-title {
     font-size: 1rem;
   }
-  
+
   .episode-overview {
     font-size: 0.9rem;
   }
