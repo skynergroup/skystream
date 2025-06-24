@@ -88,9 +88,9 @@ const NotFound = () => {
         marginTop: '3rem',
         opacity: 0.3
       }}>
-        <img 
-          src="/LOGO.png" 
-          alt="Boredflix" 
+        <img
+          src="/LOGO.png"
+          alt="SkyStream"
           style={{
             height: '60px',
             filter: 'grayscale(100%)'

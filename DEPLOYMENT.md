@@ -1,6 +1,6 @@
-# Boredflix Deployment Guide
+# SkyStream Deployment Guide
 
-This document outlines the deployment process for the Boredflix streaming website.
+This document outlines the deployment process for the SkyStream streaming website.
 
 ## Deployment Overview
 

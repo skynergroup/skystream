@@ -17,9 +17,9 @@ const getBooleanEnvVar = (key, defaultValue = false) => {
 
 // Application Configuration
 export const APP_CONFIG = {
-  name: getEnvVar('VITE_APP_NAME', 'Boredflix'),
+  name: getEnvVar('VITE_APP_NAME', 'SkyStream'),
   version: getEnvVar('VITE_APP_VERSION', '2.0.0'),
-  description: getEnvVar('VITE_APP_DESCRIPTION', 'Your ultimate destination for discovering movies and TV shows'),
+  description: getEnvVar('VITE_APP_DESCRIPTION', 'Your ultimate destination for streaming movies and TV shows'),
   isDev: getBooleanEnvVar('VITE_DEV_MODE', import.meta.env.DEV),
   enableLogs: getBooleanEnvVar('VITE_ENABLE_CONSOLE_LOGS', import.meta.env.DEV)
 };
@@ -195,21 +195,21 @@ export const utils = {
   // Log function that respects environment settings
   log: (...args) => {
     if (APP_CONFIG.enableLogs) {
-      console.log('[Boredflix]', ...args);
+      console.log('[SkyStream]', ...args);
     }
   },
 
   // Error log function
   error: (...args) => {
     if (APP_CONFIG.enableLogs) {
-      console.error('[Boredflix Error]', ...args);
+      console.error('[SkyStream Error]', ...args);
     }
   },
 
   // Warn log function
   warn: (...args) => {
     if (APP_CONFIG.enableLogs) {
-      console.warn('[Boredflix Warning]', ...args);
+      console.warn('[SkyStream Warning]', ...args);
     }
   }
 };

@@ -40,7 +40,7 @@ const Header = () => {
       <div className="header__container">
         {/* Logo */}
         <Link to="/" className="header__logo">
-          <img src="/LOGO.png" alt="Boredflix" className="header__logo-img" />
+          <img src="/LOGO.png" alt="SkyStream" className="header__logo-img" />
         </Link>
 
         {/* Desktop Navigation */}

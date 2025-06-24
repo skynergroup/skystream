@@ -1,8 +1,8 @@
-# 🎬 Boredflix - Netflix-Inspired Streaming Website
+# 🎬 SkyStream - Netflix-Inspired Streaming Website
 
 A modern, responsive streaming website built with React.js that replicates Netflix's design and functionality. Features integrated video players, search functionality, and a clean component architecture optimized for static hosting.
 
-![Boredflix](https://img.shields.io/badge/Boredflix-v2.0.0-red?style=for-the-badge&logo=react)
+![SkyStream](https://img.shields.io/badge/SkyStream-v2.0.0-red?style=for-the-badge&logo=react)
 ![React](https://img.shields.io/badge/React-18.3.1-blue?style=for-the-badge&logo=react)
 ![Vite](https://img.shields.io/badge/Vite-7.0.0-purple?style=for-the-badge&logo=vite)
 
@@ -69,7 +69,7 @@ npm run dev
 Edit `.env.local` with your configuration:
 ```env
 # Application
-VITE_APP_NAME=Boredflix
+VITE_APP_NAME=SkyStream
 VITE_APP_VERSION=2.0.0
 
 # Video Players
