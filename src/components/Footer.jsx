@@ -79,9 +79,15 @@ const Footer = () => {
             <h5 className="footer__disclaimer-title">Important Notice</h5>
             <p className="footer__disclaimer-text">
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
               Boredflix does not host or store any media files. All content is sourced from
               third-party services and platforms. We respect intellectual property rights and comply
               with DMCA regulations.
+=======
+              SkyStream does not host or store any media files. All content is sourced from
+              third-party services and platforms. We respect intellectual property rights and
+              comply with DMCA regulations. This platform is developed and maintained by Skyner Development.
+>>>>>>> Stashed changes
 =======
               SkyStream does not host or store any media files. All content is sourced from
               third-party services and platforms. We respect intellectual property rights and
