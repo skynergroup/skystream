@@ -1,8 +1,13 @@
 import { Link } from 'react-router-dom';
+import { RotateCcw } from 'lucide-react';
 import './Footer.css';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+
+  const handleRefresh = () => {
+    window.location.reload();
+  };
 
   const footerLinks = {
     browse: [
@@ -75,7 +80,8 @@ const Footer = () => {
             <p className="footer__disclaimer-text">
               SkyStream does not host or store any media files. All content is sourced from
               third-party services and platforms. We respect intellectual property rights and comply
-              with DMCA regulations.
+              with DMCA regulations. This platform is developed and maintained by Skyner
+              Development.
             </p>
           </div>
 
@@ -84,7 +90,26 @@ const Footer = () => {
             <p className="footer__copyright-text">
               © {currentYear} SkyStream. All rights reserved.
             </p>
-            <p className="footer__version">Made with ❤️ for movie lovers • Version 2.0</p>
+            <p className="footer__version">
+              Developed by{' '}
+              <a
+                href="https://skyner.co.za/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'var(--netflix-red)', textDecoration: 'none' }}
+              >
+                Skyner Development
+              </a>{' '}
+              •
+              <button
+                onClick={handleRefresh}
+                className="footer__refresh-btn"
+                title="Refresh page"
+                aria-label="Refresh page"
+              >
+                Version 2.0 <RotateCcw size={14} />
+              </button>
+            </p>
           </div>
         </div>
       </div>
