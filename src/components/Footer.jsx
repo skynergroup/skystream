@@ -79,8 +79,9 @@ const Footer = () => {
             <h5 className="footer__disclaimer-title">Important Notice</h5>
             <p className="footer__disclaimer-text">
               SkyStream does not host or store any media files. All content is sourced from
-              third-party services and platforms. We respect intellectual property rights and
-              comply with DMCA regulations. This platform is developed and maintained by Skyner Development.
+              third-party services and platforms. We respect intellectual property rights and comply
+              with DMCA regulations. This platform is developed and maintained by Skyner
+              Development.
             </p>
           </div>
 
@@ -90,7 +91,16 @@ const Footer = () => {
               © {currentYear} SkyStream. All rights reserved.
             </p>
             <p className="footer__version">
-              Developed by <a href="https://skyner.co.za/" target="_blank" rel="noopener noreferrer" style={{color: 'var(--netflix-red)', textDecoration: 'none'}}>Skyner Development</a> •
+              Developed by{' '}
+              <a
+                href="https://skyner.co.za/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'var(--netflix-red)', textDecoration: 'none' }}
+              >
+                Skyner Development
+              </a>{' '}
+              •
               <button
                 onClick={handleRefresh}
                 className="footer__refresh-btn"
