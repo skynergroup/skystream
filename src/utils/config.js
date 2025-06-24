@@ -44,10 +44,14 @@ export const PLAYER_CONFIG = {
     baseUrl: getEnvVar('VITE_VIDSRC_BASE_URL', 'https://v2.vidsrc.me/embed'),
     downloadUrl: getEnvVar('VITE_VIDSRC_DOWNLOAD_URL', 'https://dl.vidsrc.me')
   },
+  godrive: {
+    baseUrl: 'https://godriveplayer.com/player.php'
+  },
   defaults: {
-    player: getEnvVar('VITE_DEFAULT_PLAYER', 'videasy'),
+    player: getEnvVar('VITE_DEFAULT_PLAYER', 'godrive'),
     color: getEnvVar('VITE_PLAYER_COLOR', 'e50914'),
-    autoPlay: getBooleanEnvVar('VITE_AUTO_PLAY', true)
+    autoPlay: getBooleanEnvVar('VITE_AUTO_PLAY', true),
+    language: 'en'
   }
 };
 
@@ -75,17 +79,18 @@ export const utils = {
     return utils.getTMDBImageUrl(path, API_CONFIG.tmdb.defaultBackdropSize);
   },
 
-  // Generate video player URL
+  // Generate video player URL (synchronous version)
   generatePlayerUrl: (player, contentId, contentType, season = null, episode = null, options = {}) => {
     const playerOptions = {
       color: PLAYER_CONFIG.defaults.color,
       autoplay: PLAYER_CONFIG.defaults.autoPlay ? 'true' : 'false',
+      language: PLAYER_CONFIG.defaults.language,
       ...options
     };
 
     if (player === 'videasy') {
       let url = '';
-      
+
       if (contentType === 'movie') {
         url = `${PLAYER_CONFIG.videasy.baseUrl}/movie/${contentId}`;
       } else if (contentType === 'tv') {
@@ -100,30 +105,86 @@ export const utils = {
         } else {
           url = `${PLAYER_CONFIG.videasy.baseUrl}/anime/${contentId}`;
         }
-        // Default to subtitled
+        // Default to subtitled for English
         if (!playerOptions.hasOwnProperty('dub')) {
-          playerOptions.dub = 'false';
+          playerOptions.dub = playerOptions.language === 'en' ? 'false' : 'true';
         }
       }
-      
+
       const params = new URLSearchParams(playerOptions);
       return `${url}?${params}`;
-    } 
-    
+    }
+
     if (player === 'vidsrc') {
       let url = `${PLAYER_CONFIG.vidsrc.baseUrl}/${contentId}`;
-      
+
       if (contentType === 'tv' && season && episode) {
         url += `/${season}-${episode}`;
       }
-      
+
       // Add color customization
       url += `/color-${playerOptions.color}`;
-      
+
       return url;
     }
-    
+
+    if (player === 'godrive') {
+      if (contentType === 'movie') {
+        // For movies, use TMDB ID directly for now
+        // We'll fetch IMDB ID asynchronously in the component
+        return `${PLAYER_CONFIG.godrive.baseUrl}?tmdb=${contentId}`;
+      } else if (contentType === 'tv' || contentType === 'anime') {
+        // For TV shows, use TMDB ID directly
+        return `${PLAYER_CONFIG.godrive.baseUrl}?type=series&tmdb=${contentId}&season=${season}&episode=${episode}`;
+      }
+    }
+
     return '';
+  },
+
+  // Generate video player URL with IMDB support (async version)
+  generatePlayerUrlAsync: async (player, contentId, contentType, season = null, episode = null, options = {}) => {
+    if (player === 'godrive' && contentType === 'movie') {
+      // For GoDrive movies, try to get IMDB ID
+      try {
+        const imdbId = await utils.getIMDBId(contentId, 'movie');
+        if (imdbId) {
+          return `${PLAYER_CONFIG.godrive.baseUrl}?imdb=${imdbId}`;
+        }
+      } catch (error) {
+        console.warn('Failed to get IMDB ID for movie:', contentId, error);
+      }
+      // Fallback to TMDB ID
+      return `${PLAYER_CONFIG.godrive.baseUrl}?tmdb=${contentId}`;
+    }
+
+    // For all other cases, use the synchronous version
+    return utils.generatePlayerUrl(player, contentId, contentType, season, episode, options);
+  },
+
+  // Get IMDB ID from TMDB
+  getIMDBId: async (tmdbId, type = 'movie') => {
+    try {
+      const apiKey = API_CONFIG.tmdb.apiKey;
+      const baseUrl = API_CONFIG.tmdb.baseUrl;
+
+      if (!apiKey) {
+        throw new Error('TMDB API key not configured');
+      }
+
+      const url = `${baseUrl}/${type}/${tmdbId}/external_ids?api_key=${apiKey}`;
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch external IDs: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.imdb_id;
+    } catch (error) {
+      console.error('Failed to get IMDB ID:', error);
+      return null;
+    }
   },
 
   // Generate download URL
