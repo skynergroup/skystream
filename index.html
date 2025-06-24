@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boredflix | Watch Free Movies & TV Shows Online - No Sign Up</title>
+    <meta name="description" content="Discover and stream a vast collection of free movies and TV shows online in HD, Full HD and 4K on Boredflix. No sign-up required. Your ultimate destination for entertainment." />
+    <meta name="keywords" content="free movies,free tv shows,stream online,hd streaming,no sign up movies,boredflix,watch movies online,watch tv shows online,4K movies,full HD" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Boredflix | Free Movies & TV Shows Online - No Sign Up" />
+    <meta property="og:description" content="Watch thousands of movies and TV shows in HD, Full HD and 4K. No sign-up required." />
+    <meta property="og:site_name" content="Boredflix" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Boredflix | Free Movies & TV Shows - No Sign Up" />
+    <meta name="twitter:description" content="Stream free movies and TV shows in HD, Full HD and 4K. No registration needed." />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- SPA Redirect Script for Static Hosting -->
+    <script src="/spa-redirect.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- Handle SPA redirect on page load -->
+    <script>
+      (function() {
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.href) {
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
+
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

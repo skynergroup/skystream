@@ -1,0 +1,8 @@
+export { default as Home } from './Home';
+export { default as Movies } from './Movies';
+export { default as TVShows } from './TVShows';
+export { default as Anime } from './Anime';
+export { default as Search } from './Search';
+export { default as Library } from './Library';
+export { default as ContentDetail } from './ContentDetail';
+export { default as NotFound } from './NotFound';
