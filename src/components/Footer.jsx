@@ -73,7 +73,7 @@ const Footer = () => {
           <div className="footer__disclaimer">
             <h5 className="footer__disclaimer-title">Important Notice</h5>
             <p className="footer__disclaimer-text">
-              Boredflix does not host or store any media files. All content is sourced from
+              SkyStream does not host or store any media files. All content is sourced from
               third-party services and platforms. We respect intellectual property rights and comply
               with DMCA regulations.
             </p>
@@ -82,7 +82,7 @@ const Footer = () => {
           {/* Copyright and Version */}
           <div className="footer__copyright">
             <p className="footer__copyright-text">
-              © {currentYear} Boredflix. All rights reserved.
+              © {currentYear} SkyStream. All rights reserved.
             </p>
             <p className="footer__version">Made with ❤️ for movie lovers • Version 2.0</p>
           </div>
