@@ -7,11 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "build:production": "NODE_ENV=production vite build",
-    "type-check": "echo 'TypeScript not configured yet'",
     "preview": "vite preview",
     "serve": "vite preview --port 4173",
     "clean": "rm -rf dist",
-    "prebuild": "npm run clean"
+    "prebuild": "npm run clean",
+    "ci:install": "npm ci --prefer-offline --no-audit --no-fund"
   },
   "dependencies": {
     "lucide-react": "^0.523.0",

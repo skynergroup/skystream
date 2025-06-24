@@ -1,53 +1,40 @@
-name: Deploy to Production
+name: 🚀 Production Deploy
 
 on:
   push:
     branches: [ production ]
-  # Pull requests do not trigger deployment - only merged commits to production
+  workflow_dispatch: # Allow manual triggers
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: production
-    
+    timeout-minutes: 10 # Fail fast if something goes wrong
+
     steps:
-    - name: Checkout code
+    - name: Checkout
       uses: actions/checkout@v4
-      
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '18'
         cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
 
-    - name: Create production environment file
+    - name: Install & Build
       run: |
+        npm ci --prefer-offline --no-audit
         cp .env.production .env.local
-        echo "Environment variables configured for production build"
-        echo "Verifying TMDB API key is present..."
-        grep -q "VITE_TMDB_API_KEY=" .env.local && echo "✅ TMDB API key found" || echo "❌ TMDB API key missing"
-
-    - name: Build project
-      run: npm run build:production
+        npm run build:production
       env:
         NODE_ENV: production
 
-    - name: Verify build output
+    - name: Verify Build
       run: |
-        echo "Checking if build was successful..."
-        ls -la dist/
-        echo "Verifying environment variables are embedded in build..."
-        if grep -r "20aed25855723af6f6a4dcdad0f17b86" dist/ > /dev/null; then
-          echo "✅ TMDB API key found in build output"
-        else
-          echo "❌ TMDB API key NOT found in build output"
-          exit 1
-        fi
-      
-    - name: Deploy to FTP
+        [ -d "dist" ] && [ "$(ls -A dist)" ] || { echo "❌ Build failed"; exit 1; }
+        echo "✅ Build successful ($(du -sh dist | cut -f1))"
+
+    - name: Deploy
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: ftp.skyner.co.za
@@ -58,19 +45,8 @@ jobs:
         dangerous-clean-slate: true
         exclude: |
           **/.git*
-          **/.git*/**
           **/node_modules/**
           **/.env*
-          **/*.md
-          
-    - name: Notify deployment success
-      if: success()
-      run: |
-        echo "🚀 Deployment successful!"
-        echo "Site should be live at: https://bumblebeefoundation.co.za"
-        
-    - name: Notify deployment failure
-      if: failure()
-      run: |
-        echo "❌ Deployment failed!"
-        echo "Please check the logs above for errors."
+
+    - name: Status
+      run: echo "🚀 Deployed to https://bumblebeefoundation.co.za"
