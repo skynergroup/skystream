@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
   base: './', // For static hosting compatibility
   build: {
@@ -54,5 +54,8 @@ export default defineConfig({
   // Optimize dependencies
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom', 'lucide-react']
-  }
-})
+  },
+  // Environment variables configuration
+  envDir: './',
+  envPrefix: 'VITE_'
+}))
