@@ -19,7 +19,7 @@ class TMDBApi {
     try {
       const url = new URL(`${this.baseUrl}${endpoint}`);
       url.searchParams.append('api_key', this.apiKey);
-      
+
       // Add additional parameters
       Object.keys(params).forEach(key => {
         if (params[key] !== undefined && params[key] !== null) {
@@ -30,7 +30,7 @@ class TMDBApi {
       utils.log('TMDB API Request:', url.toString());
 
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         throw new Error(`TMDB API Error: ${response.status} ${response.statusText}`);
       }

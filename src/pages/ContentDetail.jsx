@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { Play, Plus, Share, ArrowLeft, X } from 'lucide-react';
 import { Button, Loading } from '../components';
 import VideoPlayer from '../components/VideoPlayer';
@@ -8,7 +8,8 @@ import tmdbApi from '../services/tmdbApi';
 import { utils } from '../utils/config';
 
 const ContentDetail = () => {
-  const { type, id } = useParams();
+  const { id } = useParams();
+  const location = useLocation();
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,23 +17,45 @@ const ContentDetail = () => {
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [selectedEpisode, setSelectedEpisode] = useState(1);
 
+  // Extract type from pathname
+  const type = location.pathname.split('/')[1]; // Gets 'movie', 'tv', or 'anime'
+
   const loadContent = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      let contentData;
+      // Simple direct API call without using the service
+      const API_KEY = '20aed25855723af6f6a4dcdad0f17b86';
+      const BASE_URL = 'https://api.themoviedb.org/3';
+
+      let url;
       if (type === 'movie') {
-        contentData = await tmdbApi.getMovieDetails(id);
+        url = `${BASE_URL}/movie/${id}?api_key=${API_KEY}`;
       } else if (type === 'tv' || type === 'anime') {
-        contentData = await tmdbApi.getTVShowDetails(id);
+        url = `${BASE_URL}/tv/${id}?api_key=${API_KEY}`;
       } else {
-        throw new Error('Invalid content type');
+        throw new Error(`Invalid content type: ${type}`);
       }
 
-      // Transform the data to our format
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+
+      const contentData = await response.json();
+
+      // Simple transformation
       const transformedContent = {
-        ...tmdbApi.transformContent(contentData),
+        id: contentData.id,
+        title: contentData.title || contentData.name,
+        name: contentData.name || contentData.title,
+        overview: contentData.overview,
+        poster_path: contentData.poster_path,
+        backdrop_path: contentData.backdrop_path,
+        release_date: contentData.release_date || contentData.first_air_date,
+        first_air_date: contentData.first_air_date || contentData.release_date,
+        vote_average: contentData.vote_average,
         runtime: contentData.runtime,
         number_of_seasons: contentData.number_of_seasons,
         number_of_episodes: contentData.number_of_episodes,
@@ -54,7 +77,7 @@ const ContentDetail = () => {
     if (type && id) {
       loadContent();
     }
-  }, [type, id]);
+  }, [type, id, location.pathname]);
 
   if (loading) {
     return (
@@ -268,7 +291,7 @@ const ContentDetail = () => {
             {/* Genres */}
             {content.genres && (
               <div style={{ marginBottom: '1.5rem' }}>
-                {content.genres.map((genre, index) => (
+                {content.genres.map((genre) => (
                   <span
                     key={genre}
                     style={{
