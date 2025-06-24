@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Play, Plus, Share, ArrowLeft } from 'lucide-react';
+import { Play, Plus, Share, ArrowLeft, X } from 'lucide-react';
 import { Button, Loading } from '../components';
 import VideoPlayer from '../components/VideoPlayer';
+import SeasonEpisodeSelector from '../components/SeasonEpisodeSelector';
 import tmdbApi from '../services/tmdbApi';
 import { utils } from '../utils/config';
 
@@ -12,6 +13,8 @@ const ContentDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showPlayer, setShowPlayer] = useState(false);
+  const [selectedSeason, setSelectedSeason] = useState(1);
+  const [selectedEpisode, setSelectedEpisode] = useState(1);
 
   const loadContent = async () => {
     try {
@@ -68,32 +71,32 @@ const ContentDetail = () => {
 
   if (error || !content) {
     return (
-      <div style={{ 
-        display: 'flex', 
+      <div style={{
+        display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center', 
-        alignItems: 'center', 
+        justifyContent: 'center',
+        alignItems: 'center',
         minHeight: '60vh',
         textAlign: 'center',
         padding: '2rem'
       }}>
-        <h1 style={{ 
-          fontSize: '3rem', 
-          color: 'var(--netflix-red)', 
-          margin: '0 0 1rem 0' 
+        <h1 style={{
+          fontSize: '3rem',
+          color: 'var(--netflix-red)',
+          margin: '0 0 1rem 0'
         }}>
           404
         </h1>
-        <h2 style={{ 
-          fontSize: '1.5rem', 
-          color: 'var(--netflix-white)', 
-          margin: '0 0 1rem 0' 
+        <h2 style={{
+          fontSize: '1.5rem',
+          color: 'var(--netflix-white)',
+          margin: '0 0 1rem 0'
         }}>
           Content Not Found
         </h2>
-        <p style={{ 
-          color: 'var(--netflix-text-gray)', 
-          margin: '0 0 2rem 0' 
+        <p style={{
+          color: 'var(--netflix-text-gray)',
+          margin: '0 0 2rem 0'
         }}>
           The content you're looking for doesn't exist or has been removed.
         </p>
@@ -103,6 +106,21 @@ const ContentDetail = () => {
       </div>
     );
   }
+
+  const handleEpisodeSelect = (season, episode) => {
+    setSelectedSeason(season);
+    setSelectedEpisode(episode);
+  };
+
+  const handlePlayClick = (season = null, episode = null) => {
+    if (content.type === 'movie') {
+      setShowPlayer(true);
+    } else if (content.type === 'tv' || content.type === 'anime') {
+      setSelectedSeason(season || selectedSeason);
+      setSelectedEpisode(episode || selectedEpisode);
+      setShowPlayer(true);
+    }
+  };
 
   const backdropUrl = utils.getBackdropUrl(content.backdrop_path);
   const posterUrl = utils.getPosterUrl(content.poster_path);
@@ -285,15 +303,6 @@ const ContentDetail = () => {
             {/* Action Buttons */}
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <Button
-                variant="primary"
-                size="large"
-                icon={<Play size={20} fill="currentColor" />}
-                onClick={() => setShowPlayer(true)}
-              >
-                Play Now
-              </Button>
-
-              <Button
                 variant="secondary"
                 size="large"
                 icon={<Plus size={20} />}
@@ -313,11 +322,24 @@ const ContentDetail = () => {
         </div>
       </div>
 
+      {/* Season/Episode Selector and Player Controls */}
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2rem' }}>
+        <SeasonEpisodeSelector
+          contentId={content.id}
+          contentType={content.type}
+          totalSeasons={content.number_of_seasons || 1}
+          onEpisodeSelect={handleEpisodeSelect}
+          onPlayClick={handlePlayClick}
+        />
+      </div>
+
       {/* Video Player */}
       {showPlayer && (
         <VideoPlayer
           contentId={content.id}
-          contentType={type}
+          contentType={content.type}
+          season={selectedSeason}
+          episode={selectedEpisode}
           onClose={() => setShowPlayer(false)}
           autoPlay={true}
         />

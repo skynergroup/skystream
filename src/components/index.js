@@ -12,3 +12,4 @@ export { default as ContentCard } from './ContentCard';
 export { default as ContentGrid } from './ContentGrid';
 export { default as HeroBanner } from './HeroBanner';
 export { default as VideoPlayer } from './VideoPlayer';
+export { default as SeasonEpisodeSelector } from './SeasonEpisodeSelector';

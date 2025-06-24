@@ -6,7 +6,7 @@ on:
   # Pull requests do not trigger deployment - only merged commits to production
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     environment: production
     

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Play, Plus, Info } from 'lucide-react';
-import VideoPlayer from './VideoPlayer';
 import './ContentCard.css';
 
 const ContentCard = ({ 
@@ -17,7 +16,6 @@ const ContentCard = ({
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [showPlayer, setShowPlayer] = useState(false);
 
   const formatDate = (date) => {
     if (!date) return '';
@@ -73,12 +71,12 @@ const ContentCard = ({
         {/* Hover Overlay */}
         <div className="content-card__overlay">
           <div className="content-card__actions">
-            <button
+            <Link
+              to={getContentUrl()}
               className="content-card__action content-card__action--play"
-              onClick={() => setShowPlayer(true)}
             >
               <Play size={20} fill="currentColor" />
-            </button>
+            </Link>
             <button className="content-card__action content-card__action--add">
               <Plus size={20} />
             </button>
@@ -106,16 +104,6 @@ const ContentCard = ({
           </div>
         </div>
       </div>
-
-      {/* Video Player */}
-      {showPlayer && (
-        <VideoPlayer
-          contentId={id}
-          contentType={type}
-          onClose={() => setShowPlayer(false)}
-          autoPlay={true}
-        />
-      )}
     </div>
   );
 };

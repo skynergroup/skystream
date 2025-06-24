@@ -106,7 +106,7 @@ const HeroBanner = ({
               icon={<Play size={20} fill="currentColor" />}
               className="hero-banner__play-btn"
             >
-              Play
+              Watch Now
             </Button>
             
             <Button
