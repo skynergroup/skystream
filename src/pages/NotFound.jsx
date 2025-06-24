@@ -88,14 +88,14 @@ const NotFound = () => {
         marginTop: '3rem',
         opacity: 0.3
       }}>
-        <img
-          src="/LOGO.png"
-          alt="SkyStream"
-          style={{
-            height: '60px',
-            filter: 'grayscale(100%)'
-          }}
-        />
+        <span style={{
+          fontSize: '2rem',
+          fontWeight: '700',
+          color: '#666',
+          letterSpacing: '-0.5px'
+        }}>
+          SkyStream
+        </span>
       </div>
     </div>
   );

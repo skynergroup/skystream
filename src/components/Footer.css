@@ -30,16 +30,26 @@
   transform: scale(1.05);
 }
 
-.footer__logo-img {
-  height: 48px;
-  width: auto;
+.footer__logo-text {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--netflix-red);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--netflix-red) 0%, #ff6b6b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.3s ease;
+  margin-bottom: 0.5rem;
+  display: inline-block;
 }
 
-.footer__title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--netflix-white);
-  margin: 0;
+.footer__logo:hover .footer__logo-text {
+  background: linear-gradient(135deg, #ff4757 0%, #ff6b6b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .footer__description {

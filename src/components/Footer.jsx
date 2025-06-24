@@ -26,9 +26,8 @@ const Footer = () => {
         {/* Logo and Description */}
         <div className="footer__brand">
           <Link to="/" className="footer__logo">
-            <img src="/LOGO.png" alt="SkyStream" className="footer__logo-img" />
+            <span className="footer__logo-text">SkyStream</span>
           </Link>
-          <h3 className="footer__title">SkyStream</h3>
           <p className="footer__description">
             Your ultimate destination for streaming movies and TV shows.
             Stream, explore, and enjoy endless entertainment.

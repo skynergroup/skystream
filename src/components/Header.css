@@ -35,9 +35,24 @@
   transform: scale(1.05);
 }
 
-.header__logo-img {
-  height: 40px;
-  width: auto;
+.header__logo-text {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--netflix-red);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--netflix-red) 0%, #ff6b6b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.3s ease;
+}
+
+.header__logo:hover .header__logo-text {
+  background: linear-gradient(135deg, #ff4757 0%, #ff6b6b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Desktop Navigation */
@@ -277,8 +292,8 @@
     display: block;
   }
   
-  .header__logo-img {
-    height: 32px;
+  .header__logo-text {
+    font-size: 1.5rem;
   }
 }
 
