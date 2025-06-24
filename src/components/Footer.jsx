@@ -78,21 +78,9 @@ const Footer = () => {
           <div className="footer__disclaimer">
             <h5 className="footer__disclaimer-title">Important Notice</h5>
             <p className="footer__disclaimer-text">
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-              Boredflix does not host or store any media files. All content is sourced from
-              third-party services and platforms. We respect intellectual property rights and comply
-              with DMCA regulations.
-=======
               SkyStream does not host or store any media files. All content is sourced from
               third-party services and platforms. We respect intellectual property rights and
               comply with DMCA regulations. This platform is developed and maintained by Skyner Development.
->>>>>>> Stashed changes
-=======
-              SkyStream does not host or store any media files. All content is sourced from
-              third-party services and platforms. We respect intellectual property rights and
-              comply with DMCA regulations. This platform is developed and maintained by Skyner Development.
->>>>>>> Stashed changes
             </p>
           </div>
 
@@ -101,9 +89,6 @@ const Footer = () => {
             <p className="footer__copyright-text">
               © {currentYear} SkyStream. All rights reserved.
             </p>
-<<<<<<< Updated upstream
-            <p className="footer__version">Made with ❤️ for movie lovers • Version 2.0</p>
-=======
             <p className="footer__version">
               Developed by <a href="https://skyner.co.za/" target="_blank" rel="noopener noreferrer" style={{color: 'var(--netflix-red)', textDecoration: 'none'}}>Skyner Development</a> •
               <button
@@ -115,7 +100,6 @@ const Footer = () => {
                 Version 2.0 <RotateCcw size={14} />
               </button>
             </p>
->>>>>>> Stashed changes
           </div>
         </div>
       </div>
