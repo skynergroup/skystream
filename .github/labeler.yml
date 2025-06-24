@@ -3,145 +3,112 @@
 
 # Frontend/UI changes
 '🎨 frontend':
-  - 'src/components/**/*'
-  - 'src/pages/**/*'
-  - '**/*.css'
-  - '**/*.scss'
-  - '**/*.jsx'
-  - 'src/assets/**/*'
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/components/**/*'
+      - 'src/pages/**/*'
+      - '**/*.css'
+      - '**/*.scss'
+      - '**/*.jsx'
+      - 'src/assets/**/*'
 
 # Backend/API changes
 '⚙️ backend':
-  - 'src/services/**/*'
-  - 'src/utils/**/*'
-  - 'src/api/**/*'
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/services/**/*'
+      - 'src/utils/**/*'
+      - 'src/api/**/*'
 
 # Configuration changes
 '🔧 config':
-  - 'vite.config.js'
-  - 'package.json'
-  - 'package-lock.json'
-  - '.env*'
-  - '.eslintrc*'
-  - '.prettierrc*'
-  - 'tsconfig.json'
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'vite.config.js'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.env*'
+      - '.eslintrc*'
+      - '.prettierrc*'
+      - 'tsconfig.json'
 
 # Documentation changes
 '📚 documentation':
-  - '**/*.md'
-  - 'docs/**/*'
-  - 'README*'
-  - 'CHANGELOG*'
-  - 'LICENSE*'
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.md'
+      - 'docs/**/*'
+      - 'README*'
+      - 'CHANGELOG*'
+      - 'LICENSE*'
 
 # CI/CD changes
 '🚀 ci/cd':
-  - '.github/**/*'
-  - 'Dockerfile*'
-  - 'docker-compose*'
-  - '.dockerignore'
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**/*'
+      - 'Dockerfile*'
+      - 'docker-compose*'
+      - '.dockerignore'
 
 # Testing changes
 '🧪 testing':
-  - '**/*.test.js'
-  - '**/*.test.jsx'
-  - '**/*.spec.js'
-  - '**/*.spec.jsx'
-  - 'tests/**/*'
-  - 'e2e/**/*'
-  - 'playwright.config.js'
-  - 'jest.config.js'
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.test.js'
+      - '**/*.test.jsx'
+      - '**/*.spec.js'
+      - '**/*.spec.jsx'
+      - 'tests/**/*'
+      - 'e2e/**/*'
+      - 'playwright.config.js'
+      - 'jest.config.js'
 
 # Security related
 '🔒 security':
-  - '.github/workflows/security-scan.yml'
-  - '.github/dependabot.yml'
-  - 'src/utils/security.js'
-
-# Performance related
-'⚡ performance':
-  - 'src/utils/performance.js'
-  - 'src/hooks/usePerformance.js'
-  - 'lighthouse.config.js'
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/workflows/security-scan.yml'
+      - '.github/dependabot.yml'
+      - 'src/utils/security.js'
 
 # Dependencies
 '📦 dependencies':
-  - 'package.json'
-  - 'package-lock.json'
-  - 'yarn.lock'
-  - 'pnpm-lock.yaml'
-
-# Bug fixes
-'🐛 bug':
-  - any: ['fix', 'bug', 'hotfix']
-
-# New features
-'✨ feature':
-  - any: ['feat', 'feature', 'add']
-
-# Refactoring
-'♻️ refactor':
-  - any: ['refactor', 'cleanup', 'improve']
-
-# Breaking changes
-'⚠️ breaking-change':
-  - 'BREAKING*'
-  - any: ['breaking', 'major']
-
-# Accessibility
-'♿ accessibility':
-  - any: ['a11y', 'accessibility', 'aria']
-
-# Mobile related
-'📱 mobile':
-  - 'src/styles/mobile.css'
-  - 'src/components/mobile/**/*'
-  - any: ['mobile', 'responsive']
-
-# Video player related
-'🎬 video-player':
-  - 'src/components/VideoPlayer*'
-  - 'src/services/videoPlayer*'
-  - 'src/utils/player*'
-
-# API related
-'🌐 api':
-  - 'src/services/tmdbApi.js'
-  - 'src/services/api*'
-  - 'src/utils/api*'
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'yarn.lock'
+      - 'pnpm-lock.yaml'
 
 # Styling
 '💄 styling':
-  - '**/*.css'
-  - '**/*.scss'
-  - 'src/styles/**/*'
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.css'
+      - '**/*.scss'
+      - 'src/styles/**/*'
 
 # Build system
 '🏗️ build':
-  - 'vite.config.js'
-  - 'rollup.config.js'
-  - 'webpack.config.js'
-  - 'build/**/*'
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'vite.config.js'
+      - 'rollup.config.js'
+      - 'webpack.config.js'
+      - 'build/**/*'
 
 # Environment
 '🌍 environment':
-  - '.env*'
-  - 'src/utils/config.js'
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.env*'
+      - 'src/utils/config.js'
 
 # Deployment
 '🚢 deployment':
-  - '.github/workflows/deploy*'
-  - 'Dockerfile*'
-  - 'docker-compose*'
-
-# Monitoring
-'📊 monitoring':
-  - 'src/utils/analytics.js'
-  - 'src/utils/monitoring.js'
-
-# SEO
-'🔍 seo':
-  - 'public/robots.txt'
-  - 'public/sitemap.xml'
-  - 'src/utils/seo.js'
-  - 'index.html'
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/workflows/deploy*'
+      - 'Dockerfile*'
+      - 'docker-compose*'
