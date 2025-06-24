@@ -31,6 +31,15 @@ jobs:
     - name: Check Prettier formatting
       run: |
         echo "Checking code formatting with Prettier..."
+
+        # Check for merge conflict markers first
+        if grep -r "<<<<<<< \|======= \|>>>>>>> " src/ > /dev/null 2>&1; then
+          echo "❌ Merge conflict markers found in source files!"
+          echo "Please resolve merge conflicts before proceeding"
+          grep -r "<<<<<<< \|======= \|>>>>>>> " src/ || true
+          exit 1
+        fi
+
         npx prettier --check "src/**/*.{js,jsx,ts,tsx,css,md,json}" || {
           echo "❌ Code formatting issues found!"
           echo "Run 'npm run format' to fix formatting issues"
