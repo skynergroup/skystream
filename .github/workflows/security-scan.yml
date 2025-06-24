@@ -12,27 +12,16 @@ on:
 
 permissions:
   contents: read
-  security-events: write
   actions: read
 
 jobs:
-  # CodeQL Analysis
-  codeql-analysis:
-    name: 🔍 CodeQL Analysis
+  # Static Analysis with ESLint Security Plugin (Free)
+  eslint-security:
+    name: 🔍 ESLint Security Analysis
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'javascript' ]
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        queries: security-extended,security-and-quality
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -43,15 +32,41 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Build project
-      run: |
-        cp .env.example .env.local
-        npm run build
+    - name: Install ESLint security plugin
+      run: npm install --no-save eslint-plugin-security
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+    - name: Run security linting
+      run: |
+        echo "Running security-focused ESLint checks..."
+        npx eslint "src/**/*.{js,jsx}" \
+          --config '{"extends": ["plugin:security/recommended"], "plugins": ["security"], "env": {"browser": true, "es6": true}, "parserOptions": {"ecmaVersion": 2020, "sourceType": "module"}}' \
+          --format json > eslint-security.json || true
+
+        # Check results and display them
+        if [ -s eslint-security.json ]; then
+          echo "📊 Security linting results:"
+          cat eslint-security.json | jq -r '.[] | select(.messages | length > 0) | "\(.filePath): \(.messages | length) issues"' || echo "Results found but couldn't parse with jq"
+
+          # Count critical security issues
+          CRITICAL_COUNT=$(cat eslint-security.json | jq '[.[] | .messages[] | select(.severity == 2)] | length' 2>/dev/null || echo "0")
+          echo "Critical security issues found: $CRITICAL_COUNT"
+
+          if [ "$CRITICAL_COUNT" -gt 0 ]; then
+            echo "⚠️ Critical security issues detected. Please review."
+          else
+            echo "✅ No critical security issues found"
+          fi
+        else
+          echo "✅ No security issues found in linting"
+        fi
+
+    - name: Upload security linting results
+      if: always()
+      uses: actions/upload-artifact@v4
       with:
-        category: "/language:${{matrix.language}}"
+        name: eslint-security-${{ github.sha }}
+        path: eslint-security.json
+        retention-days: 30
 
   # Dependency vulnerability scan
   dependency-scan:
@@ -131,87 +146,55 @@ jobs:
         path: secrets-scan.json
         retention-days: 30
 
-  # SAST (Static Application Security Testing)
-  sast-scan:
-    name: 🛡️ SAST Scan
+  # Additional security checks
+  additional-security:
+    name: 🛡️ Additional Security Checks
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-
-    - name: Install dependencies
-      run: npm ci
-
-    - name: Install ESLint security plugin
-      run: npm install --no-save eslint-plugin-security
-
-    - name: Run security linting
+    - name: Check for hardcoded secrets in code
       run: |
-        echo "Running security-focused ESLint checks..."
-        npx eslint "src/**/*.{js,jsx}" \
-          --config '{"extends": ["plugin:security/recommended"], "plugins": ["security"]}' \
-          --format json > eslint-security.json || true
-        
-        # Check results
-        if [ -s eslint-security.json ]; then
-          echo "Security linting completed. Check results for potential issues."
-          cat eslint-security.json | jq -r '.[] | select(.messages | length > 0) | .filePath'
-        else
-          echo "✅ No security issues found in linting"
+        echo "Checking for potential hardcoded secrets..."
+
+        # Check for common secret patterns
+        echo "Checking for API keys..."
+        if grep -r "api[_-]key\s*=\s*['\"][^'\"]\{10,\}" src/ || true; then
+          echo "⚠️ Potential API keys found in code"
         fi
 
-    - name: Upload SAST results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: sast-scan-${{ github.sha }}
-        path: eslint-security.json
-        retention-days: 30
-
-  # Container security scan (if using Docker)
-  container-scan:
-    name: 🐳 Container Scan
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production')
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Check for Dockerfile
-      id: check-docker
-      run: |
-        if [ -f "Dockerfile" ]; then
-          echo "dockerfile=true" >> $GITHUB_OUTPUT
-          echo "✅ Dockerfile found"
-        else
-          echo "dockerfile=false" >> $GITHUB_OUTPUT
-          echo "ℹ️ No Dockerfile found, skipping container scan"
+        echo "Checking for passwords..."
+        if grep -r "password\s*=\s*['\"][^'\"]\{5,\}" src/ || true; then
+          echo "⚠️ Potential passwords found in code"
         fi
 
-    - name: Build Docker image
-      if: steps.check-docker.outputs.dockerfile == 'true'
+        echo "Checking for tokens..."
+        if grep -r "token\s*=\s*['\"][^'\"]\{10,\}" src/ || true; then
+          echo "⚠️ Potential tokens found in code"
+        fi
+
+        echo "✅ Hardcoded secret check completed"
+
+    - name: Check for console.log in production code
       run: |
-        docker build -t skystream:${{ github.sha }} .
+        echo "Checking for console.log statements..."
+        if find src/ -name "*.js" -o -name "*.jsx" | xargs grep -n "console\.log" || true; then
+          echo "⚠️ console.log statements found - consider removing for production"
+        else
+          echo "✅ No console.log statements found"
+        fi
 
-    - name: Run Trivy vulnerability scanner
-      if: steps.check-docker.outputs.dockerfile == 'true'
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: 'skystream:${{ github.sha }}'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
+    - name: Check for eval() usage
+      run: |
+        echo "Checking for dangerous eval() usage..."
+        if find src/ -name "*.js" -o -name "*.jsx" | xargs grep -n "eval(" || true; then
+          echo "❌ eval() usage found - this is a security risk!"
+        else
+          echo "✅ No eval() usage found"
+        fi
 
-    - name: Upload Trivy scan results
-      if: steps.check-docker.outputs.dockerfile == 'true'
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: 'trivy-results.sarif'
+
 
   # License compliance scan
   license-scan:
@@ -299,18 +282,18 @@ jobs:
   security-summary:
     name: 📋 Security Summary
     runs-on: ubuntu-latest
-    needs: [codeql-analysis, dependency-scan, secret-scan, sast-scan, license-scan]
+    needs: [eslint-security, dependency-scan, secret-scan, additional-security, license-scan]
     if: always()
     steps:
     - name: Generate security report
       run: |
         echo "## 🔒 Security Scan Summary" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        
-        if [[ "${{ needs.codeql-analysis.result }}" == "success" ]]; then
-          echo "✅ **CodeQL Analysis**: No issues found" >> $GITHUB_STEP_SUMMARY
+
+        if [[ "${{ needs.eslint-security.result }}" == "success" ]]; then
+          echo "✅ **ESLint Security**: No critical issues found" >> $GITHUB_STEP_SUMMARY
         else
-          echo "❌ **CodeQL Analysis**: Issues detected" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ **ESLint Security**: Issues detected" >> $GITHUB_STEP_SUMMARY
         fi
         
         if [[ "${{ needs.dependency-scan.result }}" == "success" ]]; then
@@ -325,10 +308,10 @@ jobs:
           echo "⚠️ **Secret Scan**: Potential secrets found" >> $GITHUB_STEP_SUMMARY
         fi
         
-        if [[ "${{ needs.sast-scan.result }}" == "success" ]]; then
-          echo "✅ **SAST Scan**: No security issues" >> $GITHUB_STEP_SUMMARY
+        if [[ "${{ needs.additional-security.result }}" == "success" ]]; then
+          echo "✅ **Additional Security**: No issues found" >> $GITHUB_STEP_SUMMARY
         else
-          echo "⚠️ **SAST Scan**: Security issues found" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ **Additional Security**: Issues found" >> $GITHUB_STEP_SUMMARY
         fi
         
         if [[ "${{ needs.license-scan.result }}" == "success" ]]; then

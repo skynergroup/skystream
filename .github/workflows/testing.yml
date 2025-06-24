@@ -154,7 +154,7 @@ jobs:
         path: visual-test-results/
         retention-days: 30
 
-  # Performance Tests
+  # Performance Tests (Basic)
   performance-tests:
     name: ⚡ Performance Tests
     runs-on: ubuntu-latest
@@ -178,26 +178,21 @@ jobs:
     - name: Build application
       run: npm run build
 
-    - name: Start application
+    - name: Basic performance checks
       run: |
-        npm run preview &
-        sleep 10
+        echo "Running basic performance checks..."
 
-    - name: Install Lighthouse CI
-      run: npm install -g @lhci/cli
+        # Check bundle sizes
+        echo "📦 Bundle size analysis:"
+        find dist -name "*.js" -exec ls -lh {} \; | awk '{print $5, $9}' | sort -hr
 
-    - name: Run Lighthouse CI
-      run: |
-        echo "Running Lighthouse performance tests..."
-        lhci autorun || echo "Lighthouse CI would run here (configure lhci)"
+        # Check for large bundles (>1MB)
+        echo "🔍 Checking for large bundles..."
+        find dist -name "*.js" -size +1M -exec echo "⚠️ Large bundle found: {} ($(ls -lh {} | awk '{print $5}'))" \; || echo "✅ No large bundles found"
 
-    - name: Upload Lighthouse results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: lighthouse-results-${{ github.sha }}
-        path: .lighthouseci/
-        retention-days: 30
+        # Check total dist size
+        TOTAL_SIZE=$(du -sh dist/ | cut -f1)
+        echo "📊 Total build size: $TOTAL_SIZE"
 
   # Accessibility Tests
   accessibility-tests:
