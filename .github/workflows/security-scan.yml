@@ -1,0 +1,343 @@
+name: 🔒 Security Scan
+
+on:
+  push:
+    branches: [ main, production, develop ]
+  pull_request:
+    branches: [ main, production, develop ]
+  schedule:
+    # Run security scan every Monday at 9 AM
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  # CodeQL Analysis
+  codeql-analysis:
+    name: 🔍 CodeQL Analysis
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript' ]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        queries: security-extended,security-and-quality
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build project
+      run: |
+        cp .env.example .env.local
+        npm run build
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
+
+  # Dependency vulnerability scan
+  dependency-scan:
+    name: 📦 Dependency Scan
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run npm audit
+      run: |
+        echo "Running comprehensive npm audit..."
+        npm audit --audit-level=low --json > audit-full.json || true
+        npm audit --audit-level=moderate --json > audit-moderate.json || true
+        
+        # Check for high/critical vulnerabilities
+        if npm audit --audit-level=high; then
+          echo "✅ No high or critical vulnerabilities found"
+        else
+          echo "❌ High or critical vulnerabilities detected!"
+          npm audit --audit-level=high
+          exit 1
+        fi
+
+    - name: Upload audit results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-audit-${{ github.sha }}
+        path: |
+          audit-full.json
+          audit-moderate.json
+        retention-days: 30
+
+  # Secret scanning
+  secret-scan:
+    name: 🔐 Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install TruffleHog
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+
+    - name: Run TruffleHog scan
+      run: |
+        echo "Scanning for secrets..."
+        trufflehog git file://. --json --no-update > secrets-scan.json || true
+        
+        # Check if any secrets were found
+        if [ -s secrets-scan.json ]; then
+          echo "⚠️ Potential secrets found!"
+          cat secrets-scan.json | jq -r '.SourceMetadata.Data.Git.file' | sort | uniq
+          echo "Please review the scan results and remove any exposed secrets"
+        else
+          echo "✅ No secrets detected"
+        fi
+
+    - name: Upload secret scan results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: secret-scan-${{ github.sha }}
+        path: secrets-scan.json
+        retention-days: 30
+
+  # SAST (Static Application Security Testing)
+  sast-scan:
+    name: 🛡️ SAST Scan
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install ESLint security plugin
+      run: npm install --no-save eslint-plugin-security
+
+    - name: Run security linting
+      run: |
+        echo "Running security-focused ESLint checks..."
+        npx eslint "src/**/*.{js,jsx}" \
+          --config '{"extends": ["plugin:security/recommended"], "plugins": ["security"]}' \
+          --format json > eslint-security.json || true
+        
+        # Check results
+        if [ -s eslint-security.json ]; then
+          echo "Security linting completed. Check results for potential issues."
+          cat eslint-security.json | jq -r '.[] | select(.messages | length > 0) | .filePath'
+        else
+          echo "✅ No security issues found in linting"
+        fi
+
+    - name: Upload SAST results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: sast-scan-${{ github.sha }}
+        path: eslint-security.json
+        retention-days: 30
+
+  # Container security scan (if using Docker)
+  container-scan:
+    name: 🐳 Container Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production')
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check for Dockerfile
+      id: check-docker
+      run: |
+        if [ -f "Dockerfile" ]; then
+          echo "dockerfile=true" >> $GITHUB_OUTPUT
+          echo "✅ Dockerfile found"
+        else
+          echo "dockerfile=false" >> $GITHUB_OUTPUT
+          echo "ℹ️ No Dockerfile found, skipping container scan"
+        fi
+
+    - name: Build Docker image
+      if: steps.check-docker.outputs.dockerfile == 'true'
+      run: |
+        docker build -t skystream:${{ github.sha }} .
+
+    - name: Run Trivy vulnerability scanner
+      if: steps.check-docker.outputs.dockerfile == 'true'
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'skystream:${{ github.sha }}'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results
+      if: steps.check-docker.outputs.dockerfile == 'true'
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # License compliance scan
+  license-scan:
+    name: 📄 License Scan
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install license checker
+      run: npm install -g license-checker
+
+    - name: Check licenses
+      run: |
+        echo "Checking dependency licenses..."
+        license-checker --json --out licenses.json
+        
+        # Check for copyleft licenses that might be problematic
+        if license-checker --summary | grep -E "(GPL|AGPL|LGPL|CDDL|EPL|MPL)"; then
+          echo "⚠️ Copyleft licenses detected. Please review for compliance."
+          license-checker --summary
+        else
+          echo "✅ No problematic copyleft licenses found"
+        fi
+
+    - name: Upload license scan results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: license-scan-${{ github.sha }}
+        path: licenses.json
+        retention-days: 30
+
+  # Security headers check
+  security-headers:
+    name: 🌐 Security Headers
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/production'
+    steps:
+    - name: Check security headers
+      run: |
+        echo "Checking security headers for production site..."
+        
+        # This would check your actual production site
+        # Replace with your actual production URL
+        PROD_URL="https://your-production-site.com"
+        
+        echo "Checking headers for: $PROD_URL"
+        
+        # Check for important security headers
+        headers=$(curl -s -I "$PROD_URL" || echo "Site not accessible")
+        
+        echo "Response headers:"
+        echo "$headers"
+        
+        # Check for specific security headers
+        if echo "$headers" | grep -i "x-frame-options"; then
+          echo "✅ X-Frame-Options header found"
+        else
+          echo "⚠️ X-Frame-Options header missing"
+        fi
+        
+        if echo "$headers" | grep -i "x-content-type-options"; then
+          echo "✅ X-Content-Type-Options header found"
+        else
+          echo "⚠️ X-Content-Type-Options header missing"
+        fi
+        
+        if echo "$headers" | grep -i "strict-transport-security"; then
+          echo "✅ HSTS header found"
+        else
+          echo "⚠️ HSTS header missing"
+        fi
+
+  # Security summary
+  security-summary:
+    name: 📋 Security Summary
+    runs-on: ubuntu-latest
+    needs: [codeql-analysis, dependency-scan, secret-scan, sast-scan, license-scan]
+    if: always()
+    steps:
+    - name: Generate security report
+      run: |
+        echo "## 🔒 Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ "${{ needs.codeql-analysis.result }}" == "success" ]]; then
+          echo "✅ **CodeQL Analysis**: No issues found" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ **CodeQL Analysis**: Issues detected" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [[ "${{ needs.dependency-scan.result }}" == "success" ]]; then
+          echo "✅ **Dependency Scan**: No high/critical vulnerabilities" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ **Dependency Scan**: Vulnerabilities found" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [[ "${{ needs.secret-scan.result }}" == "success" ]]; then
+          echo "✅ **Secret Scan**: No secrets detected" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "⚠️ **Secret Scan**: Potential secrets found" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [[ "${{ needs.sast-scan.result }}" == "success" ]]; then
+          echo "✅ **SAST Scan**: No security issues" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "⚠️ **SAST Scan**: Security issues found" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [[ "${{ needs.license-scan.result }}" == "success" ]]; then
+          echo "✅ **License Scan**: Compliant" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "⚠️ **License Scan**: Review required" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Triggered by**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY

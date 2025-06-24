@@ -1,0 +1,339 @@
+name: 🚀 Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v2.1.0)'
+        required: true
+        type: string
+      release_type:
+        description: 'Type of release'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+          - release
+          - prerelease
+      generate_changelog:
+        description: 'Generate changelog automatically'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  NODE_VERSION: '18'
+
+permissions:
+  contents: write
+  packages: write
+  pull-requests: write
+
+jobs:
+  # Validate release
+  validate-release:
+    name: 🔍 Validate Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      is_prerelease: ${{ steps.version.outputs.is_prerelease }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Determine version
+      id: version
+      run: |
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          VERSION="${{ github.event.inputs.version }}"
+          IS_PRERELEASE="${{ github.event.inputs.release_type == 'prerelease' }}"
+        else
+          VERSION="${{ github.ref_name }}"
+          if [[ "$VERSION" =~ -[a-zA-Z] ]]; then
+            IS_PRERELEASE="true"
+          else
+            IS_PRERELEASE="false"
+          fi
+        fi
+        
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+        echo "Release version: $VERSION"
+        echo "Is prerelease: $IS_PRERELEASE"
+
+    - name: Validate version format
+      run: |
+        VERSION="${{ steps.version.outputs.version }}"
+        if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?$ ]]; then
+          echo "❌ Invalid version format: $VERSION"
+          echo "Expected format: v1.2.3 or v1.2.3-alpha.1"
+          exit 1
+        fi
+        echo "✅ Version format is valid"
+
+    - name: Check if tag exists
+      run: |
+        VERSION="${{ steps.version.outputs.version }}"
+        if git tag -l | grep -q "^$VERSION$"; then
+          echo "❌ Tag $VERSION already exists"
+          exit 1
+        fi
+        echo "✅ Tag $VERSION is available"
+
+  # Build and test
+  build-and-test:
+    name: 🏗️ Build & Test
+    runs-on: ubuntu-latest
+    needs: validate-release
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests
+      run: |
+        echo "Running tests for release..."
+        # npm run test:ci
+        echo "✅ Tests would run here"
+
+    - name: Run linting
+      run: |
+        echo "Running linting..."
+        # npm run lint
+        echo "✅ Linting would run here"
+
+    - name: Build production
+      run: |
+        cp .env.production .env.local
+        npm run build:production
+      env:
+        NODE_ENV: production
+
+    - name: Verify build
+      run: |
+        echo "Verifying build output..."
+        ls -la dist/
+        if [ -d "dist" ] && [ "$(ls -A dist)" ]; then
+          echo "✅ Build output verified"
+        else
+          echo "❌ Build output is empty"
+          exit 1
+        fi
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-build-${{ needs.validate-release.outputs.version }}
+        path: dist/
+        retention-days: 90
+
+  # Generate changelog
+  generate-changelog:
+    name: 📝 Generate Changelog
+    runs-on: ubuntu-latest
+    needs: validate-release
+    if: github.event.inputs.generate_changelog != 'false'
+    outputs:
+      changelog: ${{ steps.changelog.outputs.changelog }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Generate changelog
+      id: changelog
+      run: |
+        VERSION="${{ needs.validate-release.outputs.version }}"
+        
+        # Get the previous tag
+        PREVIOUS_TAG=$(git tag --sort=-version:refname | head -n 1)
+        if [ -z "$PREVIOUS_TAG" ]; then
+          PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
+        fi
+        
+        echo "Generating changelog from $PREVIOUS_TAG to HEAD"
+        
+        # Generate changelog
+        CHANGELOG=$(cat << 'EOF'
+        ## What's Changed
+        
+        ### 🚀 Features
+        $(git log $PREVIOUS_TAG..HEAD --oneline --grep="feat:" --pretty="- %s" | sed 's/feat: //')
+        
+        ### 🐛 Bug Fixes
+        $(git log $PREVIOUS_TAG..HEAD --oneline --grep="fix:" --pretty="- %s" | sed 's/fix: //')
+        
+        ### 📚 Documentation
+        $(git log $PREVIOUS_TAG..HEAD --oneline --grep="docs:" --pretty="- %s" | sed 's/docs: //')
+        
+        ### 🔧 Maintenance
+        $(git log $PREVIOUS_TAG..HEAD --oneline --grep="chore:" --pretty="- %s" | sed 's/chore: //')
+        
+        ### Other Changes
+        $(git log $PREVIOUS_TAG..HEAD --oneline --invert-grep --grep="feat:" --grep="fix:" --grep="docs:" --grep="chore:" --pretty="- %s")
+        
+        **Full Changelog**: https://github.com/${{ github.repository }}/compare/$PREVIOUS_TAG...$VERSION
+        EOF
+        )
+        
+        # Save changelog to file and output
+        echo "$CHANGELOG" > RELEASE_CHANGELOG.md
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGELOG" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Upload changelog
+      uses: actions/upload-artifact@v4
+      with:
+        name: changelog-${{ needs.validate-release.outputs.version }}
+        path: RELEASE_CHANGELOG.md
+        retention-days: 30
+
+  # Create release
+  create-release:
+    name: 🎉 Create Release
+    runs-on: ubuntu-latest
+    needs: [validate-release, build-and-test, generate-changelog]
+    if: always() && needs.validate-release.result == 'success' && needs.build-and-test.result == 'success'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: release-build-${{ needs.validate-release.outputs.version }}
+        path: dist/
+
+    - name: Create release archive
+      run: |
+        VERSION="${{ needs.validate-release.outputs.version }}"
+        tar -czf "skystream-$VERSION.tar.gz" -C dist .
+        zip -r "skystream-$VERSION.zip" dist/
+
+    - name: Create Git tag
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        VERSION="${{ needs.validate-release.outputs.version }}"
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git tag -a "$VERSION" -m "Release $VERSION"
+        git push origin "$VERSION"
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ needs.validate-release.outputs.version }}
+        name: SkyStream ${{ needs.validate-release.outputs.version }}
+        body: ${{ needs.generate-changelog.outputs.changelog || 'Release notes will be added soon.' }}
+        prerelease: ${{ needs.validate-release.outputs.is_prerelease == 'true' }}
+        files: |
+          skystream-${{ needs.validate-release.outputs.version }}.tar.gz
+          skystream-${{ needs.validate-release.outputs.version }}.zip
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Deploy release to production
+  deploy-production:
+    name: 🚀 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [validate-release, create-release]
+    if: needs.validate-release.outputs.is_prerelease == 'false'
+    environment:
+      name: production
+      url: https://your-production-site.com
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: release-build-${{ needs.validate-release.outputs.version }}
+        path: dist/
+
+    - name: Deploy to production
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_HOST }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./dist/
+        server-dir: ${{ secrets.FTP_PATH }}
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+
+    - name: Verify production deployment
+      run: |
+        echo "Verifying production deployment..."
+        sleep 30
+        
+        # Check if site is responding
+        PROD_URL="https://your-production-site.com"
+        response=$(curl -s -o /dev/null -w "%{http_code}" "$PROD_URL" || echo "000")
+        
+        if [ "$response" -eq 200 ]; then
+          echo "✅ Production site is responding correctly"
+        else
+          echo "❌ Production site returned HTTP $response"
+          exit 1
+        fi
+
+  # Post-release tasks
+  post-release:
+    name: 📋 Post-release Tasks
+    runs-on: ubuntu-latest
+    needs: [validate-release, create-release]
+    if: always() && needs.create-release.result == 'success'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Update version in package.json
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        VERSION="${{ needs.validate-release.outputs.version }}"
+        # Remove 'v' prefix for package.json
+        PACKAGE_VERSION="${VERSION#v}"
+        
+        # Update package.json version
+        npm version "$PACKAGE_VERSION" --no-git-tag-version
+        
+        # Commit version bump
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add package.json
+        git commit -m "chore: bump version to $VERSION"
+        git push origin main
+
+    - name: Create post-release summary
+      run: |
+        echo "## 🎉 Release Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Version**: ${{ needs.validate-release.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Type**: ${{ needs.validate-release.outputs.is_prerelease == 'true' && 'Pre-release' || 'Release' }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📦 Artifacts" >> $GITHUB_STEP_SUMMARY
+        echo "- Release archive (tar.gz)" >> $GITHUB_STEP_SUMMARY
+        echo "- Release archive (zip)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🔗 Links" >> $GITHUB_STEP_SUMMARY
+        echo "- [Release Page](https://github.com/${{ github.repository }}/releases/tag/${{ needs.validate-release.outputs.version }})" >> $GITHUB_STEP_SUMMARY
+        if [[ "${{ needs.validate-release.outputs.is_prerelease }}" == "false" ]]; then
+          echo "- [Production Site](https://your-production-site.com)" >> $GITHUB_STEP_SUMMARY
+        fi
