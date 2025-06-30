@@ -38,7 +38,7 @@ jobs:
 
     - name: Deploy to Staging
       if: ${{ secrets.STAGING_FTP_HOST }}
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: ${{ secrets.STAGING_FTP_HOST }}
         username: ${{ secrets.STAGING_FTP_USERNAME }}
