@@ -5,7 +5,7 @@ import { Button, Loading } from '../components';
 import VideoPlayer from '../components/VideoPlayer';
 import SeasonEpisodeSelector from '../components/SeasonEpisodeSelector';
 import tmdbApi from '../services/tmdbApi';
-import { utils } from '../utils/config';
+import { utils, analytics } from '../utils';
 
 const ContentDetail = () => {
   const { id } = useParams();
@@ -64,9 +64,41 @@ const ContentDetail = () => {
       };
 
       setContent(transformedContent);
+
+      // Track content view with detailed metadata
+      const metadata = {
+        genres: transformedContent.genres,
+        year: transformedContent.release_date?.split('-')[0] || transformedContent.first_air_date?.split('-')[0],
+        rating: transformedContent.vote_average,
+        runtime: transformedContent.runtime,
+        language: transformedContent.original_language,
+        seasons: transformedContent.number_of_seasons,
+        episodes: transformedContent.number_of_episodes,
+      };
+
+      analytics.trackContentView(type, id, transformedContent.title, metadata);
+
+      // Track specific content type popularity
+      if (type === 'movie') {
+        analytics.trackMovieView(id, transformedContent.title, metadata);
+      } else if (type === 'tv') {
+        analytics.trackSeriesView(id, transformedContent.title, metadata);
+      } else if (type === 'anime') {
+        analytics.trackAnimeView(id, transformedContent.title, metadata);
+      }
+
+      // Track genre preferences
+      if (transformedContent.genres?.length > 0) {
+        transformedContent.genres.forEach(genre => {
+          analytics.trackGenreInteraction(genre, type, 'view');
+        });
+      }
     } catch (err) {
       console.error('Failed to load content details:', err);
       setError(err);
+
+      // Track content loading error
+      analytics.trackError(`Failed to load ${type} ${id}: ${err.message}`, 'content_load_error');
     } finally {
       setLoading(false);
     }
@@ -145,12 +177,37 @@ const ContentDetail = () => {
   };
 
   const handlePlayClick = (season = null, episode = null) => {
+    const playerInfo = {
+      player: utils.PLAYER_CONFIG?.defaults?.player || 'unknown',
+      season: season || selectedSeason,
+      episode: episode || selectedEpisode,
+    };
+
     if (content.type === 'movie') {
       setShowPlayer(true);
+      // Track movie play with player info
+      analytics.trackVideoEvent('play', content.type, content.id, content.title, playerInfo);
     } else if (content.type === 'tv' || content.type === 'anime') {
-      setSelectedSeason(season || selectedSeason);
-      setSelectedEpisode(episode || selectedEpisode);
+      const currentSeason = season || selectedSeason;
+      const currentEpisode = episode || selectedEpisode;
+
+      setSelectedSeason(currentSeason);
+      setSelectedEpisode(currentEpisode);
       setShowPlayer(true);
+
+      // Track episode view
+      analytics.trackEpisodeView(
+        content.type,
+        content.id,
+        content.title,
+        currentSeason,
+        currentEpisode,
+        { episodeTitle: `Episode ${currentEpisode}` }
+      );
+
+      // Track TV/anime episode play with player info
+      analytics.trackVideoEvent('play', content.type, content.id,
+        `${content.title} S${currentSeason}E${currentEpisode}`, playerInfo);
     }
   };
 

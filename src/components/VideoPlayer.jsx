@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Settings, Download, Maximize } from 'lucide-react';
 import Button from './Button';
-import { PLAYER_CONFIG, utils } from '../utils/config';
+import { PLAYER_CONFIG, utils, analytics } from '../utils';
 import './VideoPlayer.css';
 
 const VideoPlayer = ({
@@ -58,6 +58,25 @@ const VideoPlayer = ({
     console.log('Video player loaded successfully:', playerUrl);
     setIsLoading(false);
     setError(null);
+
+    // Track successful video load with player performance
+    const contentTitle = contentType === 'movie' ?
+      `Movie ${contentId}` :
+      `${contentType} ${contentId} S${season}E${episode}`;
+
+    const playerInfo = {
+      player: currentPlayer,
+      season: season,
+      episode: episode,
+    };
+
+    analytics.trackVideoEvent('load_success', contentType, contentId, contentTitle, playerInfo);
+
+    // Track player performance
+    analytics.trackPlayerPerformance(currentPlayer, contentType, {
+      success: true,
+      loadTime: null, // Could be enhanced with actual load time measurement
+    });
   };
 
   const handleIframeError = () => {
@@ -66,12 +85,48 @@ const VideoPlayer = ({
     const errorMessage = `Failed to load ${currentPlayer} player. The content might not be available on this service.`;
     setError(errorMessage);
 
+    // Track video load error with player info
+    const contentTitle = contentType === 'movie' ?
+      `Movie ${contentId}` :
+      `${contentType} ${contentId} S${season}E${episode}`;
+
+    const playerInfo = {
+      player: currentPlayer,
+      season: season,
+      episode: episode,
+    };
+
+    analytics.trackVideoEvent('load_error', contentType, contentId, contentTitle, playerInfo);
+    analytics.trackError(`Video player error: ${errorMessage}`, 'video_player_error');
+
+    // Track player performance failure
+    analytics.trackPlayerPerformance(currentPlayer, contentType, {
+      success: false,
+      errorType: 'load_failure',
+    });
+
     // Auto-fallback to next player if current one fails
     if (currentPlayer === 'godrive') {
       console.log('GoDrive failed, will suggest trying Videasy...');
     } else if (currentPlayer === 'videasy') {
       console.log('Videasy failed, will suggest trying VidSrc...');
     }
+  };
+
+  // Analytics-aware close handler
+  const handleClose = () => {
+    const contentTitle = contentType === 'movie' ?
+      `Movie ${contentId}` :
+      `${contentType} ${contentId} S${season}E${episode}`;
+
+    const playerInfo = {
+      player: currentPlayer,
+      season: season,
+      episode: episode,
+    };
+
+    analytics.trackVideoEvent('close', contentType, contentId, contentTitle, playerInfo);
+    onClose();
   };
 
   const switchPlayer = async newPlayer => {
@@ -101,10 +156,27 @@ const VideoPlayer = ({
       }
       setPlayerUrl(url);
       console.log('Switched to player:', newPlayer, 'URL:', url);
+
+      // Track player switch
+      const contentTitle = contentType === 'movie' ?
+        `Movie ${contentId}` :
+        `${contentType} ${contentId} S${season}E${episode}`;
+      analytics.trackEvent('player_switch', {
+        category: 'video',
+        label: `${currentPlayer}_to_${newPlayer}`,
+        content_type: contentType,
+        content_id: contentId,
+        content_title: contentTitle,
+        from_player: currentPlayer,
+        to_player: newPlayer,
+      });
     } catch (error) {
       console.error('Failed to generate player URL:', error);
       setPlayerUrl('');
       setError(`Failed to switch to ${newPlayer} player: ${error.message}`);
+
+      // Track player switch error
+      analytics.trackError(`Player switch failed: ${error.message}`, 'player_switch_error');
     }
   };
 
@@ -183,7 +255,7 @@ const VideoPlayer = ({
               variant="ghost"
               size="small"
               icon={<X size={16} />}
-              onClick={onClose}
+              onClick={handleClose}
               title="Close"
             />
           </div>
@@ -299,7 +371,7 @@ const VideoPlayer = ({
                     Try VidSrc Player
                   </Button>
                 )}
-                <Button variant="secondary" onClick={onClose}>
+                <Button variant="secondary" onClick={handleClose}>
                   Close Player
                 </Button>
               </div>

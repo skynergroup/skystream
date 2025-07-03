@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { HeroBanner, ContentGrid, Loading } from '../components';
 import tmdbApi from '../services/tmdbApi';
+import { analytics } from '../utils';
 
 const Home = () => {
   const [featuredContent, setFeaturedContent] = useState(null);
@@ -24,9 +25,23 @@ const Home = () => {
       setPopularMovies(homeContent.popularMovies);
       setPopularTV(homeContent.popularTV);
       setTopRated(homeContent.topRated);
+
+      // Track home page content load
+      analytics.trackEvent('home_content_loaded', {
+        category: 'content_discovery',
+        label: 'homepage',
+        featured_count: homeContent.featured?.length || 0,
+        trending_count: homeContent.trending?.length || 0,
+        popular_movies_count: homeContent.popularMovies?.length || 0,
+        popular_tv_count: homeContent.popularTV?.length || 0,
+        top_rated_count: homeContent.topRated?.length || 0,
+      });
     } catch (err) {
       console.error('Failed to load content:', err);
       setError(err);
+
+      // Track home page load error
+      analytics.trackError(`Home page load failed: ${err.message}`, 'home_page_error');
     } finally {
       setLoading(false);
     }

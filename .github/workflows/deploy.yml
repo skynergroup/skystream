@@ -27,25 +27,46 @@ jobs:
       run: |
         cp .env.production .env.local
         echo "Environment variables configured for production build"
-        echo "Verifying TMDB API key is present..."
+        echo "Verifying required environment variables..."
         grep -q "VITE_TMDB_API_KEY=" .env.local && echo "✅ TMDB API key found" || echo "❌ TMDB API key missing"
+        grep -q "VITE_GA_TRACKING_ID=" .env.local && echo "✅ Google Analytics tracking ID found" || echo "❌ Google Analytics tracking ID missing"
+        grep -q "VITE_ENABLE_ANALYTICS=" .env.local && echo "✅ Analytics enable flag found" || echo "❌ Analytics enable flag missing"
+        echo "📊 Analytics Configuration:"
+        grep "VITE_GA_TRACKING_ID=" .env.local || echo "No GA tracking ID"
+        grep "VITE_ENABLE_ANALYTICS=" .env.local || echo "No analytics enable flag"
+
+    - name: Verify Environment Variables for Build
+      run: |
+        echo "🔍 Verifying environment variables are ready for build..."
+        echo "NODE_ENV: $NODE_ENV"
+        echo "VITE_GA_TRACKING_ID: $VITE_GA_TRACKING_ID"
+        echo "VITE_ENABLE_ANALYTICS: $VITE_ENABLE_ANALYTICS"
+        echo "VITE_TMDB_API_KEY: ${VITE_TMDB_API_KEY:0:10}..." # Show only first 10 chars for security
+        echo "✅ Environment variables verified for build process"
+      env:
+        NODE_ENV: production
+        VITE_GA_TRACKING_ID: G-CR3ZVV9BE1
+        VITE_ENABLE_ANALYTICS: true
+        VITE_TMDB_API_KEY: 20aed25855723af6f6a4dcdad0f17b86
 
     - name: Build project
       run: npm run build:production
       env:
         NODE_ENV: production
+        # Explicitly set analytics environment variables for build
+        VITE_GA_TRACKING_ID: G-CR3ZVV9BE1
+        VITE_ENABLE_ANALYTICS: true
+        # Ensure all other production variables are available
+        VITE_TMDB_API_KEY: 20aed25855723af6f6a4dcdad0f17b86
+        VITE_APP_NAME: SkyStream
+        VITE_APP_VERSION: 2.0.0
 
     - name: Verify build output
       run: |
         echo "Checking if build was successful..."
         ls -la dist/
-        echo "Verifying environment variables are embedded in build..."
-        if grep -r "20aed25855723af6f6a4dcdad0f17b86" dist/ > /dev/null; then
-          echo "✅ TMDB API key found in build output"
-        else
-          echo "❌ TMDB API key NOT found in build output"
-          exit 1
-        fi
+        echo "Running comprehensive build verification..."
+        npm run verify-build
       
     - name: Deploy to FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -68,6 +89,12 @@ jobs:
       run: |
         echo "🚀 Deployment successful!"
         echo "Site should be live at: https://bumblebeefoundation.co.za"
+        echo "📊 Google Analytics (G-CR3ZVV9BE1) is active and tracking:"
+        echo "   • Content popularity (movies, series, anime)"
+        echo "   • Player usage and performance"
+        echo "   • User behavior and engagement"
+        echo "   • Search analytics and genre preferences"
+        echo "🎯 Check your GA4 dashboard for real-time analytics data!"
         
     - name: Notify deployment failure
       if: failure()

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Play, Plus, Info } from 'lucide-react';
+import { analytics } from '../utils';
 import './ContentCard.css';
 
 const ContentCard = ({
@@ -40,12 +41,41 @@ const ContentCard = ({
     setImageLoaded(true);
   };
 
+  const handleCardClick = () => {
+    // Track content card click
+    analytics.trackEvent('content_card_click', {
+      category: 'content_discovery',
+      label: `${type}_${id}`,
+      content_type: type,
+      content_id: id,
+      content_title: title,
+      content_rating: rating,
+      content_year: formatDate(releaseDate),
+      card_size: size,
+    });
+
+    // Track specific content type clicks for popularity
+    const metadata = {
+      genres: [], // Could be enhanced if genre data is available
+      year: formatDate(releaseDate),
+      rating: rating,
+    };
+
+    if (type === 'movie') {
+      analytics.trackMovieView(id, title, metadata);
+    } else if (type === 'tv') {
+      analytics.trackSeriesView(id, title, metadata);
+    } else if (type === 'anime') {
+      analytics.trackAnimeView(id, title, metadata);
+    }
+  };
+
   const sizeClass = `content-card--${size}`;
 
   return (
     <div className={`content-card ${sizeClass}`}>
       <div className="content-card__image-container">
-        <Link to={getContentUrl()} className="content-card__image-link">
+        <Link to={getContentUrl()} className="content-card__image-link" onClick={handleCardClick}>
           {!imageError ? (
             <img
               src={poster}

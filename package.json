@@ -20,7 +20,9 @@
     "preview": "vite preview",
     "serve": "vite preview --port 4173",
     "clean": "rm -rf dist",
-    "prebuild": "npm run clean"
+    "prebuild": "npm run clean",
+    "verify-build": "node scripts/verify-build.js",
+    "postbuild": "npm run verify-build"
   },
   "dependencies": {
     "lucide-react": "^0.523.0",

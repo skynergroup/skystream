@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon } from 'lucide-react';
 import { ContentGrid, Loading } from '../components';
 import tmdbApi from '../services/tmdbApi';
+import { analytics } from '../utils';
 
 const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,9 +33,15 @@ const Search = () => {
         .map(item => tmdbApi.transformContent(item));
 
       setResults(transformedResults);
+
+      // Track search analytics
+      analytics.trackSearch(searchQuery, transformedResults.length);
     } catch (err) {
       console.error('Search failed:', err);
       setError(err);
+
+      // Track search error
+      analytics.trackError(`Search failed: ${err.message}`, 'search_error');
     } finally {
       setLoading(false);
     }

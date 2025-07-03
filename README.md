@@ -387,12 +387,111 @@ export const API_CONFIG = {
 ```
 
 ### Analytics Configuration
+
+Google Analytics 4 is integrated with comprehensive tracking:
+
 ```javascript
 export const ANALYTICS_CONFIG = {
   enabled: getBooleanEnvVar('VITE_ENABLE_ANALYTICS', false),
-  trackingId: getEnvVar('VITE_GA_TRACKING_ID'),
+  trackingId: getEnvVar('VITE_GA_TRACKING_ID', 'G-CR3ZVV9BE1'),
 };
 ```
+
+#### Tracked Events
+
+**📊 Content Popularity Analytics**
+- **Movie Views**: Track most popular movies with metadata (genre, year, rating)
+- **Series Views**: Track most popular TV shows with season/episode data
+- **Anime Views**: Track most popular anime with detailed metadata
+- **Episode Views**: Individual episode tracking for series/anime
+- **Genre Preferences**: Track which genres users prefer by content type
+
+**🎮 Player Analytics**
+- **Player Usage**: Which players (GoDrive, Videasy, VidSrc) are most used
+- **Player Performance**: Success/failure rates for each player
+- **Player Switches**: When users switch between players
+- **Load Times**: Player loading performance metrics
+
+**🔍 User Behavior Analytics**
+- **Page Views**: Automatic tracking on route changes
+- **Content Discovery**: Home page section interactions
+- **Search Behavior**: Search terms, result counts, and click-through rates
+- **Content Card Clicks**: Track which content gets clicked from browse pages
+- **Viewing Sessions**: Session duration and content consumption patterns
+
+**📱 Technical Analytics**
+- **Video Events**: Play, load success/error, close events
+- **Error Tracking**: JavaScript errors, API failures, player errors
+- **Performance Monitoring**: Load times and user experience metrics
+
+#### Environment Variables
+```bash
+# Enable/disable analytics
+VITE_ENABLE_ANALYTICS=true
+
+# Google Analytics tracking ID
+VITE_GA_TRACKING_ID=G-CR3ZVV9BE1
+```
+
+#### Analytics Utility Usage
+```javascript
+import { analytics } from './utils';
+
+// Track custom events
+analytics.trackEvent('button_click', {
+  category: 'engagement',
+  label: 'header_search',
+});
+
+// Track content interactions
+analytics.trackContentView('movie', '12345', 'Movie Title');
+
+// Track search
+analytics.trackSearch('action movies', 25);
+
+// Track video events
+analytics.trackVideoEvent('play', 'movie', '12345', 'Movie Title');
+```
+
+#### 📈 Analytics Dashboard Insights
+
+**Content Popularity Reports**
+- **Most Popular Movies**: View count, ratings, genres, release years
+- **Top TV Series**: Episode views, season popularity, binge-watching patterns
+- **Trending Anime**: Most watched anime, genre preferences, episode completion rates
+- **Genre Analytics**: Which genres are most popular by content type
+
+**Player Performance Reports**
+- **Player Usage Statistics**: GoDrive vs Videasy vs VidSrc usage percentages
+- **Player Reliability**: Success/failure rates for each player by content type
+- **Player Preferences**: Which players users prefer for movies vs TV shows
+- **Technical Performance**: Load times and error rates by player
+
+**User Behavior Insights**
+- **Content Discovery Patterns**: How users find content (search vs browse)
+- **Viewing Habits**: Session duration, content consumption patterns
+- **Popular Search Terms**: What users are looking for most
+- **Conversion Rates**: From content view to video play
+
+**Custom Google Analytics 4 Events to Monitor**
+```
+Events > All Events:
+- popular_movie (track movie popularity)
+- popular_series (track TV show popularity)
+- popular_anime (track anime popularity)
+- player_usage (track player preferences)
+- player_performance (track player reliability)
+- episode_view (track episode popularity)
+- genre_preference (track genre popularity)
+- content_card_click (track content discovery)
+```
+
+**Recommended GA4 Reports to Create**
+1. **Content Popularity Dashboard**: Top movies, series, anime by views
+2. **Player Analytics Dashboard**: Player usage, performance, preferences
+3. **User Journey Analysis**: From homepage to video play
+4. **Search Analytics**: Popular terms, search-to-play conversion
+5. **Genre Preference Report**: Most popular genres by content type
 
 ## 🎨 Customization
 

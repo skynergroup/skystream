@@ -6,3 +6,6 @@ export {
   ANALYTICS_CONFIG,
   utils,
 } from './config';
+
+export { default as analytics, Analytics } from './analytics';
+export { default as analyticsTest } from './analytics-test';
