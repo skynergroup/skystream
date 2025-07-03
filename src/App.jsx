@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Layout } from './components';
-import { Home, Movies, TVShows, Anime, Search, Library, ContentDetail, NotFound } from './pages';
+import { Home, Movies, TVShows, Anime, Search, Library, ContentDetail, PrivacyPolicy, NotFound } from './pages';
 import { analytics } from './utils';
+import ConsentBanner from './components/ConsentBanner.jsx';
 
 // Analytics tracking component
 function AnalyticsTracker() {
@@ -36,9 +37,11 @@ function App() {
           <Route path="movie/:id" element={<ContentDetail />} />
           <Route path="tv/:id" element={<ContentDetail />} />
           <Route path="anime/:id" element={<ContentDetail />} />
+          <Route path="privacy-policy" element={<PrivacyPolicy />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
+      <ConsentBanner />
     </Router>
   );
 }

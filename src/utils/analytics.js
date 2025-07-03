@@ -1,23 +1,37 @@
 import { ANALYTICS_CONFIG } from './config';
+import consentManager from './consentManager.js';
 
-// Google Analytics utility functions
+// Google Analytics utility functions with consent management
 class Analytics {
   constructor() {
     this.isInitialized = false;
     this.trackingId = ANALYTICS_CONFIG.trackingId;
     this.enabled = ANALYTICS_CONFIG.enabled;
+    this.consentGiven = false;
+
+    // Set up consent change listener
+    consentManager.onConsentChange((consent) => {
+      this.consentGiven = consent.analytics;
+      if (this.consentGiven && !this.isInitialized) {
+        this.init();
+      }
+    });
+
+    // Check if consent already exists
+    const currentConsent = consentManager.getConsent();
+    this.consentGiven = currentConsent.analytics;
   }
 
-  // Initialize Google Analytics
+  // Initialize Google Analytics (only called when consent is given)
   init() {
-    if (!this.enabled || !this.trackingId || this.isInitialized) {
+    if (!this.enabled || !this.trackingId || this.isInitialized || !this.consentGiven) {
       return;
     }
 
     try {
       // Initialize dataLayer
       window.dataLayer = window.dataLayer || [];
-      
+
       // Define gtag function
       window.gtag = function() {
         window.dataLayer.push(arguments);
@@ -25,15 +39,19 @@ class Analytics {
 
       // Initialize with current date
       window.gtag('js', new Date());
-      
-      // Configure with tracking ID
+
+      // Configure with tracking ID and privacy settings
       window.gtag('config', this.trackingId, {
         page_title: document.title,
         page_location: window.location.href,
+        anonymize_ip: true,
+        respect_dnt: true,
+        allow_google_signals: false, // Disable advertising features
+        allow_ad_personalization_signals: false,
       });
 
       this.isInitialized = true;
-      console.log('[Analytics] Google Analytics initialized with ID:', this.trackingId);
+      console.log('[Analytics] Google Analytics initialized with consent and privacy settings');
     } catch (error) {
       console.error('[Analytics] Failed to initialize Google Analytics:', error);
     }
@@ -162,6 +180,11 @@ class Analytics {
   isReady() {
     if (!this.enabled) {
       console.log('[Analytics] Analytics is disabled');
+      return false;
+    }
+
+    if (!this.consentGiven) {
+      console.log('[Analytics] User consent not given for analytics');
       return false;
     }
 

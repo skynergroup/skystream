@@ -1,12 +1,19 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, Settings } from 'lucide-react';
+import ConsentPreferences from './ConsentPreferences.jsx';
 import './Footer.css';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [showPreferences, setShowPreferences] = useState(false);
 
   const handleRefresh = () => {
     window.location.reload();
+  };
+
+  const handlePrivacySettings = () => {
+    setShowPreferences(true);
   };
 
   const footerLinks = {
@@ -18,7 +25,7 @@ const Footer = () => {
       { path: '/search', label: 'Search' },
     ],
     information: [
-      { path: '/privacy', label: 'Privacy Policy' },
+      { path: '/privacy-policy', label: 'Privacy Policy' },
       { path: '/terms', label: 'Terms of Service' },
       { path: '/contact', label: 'Contact Us' },
       { path: '/about', label: 'About' },
@@ -109,10 +116,25 @@ const Footer = () => {
               >
                 Version 2.0 <RotateCcw size={14} />
               </button>
+              •
+              <button
+                onClick={handlePrivacySettings}
+                className="footer__privacy-btn"
+                title="Privacy Settings"
+                aria-label="Privacy Settings"
+              >
+                <Settings size={14} /> Privacy
+              </button>
             </p>
           </div>
         </div>
       </div>
+
+      {/* Consent Preferences Modal */}
+      <ConsentPreferences
+        isOpen={showPreferences}
+        onClose={() => setShowPreferences(false)}
+      />
     </footer>
   );
 };

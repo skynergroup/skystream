@@ -170,7 +170,8 @@
   gap: 0.5rem;
 }
 
-.footer__refresh-btn {
+.footer__refresh-btn,
+.footer__privacy-btn {
   background: none;
   border: none;
   color: var(--netflix-light-gray);
@@ -185,7 +186,8 @@
   transition: all 0.3s ease;
 }
 
-.footer__refresh-btn:hover {
+.footer__refresh-btn:hover,
+.footer__privacy-btn:hover {
   color: var(--netflix-red);
   background: rgba(255, 255, 255, 0.1);
 }
@@ -194,7 +196,12 @@
   transform: rotate(180deg);
 }
 
-.footer__refresh-btn:active {
+.footer__privacy-btn:hover svg {
+  transform: scale(1.1);
+}
+
+.footer__refresh-btn:active,
+.footer__privacy-btn:active {
   transform: scale(0.95);
 }
 
