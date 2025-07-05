@@ -1,0 +1,104 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ staging ]
+  # Pull requests do not trigger deployment - only merged commits to staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Create staging environment file
+      run: |
+        cp .env.staging .env.local
+        echo "Environment variables configured for staging build"
+        echo "Verifying required environment variables..."
+        grep -q "VITE_TMDB_API_KEY=" .env.local && echo "✅ TMDB API key found" || echo "❌ TMDB API key missing"
+        grep -q "VITE_GA_TRACKING_ID=" .env.local && echo "✅ Google Analytics tracking ID found" || echo "❌ Google Analytics tracking ID missing"
+        grep -q "VITE_ENABLE_ANALYTICS=" .env.local && echo "✅ Analytics enable flag found" || echo "❌ Analytics enable flag missing"
+        echo "📊 Analytics Configuration:"
+        grep "VITE_GA_TRACKING_ID=" .env.local || echo "No GA tracking ID"
+        grep "VITE_ENABLE_ANALYTICS=" .env.local || echo "No analytics enable flag"
+
+    - name: Verify Environment Variables for Build
+      run: |
+        echo "🔍 Verifying environment variables are ready for staging build..."
+        echo "NODE_ENV: $NODE_ENV"
+        echo "VITE_GA_TRACKING_ID: $VITE_GA_TRACKING_ID"
+        echo "VITE_ENABLE_ANALYTICS: $VITE_ENABLE_ANALYTICS"
+        echo "VITE_TMDB_API_KEY: ${VITE_TMDB_API_KEY:0:10}..." # Show only first 10 chars for security
+        echo "✅ Environment variables verified for staging build process"
+      env:
+        NODE_ENV: staging
+        VITE_GA_TRACKING_ID: G-CR3ZVV9BE1
+        VITE_ENABLE_ANALYTICS: true
+        VITE_TMDB_API_KEY: 20aed25855723af6f6a4dcdad0f17b86
+
+    - name: Build project
+      run: npm run build:staging
+      env:
+        NODE_ENV: staging
+        # Explicitly set analytics environment variables for build
+        VITE_GA_TRACKING_ID: G-CR3ZVV9BE1
+        VITE_ENABLE_ANALYTICS: true
+        # Ensure all other staging variables are available
+        VITE_TMDB_API_KEY: 20aed25855723af6f6a4dcdad0f17b86
+        VITE_APP_NAME: SkyStream
+        VITE_APP_VERSION: 2.0.0
+
+    - name: Verify build output
+      run: |
+        echo "Checking if staging build was successful..."
+        ls -la dist/
+        echo "Running comprehensive build verification..."
+        npm run verify-build
+      
+    - name: Deploy to Staging FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ftp.skyner.co.za
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./dist/
+        server-dir: /staging.bumblebeefoundation.co.za/
+        dangerous-clean-slate: true
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          **/.env*
+          **/*.md
+          
+    - name: Notify staging deployment success
+      if: success()
+      run: |
+        echo "🚀 Staging deployment successful!"
+        echo "Site should be live at: https://staging.bumblebeefoundation.co.za"
+        echo "📊 Google Analytics (G-CR3ZVV9BE1) is active and tracking:"
+        echo "   • Content popularity (movies, series, anime)"
+        echo "   • Player usage and performance"
+        echo "   • User behavior and engagement"
+        echo "   • Search analytics and genre preferences"
+        echo "🎯 Check your GA4 dashboard for real-time analytics data!"
+        echo "🧪 This is a staging environment for testing before production deployment"
+        
+    - name: Notify staging deployment failure
+      if: failure()
+      run: |
+        echo "❌ Staging deployment failed!"
+        echo "Please check the logs above for errors."
