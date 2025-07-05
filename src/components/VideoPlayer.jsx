@@ -11,12 +11,13 @@ const VideoPlayer = ({
   episode = null,
   onClose,
   autoPlay = true,
-  preferredPlayer = PLAYER_CONFIG.defaults.player, // 'videasy' or 'vidsrc'
+  preferredPlayer = 'videasy', // Default to videasy as preferred
 }) => {
   const [currentPlayer, setCurrentPlayer] = useState(preferredPlayer);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [isDubbed, setIsDubbed] = useState(true); // Default to English dub for anime
   const iframeRef = useRef(null);
 
   // Generate player URL with error handling
@@ -26,22 +27,17 @@ const VideoPlayer = ({
     const generatePlayerUrl = async () => {
       try {
         let url;
-        if (currentPlayer === 'godrive') {
-          // Use async version for GoDrive to get IMDB IDs
-          url = await utils.generatePlayerUrlAsync(
-            currentPlayer,
-            contentId,
-            contentType,
-            season,
-            episode,
-            { autoplay: autoPlay ? 'true' : 'false' }
-          );
-        } else {
-          // Use synchronous version for other players
-          url = utils.generatePlayerUrl(currentPlayer, contentId, contentType, season, episode, {
-            autoplay: autoPlay ? 'true' : 'false',
-          });
+        // Use synchronous version for all players
+        const playerOptions = {
+          autoplay: autoPlay ? 'true' : 'false',
+        };
+
+        // Add dub option for anime
+        if (contentType === 'anime') {
+          playerOptions.dub = isDubbed ? 'true' : 'false';
         }
+
+        url = utils.generatePlayerUrl(currentPlayer, contentId, contentType, season, episode, playerOptions);
         setPlayerUrl(url);
         console.log('Generated player URL:', url);
       } catch (error) {
@@ -52,7 +48,7 @@ const VideoPlayer = ({
     };
 
     generatePlayerUrl();
-  }, [currentPlayer, contentId, contentType, season, episode, autoPlay]);
+  }, [currentPlayer, contentId, contentType, season, episode, autoPlay, isDubbed]);
 
   const handleIframeLoad = () => {
     console.log('Video player loaded successfully:', playerUrl);
@@ -106,10 +102,10 @@ const VideoPlayer = ({
     });
 
     // Auto-fallback to next player if current one fails
-    if (currentPlayer === 'godrive') {
-      console.log('GoDrive failed, will suggest trying Videasy...');
-    } else if (currentPlayer === 'videasy') {
+    if (currentPlayer === 'videasy') {
       console.log('Videasy failed, will suggest trying VidSrc...');
+    } else if (currentPlayer === 'vidsrc') {
+      console.log('VidSrc failed, will suggest trying Videasy...');
     }
   };
 
@@ -137,23 +133,17 @@ const VideoPlayer = ({
 
     // Regenerate URL for new player
     try {
-      let url;
-      if (newPlayer === 'godrive') {
-        // Use async version for GoDrive to get IMDB IDs
-        url = await utils.generatePlayerUrlAsync(
-          newPlayer,
-          contentId,
-          contentType,
-          season,
-          episode,
-          { autoplay: autoPlay ? 'true' : 'false' }
-        );
-      } else {
-        // Use synchronous version for other players
-        url = utils.generatePlayerUrl(newPlayer, contentId, contentType, season, episode, {
-          autoplay: autoPlay ? 'true' : 'false',
-        });
+      // Use synchronous version for all players
+      const playerOptions = {
+        autoplay: autoPlay ? 'true' : 'false',
+      };
+
+      // Add dub option for anime
+      if (contentType === 'anime') {
+        playerOptions.dub = isDubbed ? 'true' : 'false';
       }
+
+      const url = utils.generatePlayerUrl(newPlayer, contentId, contentType, season, episode, playerOptions);
       setPlayerUrl(url);
       console.log('Switched to player:', newPlayer, 'URL:', url);
 
@@ -261,6 +251,50 @@ const VideoPlayer = ({
           </div>
         </div>
 
+        {/* Prominent Player Switching Buttons */}
+        <div className="video-player-switcher">
+          <div className="player-switch-buttons">
+            <button
+              className={`player-switch-btn ${currentPlayer === 'videasy' ? 'active' : ''}`}
+              onClick={() => switchPlayer('videasy')}
+              disabled={isLoading}
+            >
+              <span className="player-icon">🎬</span>
+              <span className="player-name">Videasy</span>
+              <span className="player-subtitle">Preferred</span>
+              {currentPlayer === 'videasy' && <span className="active-indicator">●</span>}
+            </button>
+            <button
+              className={`player-switch-btn ${currentPlayer === 'vidsrc' ? 'active' : ''}`}
+              onClick={() => switchPlayer('vidsrc')}
+              disabled={isLoading}
+            >
+              <span className="player-icon">📺</span>
+              <span className="player-name">VidSrc</span>
+              <span className="player-subtitle">Alternative</span>
+              {currentPlayer === 'vidsrc' && <span className="active-indicator">●</span>}
+            </button>
+          </div>
+
+          {/* Anime Dub Toggle */}
+          {contentType === 'anime' && (
+            <div className="anime-dub-toggle">
+              <button
+                className={`dub-toggle-btn ${isDubbed ? 'active' : ''}`}
+                onClick={() => {
+                  setIsDubbed(!isDubbed);
+                  // Regenerate URL with new dub setting
+                  setIsLoading(true);
+                }}
+                disabled={isLoading}
+              >
+                <span className="dub-icon">🎭</span>
+                <span className="dub-text">{isDubbed ? 'English Dub' : 'Subtitled'}</span>
+              </button>
+            </div>
+          )}
+        </div>
+
         {/* Settings Panel */}
         {showSettings && (
           <div className="video-player-settings">
@@ -270,22 +304,16 @@ const VideoPlayer = ({
               <label>Video Player:</label>
               <div className="player-options">
                 <button
-                  className={`player-option ${currentPlayer === 'godrive' ? 'active' : ''}`}
-                  onClick={() => switchPlayer('godrive')}
-                >
-                  GoDrive (Recommended)
-                </button>
-                <button
                   className={`player-option ${currentPlayer === 'videasy' ? 'active' : ''}`}
                   onClick={() => switchPlayer('videasy')}
                 >
-                  Videasy
+                  Videasy (Preferred)
                 </button>
                 <button
                   className={`player-option ${currentPlayer === 'vidsrc' ? 'active' : ''}`}
                   onClick={() => switchPlayer('vidsrc')}
                 >
-                  VidSrc
+                  VidSrc (Alternative)
                 </button>
               </div>
             </div>
@@ -356,11 +384,7 @@ const VideoPlayer = ({
               <div
                 style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}
               >
-                {currentPlayer !== 'godrive' && (
-                  <Button variant="primary" onClick={() => switchPlayer('godrive')}>
-                    Try GoDrive Player
-                  </Button>
-                )}
+
                 {currentPlayer !== 'videasy' && (
                   <Button variant="primary" onClick={() => switchPlayer('videasy')}>
                     Try Videasy Player
@@ -389,62 +413,18 @@ const VideoPlayer = ({
             </div>
           )}
 
-          {currentPlayer === 'godrive' && playerUrl && !error ? (
-            // GoDrive player opens in new tab due to iframe restrictions
-            <div className="godrive-player-notice">
-              <div className="notice-content">
-                <h3>🎬 GoDrive Player</h3>
-                <p>GoDrive player will open in a new tab for the best viewing experience.</p>
-                <div
-                  className="notice-actions"
-                  style={{
-                    display: 'flex',
-                    gap: '1rem',
-                    justifyContent: 'center',
-                    margin: '1rem 0',
-                  }}
-                >
-                  <Button
-                    variant="primary"
-                    size="large"
-                    onClick={() => {
-                      window.open(
-                        playerUrl,
-                        '_blank',
-                        'width=1280,height=720,scrollbars=yes,resizable=yes'
-                      );
-                      setIsLoading(false);
-                    }}
-                  >
-                    Open GoDrive Player
-                  </Button>
-                  <Button variant="secondary" onClick={() => switchPlayer('videasy')}>
-                    Try Videasy Instead
-                  </Button>
-                </div>
-                <div className="debug-info" style={{ textAlign: 'center', marginTop: '1rem' }}>
-                  <small style={{ color: 'var(--netflix-text-gray)' }}>
-                    Player URL: {playerUrl}
-                  </small>
-                </div>
-              </div>
-            </div>
-          ) : (
-            // Other players use iframe
-            playerUrl &&
-            !error && (
-              <iframe
-                ref={iframeRef}
-                src={playerUrl}
-                className="video-player-iframe"
-                frameBorder="0"
-                allowFullScreen
-                allow="encrypted-media; autoplay; picture-in-picture"
-                onLoad={handleIframeLoad}
-                onError={handleIframeError}
-                style={{ display: isLoading || error || !playerUrl ? 'none' : 'block' }}
-              />
-            )
+          {(currentPlayer === 'videasy' || currentPlayer === 'vidsrc') && playerUrl && !error && (
+            // Players use iframe
+            <iframe
+              ref={iframeRef}
+              src={playerUrl}
+              className="video-player-iframe"
+              style={{ border: 'none', display: isLoading || error || !playerUrl ? 'none' : 'block' }}
+              allowFullScreen
+              allow="encrypted-media; autoplay; picture-in-picture"
+              onLoad={handleIframeLoad}
+              onError={handleIframeError}
+            />
           )}
         </div>
       </div>

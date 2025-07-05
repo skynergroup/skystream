@@ -59,6 +59,11 @@ const SeasonEpisodeSelector = ({
     if (onEpisodeSelect) {
       onEpisodeSelect(selectedSeason, episode);
     }
+
+    // Auto-play when episode is selected
+    if (onPlayClick) {
+      onPlayClick(selectedSeason, episode);
+    }
   };
 
   const handlePlayClick = () => {

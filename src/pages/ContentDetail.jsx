@@ -110,6 +110,17 @@ const ContentDetail = () => {
     }
   }, [type, id, location.pathname]);
 
+  // Auto-open player for movies when content loads
+  useEffect(() => {
+    if (content && content.type === 'movie' && !showPlayer) {
+      // Small delay to ensure content is fully loaded
+      const timer = setTimeout(() => {
+        handlePlayClick();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [content]);
+
   if (loading) {
     return (
       <div

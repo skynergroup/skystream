@@ -47,11 +47,9 @@ export const PLAYER_CONFIG = {
     baseUrl: getEnvVar('VITE_VIDSRC_BASE_URL', 'https://v2.vidsrc.me/embed'),
     downloadUrl: getEnvVar('VITE_VIDSRC_DOWNLOAD_URL', 'https://dl.vidsrc.me'),
   },
-  godrive: {
-    baseUrl: 'https://godriveplayer.com/player.php',
-  },
+
   defaults: {
-    player: getEnvVar('VITE_DEFAULT_PLAYER', 'godrive'),
+    player: getEnvVar('VITE_DEFAULT_PLAYER', 'videasy'),
     color: getEnvVar('VITE_PLAYER_COLOR', 'e50914'),
     autoPlay: getBooleanEnvVar('VITE_AUTO_PLAY', true),
     language: 'en',
@@ -105,7 +103,7 @@ export const utils = {
         url = `${PLAYER_CONFIG.videasy.baseUrl}/movie/${contentId}`;
       } else if (contentType === 'tv') {
         url = `${PLAYER_CONFIG.videasy.baseUrl}/tv/${contentId}/${season}/${episode}`;
-        // Add TV-specific options
+        // Add TV-specific options for better user experience
         playerOptions.nextEpisode = 'true';
         playerOptions.episodeSelector = 'true';
         playerOptions.autoplayNextEpisode = 'true';
@@ -115,9 +113,9 @@ export const utils = {
         } else {
           url = `${PLAYER_CONFIG.videasy.baseUrl}/anime/${contentId}`;
         }
-        // Default to subtitled for English
+        // Add dub option for anime - default to English dub if available
         if (!Object.prototype.hasOwnProperty.call(playerOptions, 'dub')) {
-          playerOptions.dub = playerOptions.language === 'en' ? 'false' : 'true';
+          playerOptions.dub = 'true'; // Default to English dub
         }
       }
 
@@ -126,58 +124,25 @@ export const utils = {
     }
 
     if (player === 'vidsrc') {
-      let url = `${PLAYER_CONFIG.vidsrc.baseUrl}/${contentId}`;
+      let url = '';
 
-      if (contentType === 'tv' && season && episode) {
-        url += `/${season}-${episode}`;
+      if (contentType === 'movie') {
+        // VidSrc movie format: https://vidsrc.net/embed/movie?tmdb=TMDB_ID
+        url = `${PLAYER_CONFIG.vidsrc.baseUrl}/movie?tmdb=${contentId}`;
+      } else if (contentType === 'tv' || contentType === 'anime') {
+        // VidSrc TV format: https://vidsrc.net/embed/tv?tmdb=TMDB_ID&season=SEASON&episode=EPISODE
+        url = `${PLAYER_CONFIG.vidsrc.baseUrl}/tv?tmdb=${contentId}&season=${season}&episode=${episode}`;
       }
-
-      // Add color customization
-      url += `/color-${playerOptions.color}`;
 
       return url;
     }
 
-    if (player === 'godrive') {
-      if (contentType === 'movie') {
-        // For movies, use TMDB ID directly for now
-        // We'll fetch IMDB ID asynchronously in the component
-        return `${PLAYER_CONFIG.godrive.baseUrl}?tmdb=${contentId}`;
-      } else if (contentType === 'tv' || contentType === 'anime') {
-        // For TV shows, use TMDB ID directly
-        return `${PLAYER_CONFIG.godrive.baseUrl}?type=series&tmdb=${contentId}&season=${season}&episode=${episode}`;
-      }
-    }
+
 
     return '';
   },
 
-  // Generate video player URL with IMDB support (async version)
-  generatePlayerUrlAsync: async (
-    player,
-    contentId,
-    contentType,
-    season = null,
-    episode = null,
-    options = {}
-  ) => {
-    if (player === 'godrive' && contentType === 'movie') {
-      // For GoDrive movies, try to get IMDB ID
-      try {
-        const imdbId = await utils.getIMDBId(contentId, 'movie');
-        if (imdbId) {
-          return `${PLAYER_CONFIG.godrive.baseUrl}?imdb=${imdbId}`;
-        }
-      } catch (error) {
-        console.warn('Failed to get IMDB ID for movie:', contentId, error);
-      }
-      // Fallback to TMDB ID
-      return `${PLAYER_CONFIG.godrive.baseUrl}?tmdb=${contentId}`;
-    }
 
-    // For all other cases, use the synchronous version
-    return utils.generatePlayerUrl(player, contentId, contentType, season, episode, options);
-  },
 
   // Get IMDB ID from TMDB
   getIMDBId: async (tmdbId, type = 'movie') => {

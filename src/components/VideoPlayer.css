@@ -310,3 +310,158 @@
   margin: 1rem 0;
   flex-wrap: wrap;
 }
+
+/* Prominent Player Switching Buttons */
+.video-player-switcher {
+  padding: 1rem 1.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.player-switch-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.player-switch-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  color: var(--netflix-white);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.player-switch-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.player-switch-btn.active {
+  background: var(--netflix-red);
+  border-color: var(--netflix-red);
+  box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
+}
+
+.player-switch-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.player-switch-btn:disabled:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: transparent;
+  transform: none;
+}
+
+.player-icon {
+  font-size: 1.1rem;
+}
+
+.player-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.player-subtitle {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+}
+
+.active-indicator {
+  color: var(--netflix-white);
+  font-size: 0.6rem;
+  margin-left: 0.25rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Anime Dub Toggle */
+.anime-dub-toggle {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: center;
+}
+
+.dub-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: var(--netflix-white);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dub-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.dub-toggle-btn.active {
+  background: rgba(229, 9, 20, 0.8);
+  border-color: var(--netflix-red);
+}
+
+.dub-toggle-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dub-icon {
+  font-size: 1rem;
+}
+
+.dub-text {
+  font-weight: 600;
+}
+
+/* Responsive design for player switcher */
+@media (max-width: 768px) {
+  .video-player-switcher {
+    padding: 0.75rem 1rem;
+  }
+
+  .player-switch-buttons {
+    gap: 0.5rem;
+  }
+
+  .player-switch-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+    min-width: 100px;
+  }
+
+  .player-icon {
+    font-size: 1rem;
+  }
+
+  .dub-toggle-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
