@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Menu, X } from 'lucide-react';
+import { Search, Menu, X, User } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import UserProfile from './UserProfile';
+import AuthModal from './AuthModal';
+import Button from './Button';
 import './Header.css';
 
 const Header = () => {
@@ -8,7 +12,10 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState('signin');
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,11 +34,21 @@ const Header = () => {
     }
   };
 
+  const handleAuthModalOpen = (mode = 'signin') => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
+  const handleAuthModalClose = () => {
+    setIsAuthModalOpen(false);
+  };
+
   const navItems = [
     { path: '/', label: 'Home' },
     { path: '/browse/movies', label: 'Movies' },
     { path: '/browse/tv', label: 'TV Shows' },
     { path: '/browse/anime', label: 'Anime' },
+    { path: '/watchlist', label: 'My Watchlist' },
     { path: '/library', label: 'My Library' },
   ];
 
@@ -61,7 +78,7 @@ const Header = () => {
           </ul>
         </nav>
 
-        {/* Search and Mobile Menu */}
+        {/* Search, Auth, and Mobile Menu */}
         <div className="header__actions">
           {/* Search */}
           <div className={`header__search ${isSearchOpen ? 'header__search--open' : ''}`}>
@@ -82,6 +99,32 @@ const Header = () => {
                 <Search size={20} />
               </button>
             </form>
+          </div>
+
+          {/* Authentication */}
+          <div className="header__auth">
+            {isAuthenticated ? (
+              <UserProfile />
+            ) : (
+              <div className="header__auth-buttons">
+                <Button
+                  variant="ghost"
+                  size="small"
+                  onClick={() => handleAuthModalOpen('signin')}
+                  className="header__auth-btn"
+                >
+                  Sign In
+                </Button>
+                <Button
+                  variant="primary"
+                  size="small"
+                  onClick={() => handleAuthModalOpen('signup')}
+                  className="header__auth-btn"
+                >
+                  Sign Up
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -128,7 +171,43 @@ const Header = () => {
             </button>
           </form>
         </div>
+
+        {/* Mobile Authentication */}
+        {!isAuthenticated && (
+          <div className="header__mobile-auth">
+            <Button
+              variant="ghost"
+              size="medium"
+              onClick={() => {
+                handleAuthModalOpen('signin');
+                setIsMobileMenuOpen(false);
+              }}
+              className="header__mobile-auth-btn"
+            >
+              <User size={18} />
+              Sign In
+            </Button>
+            <Button
+              variant="primary"
+              size="medium"
+              onClick={() => {
+                handleAuthModalOpen('signup');
+                setIsMobileMenuOpen(false);
+              }}
+              className="header__mobile-auth-btn"
+            >
+              Sign Up
+            </Button>
+          </div>
+        )}
       </nav>
+
+      {/* Authentication Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={handleAuthModalClose}
+        initialMode={authModalMode}
+      />
     </header>
   );
 };

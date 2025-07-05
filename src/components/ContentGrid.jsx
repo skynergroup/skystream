@@ -63,6 +63,11 @@ const ContentGrid = ({
             rating={item.vote_average}
             type={item.media_type || item.type || (item.first_air_date ? 'tv' : 'movie')}
             size={cardSize}
+            content={{
+              ...item,
+              type: item.media_type || item.type || (item.first_air_date ? 'tv' : 'movie'),
+              title: item.title || item.name
+            }}
           />
         ))}
       </div>

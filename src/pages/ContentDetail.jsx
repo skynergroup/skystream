@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { Play, Plus, Share, ArrowLeft, X } from 'lucide-react';
+import { Play, Share, ArrowLeft, X } from 'lucide-react';
 import { Button, Loading } from '../components';
 import VideoPlayer from '../components/VideoPlayer';
 import SeasonEpisodeSelector from '../components/SeasonEpisodeSelector';
+import WatchlistButton from '../components/WatchlistButton';
 import tmdbApi from '../services/tmdbApi';
 import { utils, analytics } from '../utils';
 
@@ -423,9 +424,19 @@ const ContentDetail = () => {
 
             {/* Action Buttons */}
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <Button variant="secondary" size="large" icon={<Plus size={20} />}>
-                Add to Watchlist
-              </Button>
+              <WatchlistButton
+                content={{
+                  id: content.id,
+                  type: type,
+                  title: content.title || content.name,
+                  poster_path: content.poster_path,
+                  overview: content.overview,
+                  vote_average: content.vote_average,
+                  release_date: content.release_date || content.first_air_date
+                }}
+                variant="large"
+                showText={true}
+              />
 
               <Button variant="ghost" size="large" icon={<Share size={20} />}>
                 Share
@@ -439,7 +450,7 @@ const ContentDetail = () => {
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2rem' }}>
         <SeasonEpisodeSelector
           contentId={content.id}
-          contentType={content.type}
+          contentType={type}
           totalSeasons={content.number_of_seasons || 1}
           onEpisodeSelect={handleEpisodeSelect}
           onPlayClick={handlePlayClick}
@@ -450,7 +461,7 @@ const ContentDetail = () => {
       {showPlayer && (
         <VideoPlayer
           contentId={content.id}
-          contentType={content.type}
+          contentType={type}
           season={selectedSeason}
           episode={selectedEpisode}
           onClose={() => setShowPlayer(false)}

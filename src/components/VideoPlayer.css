@@ -440,6 +440,47 @@
   font-weight: 600;
 }
 
+/* Resume Progress Indicator */
+.resume-progress-indicator {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  border: 1px solid rgba(229, 9, 20, 0.3);
+}
+
+.resume-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--netflix-white);
+  font-size: 0.85rem;
+}
+
+.resume-icon {
+  font-size: 1rem;
+}
+
+.resume-text {
+  font-weight: 500;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--netflix-red), #ff6b6b);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
 /* Responsive design for player switcher */
 @media (max-width: 768px) {
   .video-player-switcher {
@@ -462,6 +503,15 @@
 
   .dub-toggle-btn {
     padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .resume-progress-indicator {
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .resume-info {
     font-size: 0.8rem;
   }
 }

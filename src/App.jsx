@@ -1,9 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Layout } from './components';
-import { Home, Movies, TVShows, Anime, Search, Library, ContentDetail, PrivacyPolicy, NotFound } from './pages';
+import { Home, Movies, TVShows, Anime, Search, Library, Watchlist, ContentDetail, PrivacyPolicy, NotFound } from './pages';
 import { analytics } from './utils';
 import ConsentBanner from './components/ConsentBanner.jsx';
+import { AuthProvider } from './contexts/AuthContext';
 
 // Analytics tracking component
 function AnalyticsTracker() {
@@ -24,25 +25,28 @@ function AnalyticsTracker() {
 
 function App() {
   return (
-    <Router>
-      <AnalyticsTracker />
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="browse/movies" element={<Movies />} />
-          <Route path="browse/tv" element={<TVShows />} />
-          <Route path="browse/anime" element={<Anime />} />
-          <Route path="search" element={<Search />} />
-          <Route path="library" element={<Library />} />
-          <Route path="movie/:id" element={<ContentDetail />} />
-          <Route path="tv/:id" element={<ContentDetail />} />
-          <Route path="anime/:id" element={<ContentDetail />} />
-          <Route path="privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
-      <ConsentBanner />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AnalyticsTracker />
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="browse/movies" element={<Movies />} />
+            <Route path="browse/tv" element={<TVShows />} />
+            <Route path="browse/anime" element={<Anime />} />
+            <Route path="search" element={<Search />} />
+            <Route path="library" element={<Library />} />
+            <Route path="watchlist" element={<Watchlist />} />
+            <Route path="movie/:id" element={<ContentDetail />} />
+            <Route path="tv/:id" element={<ContentDetail />} />
+            <Route path="anime/:id" element={<ContentDetail />} />
+            <Route path="privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+        <ConsentBanner />
+      </Router>
+    </AuthProvider>
   );
 }
 

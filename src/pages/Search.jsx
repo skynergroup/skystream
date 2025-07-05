@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search as SearchIcon } from 'lucide-react';
 import { ContentGrid, Loading } from '../components';
+import SearchFilters from '../components/SearchFilters';
 import tmdbApi from '../services/tmdbApi';
 import { analytics } from '../utils';
 
@@ -12,30 +13,74 @@ const Search = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [filters, setFilters] = useState({
+    type: 'all',
+    genre: '',
+    year: '',
+    rating: '',
+    sortBy: 'popularity.desc'
+  });
+  const [availableGenres, setAvailableGenres] = useState([]);
+  const [genresLoading, setGenresLoading] = useState(false);
 
-  const performSearch = async searchQuery => {
-    if (!searchQuery.trim()) return;
+  // Load available genres
+  useEffect(() => {
+    const loadGenres = async () => {
+      try {
+        setGenresLoading(true);
+        const [movieGenres, tvGenres] = await Promise.all([
+          tmdbApi.getMovieGenres(),
+          tmdbApi.getTVGenres()
+        ]);
 
+        // Combine and deduplicate genres
+        const allGenres = [...movieGenres.genres, ...tvGenres.genres];
+        const uniqueGenres = allGenres.filter((genre, index, self) =>
+          index === self.findIndex(g => g.id === genre.id)
+        );
+
+        setAvailableGenres(uniqueGenres.sort((a, b) => a.name.localeCompare(b.name)));
+      } catch (err) {
+        console.error('Failed to load genres:', err);
+      } finally {
+        setGenresLoading(false);
+      }
+    };
+
+    loadGenres();
+  }, []);
+
+  const performSearch = useCallback(async (searchQuery = query, searchFilters = filters) => {
     try {
       setLoading(true);
       setError(null);
       setHasSearched(true);
 
-      // Update URL
-      setSearchParams({ q: searchQuery });
+      // Update URL with query
+      if (searchQuery.trim()) {
+        setSearchParams({ q: searchQuery });
+      }
 
-      // Search using TMDB API
-      const searchResults = await tmdbApi.search(searchQuery);
+      // Use advanced search with filters
+      const searchResults = await tmdbApi.advancedSearch(searchQuery, searchFilters);
 
-      // Transform and filter results
-      const transformedResults = searchResults.results
-        .filter(item => item.media_type !== 'person') // Filter out people
-        .map(item => tmdbApi.transformContent(item));
+      // Transform results
+      const transformedResults = searchResults.results.map(item => tmdbApi.transformContent(item));
 
       setResults(transformedResults);
 
       // Track search analytics
-      analytics.trackSearch(searchQuery, transformedResults.length);
+      analytics.trackSearch(searchQuery, transformedResults.length, searchFilters);
+
+      // Track filter usage
+      if (Object.values(searchFilters).some(value => value && value !== 'all' && value !== 'popularity.desc')) {
+        analytics.trackEvent('search_filters_used', {
+          category: 'search',
+          label: 'advanced_search',
+          filters: searchFilters,
+          results_count: transformedResults.length
+        });
+      }
     } catch (err) {
       console.error('Search failed:', err);
       setError(err);
@@ -45,23 +90,31 @@ const Search = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [query, filters, setSearchParams]);
 
   const handleSubmit = e => {
     e.preventDefault();
-    performSearch(query);
+    performSearch(query, filters);
   };
 
   const handleInputChange = e => {
     setQuery(e.target.value);
   };
 
+  const handleFiltersChange = useCallback((newFilters) => {
+    setFilters(newFilters);
+    // Auto-search when filters change if we have a query or other active filters
+    if (query.trim() || Object.values(newFilters).some(value => value && value !== 'all' && value !== 'popularity.desc')) {
+      performSearch(query, newFilters);
+    }
+  }, [query, performSearch]);
+
   // Search on initial load if query exists
   useEffect(() => {
     const initialQuery = searchParams.get('q');
     if (initialQuery) {
       setQuery(initialQuery);
-      performSearch(initialQuery);
+      performSearch(initialQuery, filters);
     }
   }, []);
 
@@ -171,10 +224,18 @@ const Search = () => {
             }}
           >
             {results.length > 0
-              ? `Found ${results.length} result${results.length !== 1 ? 's' : ''} for "${searchParams.get('q')}"`
-              : `No results found for "${searchParams.get('q')}"`}
+              ? `Found ${results.length} result${results.length !== 1 ? 's' : ''} ${query ? `for "${searchParams.get('q')}"` : ''}`
+              : `No results found ${query ? `for "${searchParams.get('q')}"` : ''}`}
           </p>
         )}
+
+        {/* Search Filters */}
+        <SearchFilters
+          onFiltersChange={handleFiltersChange}
+          initialFilters={filters}
+          availableGenres={availableGenres}
+          isLoading={loading || genresLoading}
+        />
       </div>
 
       {/* Search Results */}

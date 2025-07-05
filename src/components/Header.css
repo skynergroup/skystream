@@ -297,6 +297,43 @@
   }
 }
 
+/* Authentication */
+.header__auth {
+  display: flex;
+  align-items: center;
+  margin-left: 16px;
+}
+
+.header__auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header__auth-btn {
+  white-space: nowrap;
+}
+
+/* Mobile Authentication */
+.header__mobile-auth {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header__mobile-auth-btn {
+  justify-content: center;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .header__auth {
+    display: none;
+  }
+}
+
 @media (max-width: 480px) {
   .header__container {
     padding: 0.75rem;

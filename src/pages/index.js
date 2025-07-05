@@ -4,6 +4,7 @@ export { default as TVShows } from './TVShows';
 export { default as Anime } from './Anime';
 export { default as Search } from './Search';
 export { default as Library } from './Library';
+export { default as Watchlist } from './Watchlist';
 export { default as ContentDetail } from './ContentDetail';
 export { default as PrivacyPolicy } from './PrivacyPolicy';
 export { default as NotFound } from './NotFound';

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Play, Plus, Info } from 'lucide-react';
+import { Play, Info } from 'lucide-react';
 import { analytics } from '../utils';
+import WatchlistButton from './WatchlistButton';
 import './ContentCard.css';
 
 const ContentCard = ({
@@ -14,6 +15,7 @@ const ContentCard = ({
   rating,
   type = 'movie',
   size = 'medium',
+  content = null, // Full content object for watchlist
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -102,9 +104,20 @@ const ContentCard = ({
             <Link to={getContentUrl()} className="content-card__action content-card__action--play">
               <Play size={20} fill="currentColor" />
             </Link>
-            <button className="content-card__action content-card__action--add">
-              <Plus size={20} />
-            </button>
+            <WatchlistButton
+              content={content || {
+                id,
+                type,
+                title,
+                poster_path: poster?.split('/').pop()?.replace(/^w\d+/, ''), // Extract original path
+                overview,
+                vote_average: rating,
+                release_date: releaseDate
+              }}
+              variant="compact"
+              showText={false}
+              className="content-card__action content-card__action--watchlist"
+            />
             <Link to={getContentUrl()} className="content-card__action content-card__action--info">
               <Info size={20} />
             </Link>
