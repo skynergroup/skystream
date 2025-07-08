@@ -8,6 +8,8 @@ export { default as Button } from './Button';
 export { default as Loading } from './Loading';
 export { default as SearchFilters } from './SearchFilters';
 export { default as Breadcrumb } from './Breadcrumb';
+export { default as FilterBar } from './FilterBar';
+export { default as Pagination } from './Pagination';
 
 // Content Components
 export { default as ContentCard } from './ContentCard';

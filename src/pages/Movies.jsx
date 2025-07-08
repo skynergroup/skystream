@@ -1,31 +1,42 @@
 import { useState, useEffect } from 'react';
-import { ContentGrid, Loading } from '../components';
+import { ContentGrid, Loading, FilterBar, Pagination } from '../components';
 import tmdbApi from '../services/tmdbApi';
+import { analytics } from '../utils';
 
 const Movies = () => {
-  const [popularMovies, setPopularMovies] = useState([]);
-  const [topRatedMovies, setTopRatedMovies] = useState([]);
-  const [nowPlayingMovies, setNowPlayingMovies] = useState([]);
-  const [upcomingMovies, setUpcomingMovies] = useState([]);
+  const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [filters, setFilters] = useState({
+    genre: 'All Genres',
+    language: 'Language',
+    year: 'All Years',
+    rating: 'Any Rating',
+    sort: 'Smart Filter (Recommended)'
+  });
 
-  const loadMovies = async () => {
+  const loadMovies = async (page = 1, appliedFilters = filters) => {
     try {
       setLoading(true);
       setError(null);
 
-      const [popular, topRated, nowPlaying, upcoming] = await Promise.all([
-        tmdbApi.getPopularMovies(),
-        tmdbApi.getTopRatedMovies(),
-        tmdbApi.getNowPlayingMovies(),
-        tmdbApi.getUpcomingMovies(),
-      ]);
+      // Track filter usage
+      analytics.trackEvent('movies_filter_applied', {
+        category: 'browse',
+        label: 'movies',
+        filters: appliedFilters,
+        page
+      });
 
-      setPopularMovies(popular.results.map(movie => tmdbApi.transformContent(movie)));
-      setTopRatedMovies(topRated.results.map(movie => tmdbApi.transformContent(movie)));
-      setNowPlayingMovies(nowPlaying.results.map(movie => tmdbApi.transformContent(movie)));
-      setUpcomingMovies(upcoming.results.map(movie => tmdbApi.transformContent(movie)));
+      // For now, use popular movies as the base
+      // In a real app, you'd apply the filters to the API call
+      const response = await tmdbApi.getPopularMovies(page);
+
+      setMovies(response.results.map(movie => tmdbApi.transformContent(movie)));
+      setTotalPages(Math.min(response.total_pages, 1000)); // TMDB limits to 1000 pages
+      setCurrentPage(page);
     } catch (err) {
       console.error('Failed to load movies:', err);
       setError(err);
@@ -35,12 +46,54 @@ const Movies = () => {
   };
 
   useEffect(() => {
-    loadMovies();
+    loadMovies(1, filters);
   }, []);
 
+  // Filter handlers
+  const handleGenreChange = (genre) => {
+    const newFilters = { ...filters, genre };
+    setFilters(newFilters);
+    loadMovies(1, newFilters);
+  };
+
+  const handleLanguageChange = (language) => {
+    const newFilters = { ...filters, language };
+    setFilters(newFilters);
+    loadMovies(1, newFilters);
+  };
+
+  const handleYearChange = (year) => {
+    const newFilters = { ...filters, year };
+    setFilters(newFilters);
+    loadMovies(1, newFilters);
+  };
+
+  const handleRatingChange = (rating) => {
+    const newFilters = { ...filters, rating };
+    setFilters(newFilters);
+    loadMovies(1, newFilters);
+  };
+
+  const handleSortChange = (sort) => {
+    const newFilters = { ...filters, sort };
+    setFilters(newFilters);
+    loadMovies(1, newFilters);
+  };
+
+  const handlePageChange = (page) => {
+    loadMovies(page, filters);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  if (loading && movies.length === 0) {
+    return <Loading />;
+  }
+
   return (
-    <div className="movies-page" style={{ padding: '2rem 0' }}>
-      <div style={{ padding: '0 2rem', marginBottom: '2rem' }}>
+    <div className="movies-page">
+      {/* Header */}
+      <div style={{ padding: '2rem 2rem 0 2rem' }}>
         <h1
           style={{
             fontSize: '2.5rem',
@@ -49,50 +102,48 @@ const Movies = () => {
             margin: '0 0 0.5rem 0',
           }}
         >
-          Movies
+          Browse Movies
         </h1>
-        <p
-          style={{
-            color: 'var(--netflix-text-gray)',
-            fontSize: '1.1rem',
-            margin: 0,
-          }}
-        >
-          Discover and stream thousands of movies in HD, Full HD and 4K quality.
-        </p>
       </div>
 
-      <ContentGrid
-        title="Popular Movies"
-        items={popularMovies}
-        loading={loading}
-        error={error}
-        cardSize="medium"
+      {/* Filter Bar */}
+      <FilterBar
+        contentType="movie"
+        onGenreChange={handleGenreChange}
+        onLanguageChange={handleLanguageChange}
+        onYearChange={handleYearChange}
+        onRatingChange={handleRatingChange}
+        onSortChange={handleSortChange}
       />
 
-      <ContentGrid
-        title="Top Rated Movies"
-        items={topRatedMovies}
-        loading={loading}
-        error={error}
-        cardSize="medium"
-      />
+      {/* Movies Grid */}
+      <div style={{ padding: '0 2rem' }}>
+        {error ? (
+          <div style={{
+            textAlign: 'center',
+            padding: '2rem',
+            color: 'var(--netflix-text-gray)'
+          }}>
+            <p>Failed to load movies. Please try again.</p>
+          </div>
+        ) : (
+          <ContentGrid
+            items={movies}
+            loading={loading}
+            cardSize="medium"
+            showTitle={false}
+          />
+        )}
+      </div>
 
-      <ContentGrid
-        title="Now Playing"
-        items={nowPlayingMovies}
-        loading={loading}
-        error={error}
-        cardSize="medium"
-      />
-
-      <ContentGrid
-        title="Upcoming Movies"
-        items={upcomingMovies}
-        loading={loading}
-        error={error}
-        cardSize="medium"
-      />
+      {/* Pagination */}
+      {!loading && !error && movies.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 };

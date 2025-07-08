@@ -1,64 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Bookmark, Clock, Heart } from 'lucide-react';
+import { Bookmark, Clock, Eye } from 'lucide-react';
 import { ContentGrid, Loading } from '../components';
 
 const Library = () => {
-  const [watchlist, setWatchlist] = useState([]);
-  const [favorites, setFavorites] = useState([]);
-  const [continueWatching, setContinueWatching] = useState([]);
+  const [wantToWatch, setWantToWatch] = useState([]);
+  const [currentlyWatching, setCurrentlyWatching] = useState([]);
+  const [watchedHistory, setWatchedHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('watchlist');
+  const [activeTab, setActiveTab] = useState('want-to-watch');
 
-  // Mock library data
-  const mockWatchlist = [
-    {
-      id: 299534,
-      title: 'Avengers: Endgame',
-      poster_path: '/or06FN3Dka5tukK1e9sl16pB3iy.jpg',
-      backdrop_path: '/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg',
-      overview: 'After the devastating events of Avengers: Infinity War...',
-      release_date: '2019-04-24',
-      vote_average: 8.3,
-      type: 'movie',
-    },
-    {
-      id: 1399,
-      name: 'Game of Thrones',
-      poster_path: '/7WUHnWGx5OO145IRxPDUkQSh4C7.jpg',
-      backdrop_path: '/suopoADq0k8YZr4dQXcU6pToj6s.jpg',
-      overview: 'Seven noble families fight for control of the mythical land of Westeros...',
-      first_air_date: '2011-04-17',
-      vote_average: 8.3,
-      type: 'tv',
-    },
-  ];
-
-  const mockFavorites = [
-    {
-      id: 155,
-      title: 'The Dark Knight',
-      poster_path: '/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
-      backdrop_path: '/hqkIcbrOHL86UncnHIsHVcVmzue.jpg',
-      overview: 'Batman raises the stakes in his war on crime...',
-      release_date: '2008-07-16',
-      vote_average: 9.0,
-      type: 'movie',
-    },
-  ];
-
-  const mockContinueWatching = [
-    {
-      id: 94605,
-      name: 'Arcane',
-      poster_path: '/fqldf2t8ztc9aiwn3k6mlX3tvRT.jpg',
-      backdrop_path: '/rkB4LyZHo1NHXFEDHl9vSD9r1lI.jpg',
-      overview: 'Amid the stark discord of twin cities Piltover and Zaun...',
-      first_air_date: '2021-11-06',
-      vote_average: 8.7,
-      type: 'tv',
-      progress: 65, // Progress percentage
-    },
-  ];
+  // Mock library data - empty to match BoredFlix
+  const mockWantToWatch = [];
+  const mockCurrentlyWatching = [];
+  const mockWatchedHistory = [];
 
   useEffect(() => {
     const loadLibrary = async () => {
@@ -68,9 +22,9 @@ const Library = () => {
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 800));
 
-        setWatchlist(mockWatchlist);
-        setFavorites(mockFavorites);
-        setContinueWatching(mockContinueWatching);
+        setWantToWatch(mockWantToWatch);
+        setCurrentlyWatching(mockCurrentlyWatching);
+        setWatchedHistory(mockWatchedHistory);
       } catch (err) {
         console.error('Failed to load library:', err);
       } finally {
@@ -82,9 +36,9 @@ const Library = () => {
   }, []);
 
   const tabs = [
-    { id: 'watchlist', label: 'Watchlist', icon: Bookmark, data: watchlist },
-    { id: 'favorites', label: 'Favorites', icon: Heart, data: favorites },
-    { id: 'continue', label: 'Continue Watching', icon: Clock, data: continueWatching },
+    { id: 'want-to-watch', label: 'Want to Watch', icon: Bookmark, data: wantToWatch, count: wantToWatch.length },
+    { id: 'currently-watching', label: 'Currently Watching', icon: Clock, data: currentlyWatching, count: currentlyWatching.length },
+    { id: 'watched-history', label: 'Watched History', icon: Eye, data: watchedHistory, count: watchedHistory.length },
   ];
 
   const activeTabData = tabs.find(tab => tab.id === activeTab);
@@ -184,22 +138,16 @@ const Library = () => {
               >
                 <Icon size={20} />
                 {tab.label}
-                {tab.data.length > 0 && (
-                  <span
-                    style={{
-                      background: 'var(--netflix-red)',
-                      color: 'var(--netflix-white)',
-                      fontSize: '0.75rem',
-                      fontWeight: '600',
-                      padding: '0.25rem 0.5rem',
-                      borderRadius: '12px',
-                      minWidth: '20px',
-                      textAlign: 'center',
-                    }}
-                  >
-                    {tab.data.length}
-                  </span>
-                )}
+                <span
+                  style={{
+                    color: 'inherit',
+                    fontSize: '0.9rem',
+                    fontWeight: '400',
+                    marginLeft: '0.25rem',
+                  }}
+                >
+                  ({tab.count})
+                </span>
                 {isActive && (
                   <div
                     style={{
@@ -248,7 +196,7 @@ const Library = () => {
                     margin: '0 0 0.5rem 0',
                   }}
                 >
-                  Your {activeTabData.label} is Empty
+                  Your watchlist is empty
                 </h3>
                 <p
                   style={{
@@ -258,9 +206,7 @@ const Library = () => {
                     margin: 0,
                   }}
                 >
-                  {activeTab === 'watchlist' && 'Add movies and shows you want to watch later.'}
-                  {activeTab === 'favorites' && 'Mark content as favorite to find it easily.'}
-                  {activeTab === 'continue' && 'Your viewing progress will appear here.'}
+                  Add movies and TV shows to your watchlist by clicking the "Save to Watchlist" button while watching.
                 </p>
               </>
             )}

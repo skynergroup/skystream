@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Layout } from './components';
-import { Home, Movies, TVShows, Anime, Search, Library, Watchlist, ContentDetail, PrivacyPolicy, NotFound } from './pages';
+import { Home, Movies, TVShows, Anime, Search, Library, Watchlist, Parties, ContentDetail, PrivacyPolicy, NotFound } from './pages';
 import { analytics } from './utils';
 import ConsentBanner from './components/ConsentBanner.jsx';
 import { AuthProvider } from './contexts/AuthContext';
@@ -37,6 +37,7 @@ function App() {
             <Route path="search" element={<Search />} />
             <Route path="library" element={<Library />} />
             <Route path="watchlist" element={<Watchlist />} />
+            <Route path="parties" element={<Parties />} />
             <Route path="movie/:id" element={<ContentDetail />} />
             <Route path="tv/:id" element={<ContentDetail />} />
             <Route path="anime/:id" element={<ContentDetail />} />
