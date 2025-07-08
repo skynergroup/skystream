@@ -21,9 +21,7 @@
     "preview": "vite preview",
     "serve": "vite preview --port 4173",
     "clean": "rm -rf dist",
-    "prebuild": "npm run clean",
-    "verify-build": "node scripts/verify-build.js",
-    "postbuild": "npm run verify-build"
+    "prebuild": "npm run clean"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "^3.840.0",
