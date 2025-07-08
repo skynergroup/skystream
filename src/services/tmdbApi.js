@@ -396,7 +396,7 @@ class TMDBApi {
       ]);
 
       return {
-        featured: trending.results[0] ? this.transformContent(trending.results[0]) : null,
+        featured: trending.results.slice(0, 5).map(item => this.transformContent(item)), // Multiple featured items for carousel
         trending: trending.results.slice(0, 20).map(item => this.transformContent(item)),
         popularMovies: popularMovies.results.slice(0, 20).map(item => this.transformContent(item)),
         popularTV: popularTV.results.slice(0, 20).map(item => this.transformContent(item)),

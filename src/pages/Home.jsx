@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { HeroBanner, ContentGrid, Loading, ContinueWatching, TrendingSection, BoredFlixHero } from '../components';
+import { HeroBanner, ContentGrid, Loading, ContinueWatching, TrendingSection, BoredFlixHero, HeroCarousel } from '../components';
+import { useAuth } from '../contexts/AuthContext';
 import tmdbApi from '../services/tmdbApi';
 import { analytics } from '../utils';
 import { getRandomFeaturedContent } from '../utils/boredflixHelpers';
 
 const Home = () => {
-  const [featuredContent, setFeaturedContent] = useState(null);
+  const { isAuthenticated } = useAuth();
+  const [featuredContent, setFeaturedContent] = useState([]);
   const [trendingContent, setTrendingContent] = useState([]);
   const [popularMovies, setPopularMovies] = useState([]);
   const [popularTV, setPopularTV] = useState([]);
@@ -33,7 +35,7 @@ const Home = () => {
       analytics.trackEvent('home_content_loaded', {
         category: 'content_discovery',
         label: 'homepage',
-        featured_count: homeContent.featured ? 1 : 0,
+        featured_count: homeContent.featured?.length || 0,
         trending_count: homeContent.trending?.length || 0,
         popular_movies_count: homeContent.popularMovies?.length || 0,
         popular_tv_count: homeContent.popularTV?.length || 0,
@@ -108,15 +110,17 @@ const Home = () => {
 
   return (
     <div className="home-page">
-      {/* BoredFlix-style Hero Banner */}
-      <BoredFlixHero content={featuredContent} />
+      {/* BoredFlix-style Hero Carousel */}
+      <HeroCarousel content={featuredContent} autoPlay={true} interval={6000} />
 
       {/* Content Sections - BoredFlix Layout */}
       <div style={{ padding: '2rem 0' }}>
-        {/* Continue Watching Section */}
-        <div style={{ padding: '0 2rem' }}>
-          <ContinueWatching limit={8} />
-        </div>
+        {/* Continue Watching Section - Only show when authenticated */}
+        {isAuthenticated && (
+          <div style={{ padding: '0 2rem' }}>
+            <ContinueWatching limit={8} />
+          </div>
+        )}
 
         {/* Trending Today - BoredFlix Style */}
         <div style={{ padding: '0 2rem' }}>
