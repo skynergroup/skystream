@@ -58,7 +58,7 @@ export const PLAYER_CONFIG = {
 
 // Analytics Configuration
 export const ANALYTICS_CONFIG = {
-  enabled: getBooleanEnvVar('VITE_ENABLE_ANALYTICS', false),
+  enabled: getBooleanEnvVar('VITE_ENABLE_ANALYTICS', true), // Enable analytics by default for testing
   trackingId: getEnvVar('VITE_GA_TRACKING_ID', 'G-CR3ZVV9BE1'),
 };
 

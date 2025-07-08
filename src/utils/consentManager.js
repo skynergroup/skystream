@@ -191,6 +191,20 @@ class ConsentManager {
   }
 
   /**
+   * Development helper: Enable analytics for testing
+   * This should only be used in development/testing environments
+   */
+  enableAnalyticsForTesting() {
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname.includes('dev'))) {
+      console.log('[Consent] Enabling analytics for testing/development');
+      return this.acceptAll();
+    } else {
+      console.warn('[Consent] Analytics auto-enable only works in development environments');
+      return false;
+    }
+  }
+
+  /**
    * Clear all consent data (for testing or user request)
    */
   clearConsent() {

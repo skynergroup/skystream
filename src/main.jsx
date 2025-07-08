@@ -11,6 +11,15 @@ if (import.meta.env.DEV) {
       setupLocatorUI();
     }
   });
+
+  // Enable analytics for development/testing
+  import('./utils/consentManager.js').then((module) => {
+    const consentManager = module.default;
+    // Auto-enable analytics in development for testing
+    setTimeout(() => {
+      consentManager.enableAnalyticsForTesting();
+    }, 1000); // Delay to ensure DOM is ready
+  });
 }
 
 createRoot(document.getElementById('root')).render(
