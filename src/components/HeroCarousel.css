@@ -2,16 +2,15 @@
 .hero-carousel {
   position: relative;
   width: 100%;
-  height: 100vh;
-  min-height: 600px;
+  min-height: 70vh;
   overflow: hidden;
   background: var(--netflix-black);
+  margin-bottom: 2rem;
 }
 
 .hero-carousel.loading,
 .hero-carousel.single-item {
-  height: 100vh;
-  min-height: 600px;
+  min-height: 70vh;
 }
 
 /* Carousel Container */
@@ -32,6 +31,11 @@
   transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;
   pointer-events: none;
+}
+
+/* Remove margin from BoredFlixHero when inside carousel */
+.hero-carousel-item .boredflix-hero {
+  margin-bottom: 0;
 }
 
 .hero-carousel-item.active {
@@ -134,16 +138,14 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .hero-carousel {
-    height: 80vh;
-    min-height: 500px;
+    min-height: 70vh;
   }
 
   .hero-carousel.loading,
   .hero-carousel.single-item {
-    height: 80vh;
-    min-height: 500px;
+    min-height: 70vh;
   }
 
   .hero-carousel-nav {
@@ -171,14 +173,12 @@
 
 @media (max-width: 768px) {
   .hero-carousel {
-    height: 70vh;
-    min-height: 400px;
+    min-height: 60vh;
   }
 
   .hero-carousel.loading,
   .hero-carousel.single-item {
-    height: 70vh;
-    min-height: 400px;
+    min-height: 60vh;
   }
 
   .hero-carousel-nav {
@@ -207,14 +207,12 @@
 
 @media (max-width: 480px) {
   .hero-carousel {
-    height: 60vh;
-    min-height: 350px;
+    min-height: 60vh;
   }
 
   .hero-carousel.loading,
   .hero-carousel.single-item {
-    height: 60vh;
-    min-height: 350px;
+    min-height: 60vh;
   }
 
   .hero-carousel-nav {
