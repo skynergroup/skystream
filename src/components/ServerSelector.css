@@ -1,0 +1,249 @@
+/* BoredFlix-style Server Selector */
+.server-selector {
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.server-selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.server-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--netflix-white);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.lightning-icon {
+  color: #ffd700;
+}
+
+.server-count {
+  color: var(--netflix-text-gray);
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+}
+
+.server-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.server-btn {
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--netflix-white);
+  text-align: left;
+}
+
+.server-btn:hover:not(.offline) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.server-btn.active {
+  background: rgba(229, 9, 20, 0.2);
+  border-color: var(--netflix-red);
+  box-shadow: 0 0 20px rgba(229, 9, 20, 0.3);
+}
+
+.server-btn.offline {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.05);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.server-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.server-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.server-lightning {
+  color: #ffd700;
+}
+
+.server-name {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.server-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-icon.online {
+  color: #4CAF50;
+}
+
+.status-icon.offline {
+  color: #F44336;
+}
+
+.status-text {
+  font-size: 0.85rem;
+  color: var(--netflix-text-gray);
+  text-transform: capitalize;
+}
+
+.active-indicator {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: var(--netflix-red);
+}
+
+.server-info {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
+}
+
+.server-description {
+  color: var(--netflix-text-gray);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .server-selector {
+    padding: 1rem;
+  }
+
+  .server-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .server-btn {
+    padding: 0.75rem;
+  }
+
+  .server-selector-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .server-title {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .server-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .server-btn {
+    padding: 0.5rem;
+  }
+
+  .server-name {
+    font-size: 0.9rem;
+  }
+
+  .server-status {
+    font-size: 0.8rem;
+  }
+}
+
+/* Animation for server switching */
+.server-btn.switching {
+  animation: serverSwitch 0.5s ease;
+}
+
+@keyframes serverSwitch {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Loading state */
+.server-btn.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.server-btn.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .server-btn {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .server-btn.active {
+    border-color: var(--netflix-red);
+    background: rgba(229, 9, 20, 0.3);
+  }
+
+  .server-btn.offline {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .server-btn,
+  .server-btn.switching {
+    transition: none;
+    animation: none;
+    transform: none;
+  }
+
+  .server-btn.loading::after {
+    animation: none;
+  }
+}

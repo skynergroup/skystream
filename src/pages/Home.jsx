@@ -118,7 +118,7 @@ const Home = () => {
           <ContinueWatching limit={8} />
         </div>
 
-        {/* Trending Today */}
+        {/* Trending Today - BoredFlix Style */}
         <div style={{ padding: '0 2rem' }}>
           <TrendingSection
             contentType="all"
@@ -126,10 +126,12 @@ const Home = () => {
             limit={20}
             layout="grid"
             showTitle={true}
+            showLive={true}
+            showContentTypeToggle={true}
           />
         </div>
 
-        {/* Trending This Week */}
+        {/* Trending This Week - BoredFlix Style */}
         <div style={{ padding: '0 2rem' }}>
           <TrendingSection
             contentType="all"
@@ -137,6 +139,7 @@ const Home = () => {
             limit={20}
             layout="grid"
             showTitle={true}
+            showContentTypeToggle={true}
           />
         </div>
 

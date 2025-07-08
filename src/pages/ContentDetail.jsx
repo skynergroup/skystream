@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { Play, Share, ArrowLeft, X } from 'lucide-react';
-import { Button, Loading, Breadcrumb, ProductionInfo, CommentsSection, FAQSection, BookmarkButton } from '../components';
+import { Play, Share, ArrowLeft, X, Download, Users, Heart } from 'lucide-react';
+import { Button, Loading, Breadcrumb, ProductionInfo, CommentsSection, FAQSection, BookmarkButton, ServerSelector, ContentFAQ } from '../components';
 import VideoPlayer from '../components/VideoPlayer';
 import SeasonEpisodeSelector from '../components/SeasonEpisodeSelector';
 import WatchlistButton from '../components/WatchlistButton';
@@ -17,6 +17,7 @@ const ContentDetail = () => {
   const [showPlayer, setShowPlayer] = useState(false);
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [selectedEpisode, setSelectedEpisode] = useState(1);
+  const [selectedServer, setSelectedServer] = useState(1);
 
   // Extract type from pathname
   const type = location.pathname.split('/')[1]; // Gets 'movie', 'tv', or 'anime'
@@ -186,6 +187,17 @@ const ContentDetail = () => {
   const handleEpisodeSelect = (season, episode) => {
     setSelectedSeason(season);
     setSelectedEpisode(episode);
+  };
+
+  const handleServerChange = (serverNumber) => {
+    setSelectedServer(serverNumber);
+    // Track server change
+    analytics.trackEvent('server_change', {
+      category: 'video_player',
+      label: `server_${serverNumber}`,
+      content_type: content?.type,
+      content_id: content?.id
+    });
   };
 
   const handlePlayClick = (season = null, episode = null) => {
@@ -482,6 +494,18 @@ const ContentDetail = () => {
               <Button variant="ghost" size="large" icon={<Share size={20} />}>
                 Share
               </Button>
+
+              <Button variant="ghost" size="large" icon={<Heart size={20} />}>
+                Save
+              </Button>
+
+              <Button variant="ghost" size="large" icon={<Users size={20} />}>
+                Party
+              </Button>
+
+              <Button variant="ghost" size="large" icon={<Download size={20} />}>
+                Download
+              </Button>
             </div>
           </div>
         </div>
@@ -506,6 +530,25 @@ const ContentDetail = () => {
           />
         )}
 
+        {/* BoredFlix-style Server Selector */}
+        {showPlayer && (
+          <ServerSelector
+            onServerChange={handleServerChange}
+            activeServer={selectedServer}
+            availableServers={[1, 2, 3, 4, 5, 6, 7, 8]}
+            serverStatus={{
+              1: 'online',
+              2: 'online',
+              3: 'online',
+              4: 'online',
+              5: 'online',
+              6: 'offline',
+              7: 'online',
+              8: 'online'
+            }}
+          />
+        )}
+
         {/* Embedded Video Player */}
         {(() => {
           try {
@@ -520,6 +563,7 @@ const ContentDetail = () => {
                 onClose={() => setShowPlayer(false)}
                 onEpisodeSelect={handleEpisodeSelect}
                 autoPlay={true}
+                selectedServer={selectedServer}
               />
             );
           } catch (error) {
@@ -547,11 +591,10 @@ const ContentDetail = () => {
         contentTitle={content.title || content.name}
       />
 
-      {/* FAQ Section */}
-      <FAQSection
-        contentType={content.type}
-        contentTitle={content.title || content.name}
-      />
+      {/* BoredFlix-style FAQ Section */}
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2rem' }}>
+        <ContentFAQ content={content} />
+      </div>
     </div>
   );
 };

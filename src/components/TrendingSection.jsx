@@ -5,26 +5,29 @@ import trendingService from '../services/trendingService';
 import Button from './Button';
 import './TrendingSection.css';
 
-const TrendingSection = ({ 
-  contentType = 'all', 
+const TrendingSection = ({
+  contentType = 'all',
   timeframe = 'week',
-  limit = 20, 
-  showTitle = true, 
+  limit = 20,
+  showTitle = true,
   layout = 'grid', // 'grid' or 'carousel'
-  className = '' 
+  className = '',
+  showLive = false, // BoredFlix-style live indicator
+  showContentTypeToggle = false // BoredFlix-style Movies/TV Shows toggle
 }) => {
   const [trendingItems, setTrendingItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTimeframe, setSelectedTimeframe] = useState(timeframe);
+  const [selectedContentType, setSelectedContentType] = useState(contentType);
 
   useEffect(() => {
     loadTrending();
-  }, [contentType, selectedTimeframe, limit]);
+  }, [selectedContentType, selectedTimeframe, limit]);
 
   const loadTrending = async () => {
     try {
       setLoading(true);
-      const items = await trendingService.getTrending(contentType, limit, selectedTimeframe);
+      const items = await trendingService.getTrending(selectedContentType, limit, selectedTimeframe);
       setTrendingItems(items);
     } catch (error) {
       console.error('Failed to load trending content:', error);
@@ -35,6 +38,10 @@ const TrendingSection = ({
 
   const handleTimeframeChange = (newTimeframe) => {
     setSelectedTimeframe(newTimeframe);
+  };
+
+  const handleContentTypeChange = (newContentType) => {
+    setSelectedContentType(newContentType);
   };
 
   const getContentUrl = (item) => {
@@ -99,11 +106,31 @@ const TrendingSection = ({
     <div className={`trending-section ${className}`}>
       {showTitle && (
         <div className="trending-header">
-          <h2 className="trending-title">
-            <TrendingUp size={24} />
-            Trending {getTimeframeLabel(selectedTimeframe)}
-          </h2>
-          
+          <div className="trending-title-container">
+            <h2 className="trending-title">
+              <TrendingUp size={24} />
+              Trending {getTimeframeLabel(selectedTimeframe)}
+              {showLive && <span className="live-indicator">Live</span>}
+            </h2>
+
+            {showContentTypeToggle && (
+              <div className="content-type-toggle">
+                <button
+                  className={`toggle-btn ${selectedContentType === 'movie' ? 'active' : ''}`}
+                  onClick={() => handleContentTypeChange('movie')}
+                >
+                  Movies
+                </button>
+                <button
+                  className={`toggle-btn ${selectedContentType === 'tv' ? 'active' : ''}`}
+                  onClick={() => handleContentTypeChange('tv')}
+                >
+                  TV Shows
+                </button>
+              </div>
+            )}
+          </div>
+
           <div className="timeframe-selector">
             {['day', 'week', 'month'].map((tf) => (
               <button
