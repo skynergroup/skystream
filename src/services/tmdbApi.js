@@ -367,13 +367,32 @@ class TMDBApi {
   /**
    * Get content for homepage
    */
+  /**
+   * Get popular anime content
+   */
+  async getPopularAnime() {
+    try {
+      const response = await this.makeRequest('/discover/tv', {
+        with_origin_country: 'JP',
+        with_genres: '16', // Animation genre
+        sort_by: 'popularity.desc',
+        page: 1
+      });
+      return response;
+    } catch (error) {
+      utils.error('Failed to fetch popular anime:', error);
+      throw error;
+    }
+  }
+
   async getHomePageContent() {
     try {
-      const [trending, popularMovies, popularTV, topRatedMovies] = await Promise.all([
+      const [trending, popularMovies, popularTV, topRatedMovies, popularAnime] = await Promise.all([
         this.getTrending('all', 'week'),
         this.getPopularMovies(),
         this.getPopularTVShows(),
         this.getTopRatedMovies(),
+        this.getPopularAnime(),
       ]);
 
       return {
@@ -382,6 +401,7 @@ class TMDBApi {
         popularMovies: popularMovies.results.slice(0, 20).map(item => this.transformContent(item)),
         popularTV: popularTV.results.slice(0, 20).map(item => this.transformContent(item)),
         topRated: topRatedMovies.results.slice(0, 20).map(item => this.transformContent(item)),
+        popularAnime: popularAnime.results.slice(0, 20).map(item => this.transformContent(item)),
       };
     } catch (error) {
       utils.error('Failed to fetch homepage content:', error);

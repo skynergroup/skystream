@@ -67,6 +67,39 @@
   animation: skeleton-loading 1.5s infinite;
 }
 
+/* BoredFlix-style NEW Badge */
+.content-card__new-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--netflix-red);
+  color: var(--netflix-white);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(229, 9, 20, 0.4);
+}
+
+/* BoredFlix-style Rating Badge */
+.content-card__rating-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.8);
+  color: var(--netflix-white);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 2;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 .content-card__image-placeholder {
   width: 100%;
   height: 100%;

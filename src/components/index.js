@@ -22,3 +22,4 @@ export { default as BookmarkButton } from './BookmarkButton';
 export { default as ContinueWatching } from './ContinueWatching';
 export { default as TrendingSection } from './TrendingSection';
 export { default as UserPreferences } from './UserPreferences';
+export { default as BoredFlixHero } from './BoredFlixHero';

@@ -2,6 +2,13 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Play, Info } from 'lucide-react';
 import { analytics } from '../utils';
+import {
+  convertRatingToPercentage,
+  formatYear,
+  isNewContent,
+  getPosterUrl,
+  getContentTypeDisplay
+} from '../utils/boredflixHelpers';
 import WatchlistButton from './WatchlistButton';
 import './ContentCard.css';
 
@@ -20,15 +27,12 @@ const ContentCard = ({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const formatDate = date => {
-    if (!date) return '';
-    return new Date(date).getFullYear();
-  };
-
-  const formatRating = rating => {
-    if (!rating) return '';
-    return Math.round(rating * 10) / 10;
-  };
+  // BoredFlix-style data processing
+  const percentageRating = convertRatingToPercentage(rating);
+  const year = formatYear(releaseDate);
+  const isNew = isNewContent(releaseDate);
+  const contentTypeDisplay = getContentTypeDisplay(type);
+  const imageUrl = getPosterUrl(poster);
 
   const getContentUrl = () => {
     return `/${type}/${id}`;
@@ -59,7 +63,7 @@ const ContentCard = ({
     // Track specific content type clicks for popularity
     const metadata = {
       genres: [], // Could be enhanced if genre data is available
-      year: formatDate(releaseDate),
+      year: year,
       rating: rating,
     };
 
@@ -80,7 +84,7 @@ const ContentCard = ({
         <Link to={getContentUrl()} className="content-card__image-link" onClick={handleCardClick}>
           {!imageError ? (
             <img
-              src={poster}
+              src={imageUrl}
               alt={title}
               className={`content-card__image ${imageLoaded ? 'content-card__image--loaded' : ''}`}
               onLoad={handleImageLoad}
@@ -96,6 +100,16 @@ const ContentCard = ({
           )}
 
           {!imageLoaded && !imageError && <div className="content-card__image-skeleton"></div>}
+
+          {/* NEW Badge */}
+          {isNew && <div className="content-card__new-badge">NEW</div>}
+
+          {/* Rating Badge */}
+          {percentageRating && (
+            <div className="content-card__rating-badge">
+              {percentageRating}%
+            </div>
+          )}
         </Link>
 
         {/* Hover Overlay */}
@@ -131,9 +145,9 @@ const ContentCard = ({
               </p>
             )}
             <div className="content-card__meta">
-              {releaseDate && <span className="content-card__year">{formatDate(releaseDate)}</span>}
-              {rating && <span className="content-card__rating">★ {formatRating(rating)}</span>}
-              <span className="content-card__type">{type.toUpperCase()}</span>
+              {year && <span className="content-card__year">{year}</span>}
+              <span className="content-card__type">{contentTypeDisplay}</span>
+              {percentageRating && <span className="content-card__rating">{percentageRating / 10}</span>}
             </div>
           </div>
         </div>
