@@ -3,6 +3,7 @@ import { ChevronDown, Play } from 'lucide-react';
 import Button from './Button';
 import Loading from './Loading';
 import tmdbApi from '../services/tmdbApi';
+import { analytics } from '../utils';
 import './SeasonEpisodeSelector.css';
 
 const SeasonEpisodeSelector = ({
@@ -49,11 +50,60 @@ const SeasonEpisodeSelector = ({
   const handleSeasonChange = season => {
     setSelectedSeason(season);
     setShowSeasonDropdown(false);
+
+    // Track season selection analytics
+    analytics.trackEvent('season_selection', {
+      category: 'series_navigation',
+      label: `${contentType}_season_${season}`,
+      event_action: 'season_change',
+      content_type: contentType,
+      content_id: contentId,
+      season_from: selectedSeason,
+      season_to: season,
+      session_id: analytics.getSessionId(),
+      timestamp: new Date().toISOString(),
+      page_url: window.location.pathname,
+      value: 1,
+    });
   };
 
   const handleEpisodeChange = episode => {
     setSelectedEpisode(episode);
     setShowEpisodeDropdown(false);
+
+    // Get episode details for analytics
+    const episodeData = episodes.find(ep => ep.episode_number === episode);
+
+    // Track episode selection analytics
+    analytics.trackEvent('episode_selection', {
+      category: 'series_navigation',
+      label: `${contentType}_S${selectedSeason}E${episode}`,
+      event_action: 'episode_change',
+      content_type: contentType,
+      content_id: contentId,
+      season: selectedSeason,
+      episode_from: selectedEpisode,
+      episode_to: episode,
+      episode_title: episodeData?.name || `Episode ${episode}`,
+      episode_air_date: episodeData?.air_date || 'Unknown',
+      episode_rating: episodeData?.vote_average || 'Unknown',
+      session_id: analytics.getSessionId(),
+      timestamp: new Date().toISOString(),
+      page_url: window.location.pathname,
+      value: 1,
+    });
+
+    // Track episode discovery pattern
+    analytics.trackEvent('episode_discovery', {
+      category: 'content_discovery',
+      label: `${contentType}_episode_browse`,
+      content_type: contentType,
+      content_id: contentId,
+      season: selectedSeason,
+      episode: episode,
+      discovery_method: 'episode_selector',
+      value: 1,
+    });
 
     // Notify parent component
     if (onEpisodeSelect) {

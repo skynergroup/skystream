@@ -78,21 +78,36 @@ const ContentDetail = () => {
         episodes: transformedContent.number_of_episodes,
       };
 
-      analytics.trackContentView(type, id, transformedContent.title, metadata);
+      // Enhanced content view tracking with comprehensive metadata
+      const enhancedMetadata = {
+        ...metadata,
+        genres: transformedContent.genres?.map(g => g.name) || [],
+        cast: transformedContent.credits?.cast?.slice(0, 10).map(c => c.name) || [],
+        director: transformedContent.credits?.crew?.find(c => c.job === 'Director')?.name || 'Unknown',
+        country: transformedContent.production_countries?.[0]?.name || 'Unknown',
+        language: transformedContent.original_language || 'Unknown',
+        budget: transformedContent.budget || 0,
+        revenue: transformedContent.revenue || 0,
+        popularity: transformedContent.popularity || 0,
+        vote_average: transformedContent.vote_average || 0,
+        vote_count: transformedContent.vote_count || 0,
+      };
+
+      analytics.trackContentView(type, id, transformedContent.title, enhancedMetadata);
 
       // Track specific content type popularity
       if (type === 'movie') {
-        analytics.trackMovieView(id, transformedContent.title, metadata);
+        analytics.trackMovieView(id, transformedContent.title, enhancedMetadata);
       } else if (type === 'tv') {
-        analytics.trackSeriesView(id, transformedContent.title, metadata);
+        analytics.trackSeriesView(id, transformedContent.title, enhancedMetadata);
       } else if (type === 'anime') {
-        analytics.trackAnimeView(id, transformedContent.title, metadata);
+        analytics.trackAnimeView(id, transformedContent.title, enhancedMetadata);
       }
 
       // Track genre preferences
       if (transformedContent.genres?.length > 0) {
         transformedContent.genres.forEach(genre => {
-          analytics.trackGenreInteraction(genre, type, 'view');
+          analytics.trackGenreInteraction(genre.name, type, 'view');
         });
       }
     } catch (err) {
@@ -191,24 +206,61 @@ const ContentDetail = () => {
 
   const handleServerChange = (serverNumber) => {
     setSelectedServer(serverNumber);
-    // Track server change
+
+    // Enhanced server change tracking
     analytics.trackEvent('server_change', {
-      category: 'video_player',
+      category: 'player_behavior',
       label: `server_${serverNumber}`,
+      event_action: 'server_change',
       content_type: content?.type,
-      content_id: content?.id
+      content_id: content?.id,
+      content_title: content?.title,
+      server_from: selectedServer,
+      server_to: serverNumber,
+      content_genre: content?.genres?.map(g => g.name).join(', ') || 'Unknown',
+      session_id: analytics.getSessionId(),
+      timestamp: new Date().toISOString(),
+      value: 1,
+    });
+
+    // Track server preference
+    analytics.trackEvent('server_preference', {
+      category: 'player_preferences',
+      label: `Server ${serverNumber}`,
+      server_name: `Server ${serverNumber}`,
+      content_type: content?.type,
+      content_id: content?.id,
+      value: 1,
     });
   };
 
   const handlePlayClick = (season = null, episode = null) => {
     const playerInfo = {
-      player: utils.PLAYER_CONFIG?.defaults?.player || 'unknown',
+      playerType: utils.PLAYER_CONFIG?.defaults?.player || 'videasy',
+      serverName: `Server ${selectedServer}`,
+      quality: 'Auto',
       season: season || selectedSeason,
       episode: episode || selectedEpisode,
     };
 
+    // Enhanced metadata for tracking
+    const trackingMetadata = {
+      genres: content.genres?.map(g => g.name) || [],
+      year: content.release_date ? new Date(content.release_date).getFullYear() :
+            content.first_air_date ? new Date(content.first_air_date).getFullYear() : 'Unknown',
+      rating: content.vote_average || 'Unknown',
+      runtime: content.runtime || content.episode_run_time?.[0] || 'Unknown',
+    };
+
     if (content.type === 'movie') {
       setShowPlayer(true);
+
+      // Track "Watch Now" button click
+      analytics.trackWatchNowClick(content.type, content.id, content.title, trackingMetadata);
+
+      // Track actual watch start
+      analytics.trackWatchStart(content.type, content.id, content.title, trackingMetadata, playerInfo);
+
       // Track movie play with player info
       analytics.trackVideoEvent('play', content.type, content.id, content.title, playerInfo);
     } else if (content.type === 'tv' || content.type === 'anime') {
@@ -218,6 +270,14 @@ const ContentDetail = () => {
       setSelectedSeason(currentSeason);
       setSelectedEpisode(currentEpisode);
       setShowPlayer(true);
+
+      const episodeTitle = `${content.title} S${currentSeason}E${currentEpisode}`;
+
+      // Track "Watch Now" button click for episodes
+      analytics.trackWatchNowClick(content.type, content.id, episodeTitle, trackingMetadata);
+
+      // Track actual watch start for episodes
+      analytics.trackWatchStart(content.type, content.id, episodeTitle, trackingMetadata, playerInfo);
 
       // Track episode view
       analytics.trackEpisodeView(
@@ -230,8 +290,7 @@ const ContentDetail = () => {
       );
 
       // Track TV/anime episode play with player info
-      analytics.trackVideoEvent('play', content.type, content.id,
-        `${content.title} S${currentSeason}E${currentEpisode}`, playerInfo);
+      analytics.trackVideoEvent('play', content.type, content.id, episodeTitle, playerInfo);
     }
   };
 

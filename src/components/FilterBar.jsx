@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, Filter } from 'lucide-react';
+import { analytics } from '../utils';
 import './FilterBar.css';
 
 const FilterBar = ({ 
@@ -69,8 +70,44 @@ const FilterBar = ({
   };
 
   const handleFilterChange = (filterType, value) => {
+    const previousValue = filters[filterType];
     setFilters(prev => ({ ...prev, [filterType]: value }));
     setActiveDropdown(null);
+
+    // Track comprehensive filter usage
+    const allFilters = { ...filters, [filterType]: value };
+    analytics.trackFilterUsage(filterType, value, contentType, allFilters);
+
+    // Track specific filter interactions
+    analytics.trackEvent('filter_interaction', {
+      category: 'filter_behavior',
+      label: `${filterType}_${value}`,
+      event_action: 'filter_change',
+      filter_type: filterType,
+      filter_value: value,
+      previous_value: previousValue,
+      content_type: contentType,
+      all_active_filters: JSON.stringify(allFilters),
+      session_id: analytics.getSessionId(),
+      timestamp: new Date().toISOString(),
+      page_url: window.location.pathname,
+      value: 1,
+    });
+
+    // Track genre preferences when genre filter is used
+    if (filterType === 'genre' && value !== 'All Genres') {
+      analytics.trackGenreInteraction(value, contentType, 'filter');
+    }
+
+    // Track user preference patterns
+    analytics.trackEvent('user_preference', {
+      category: 'user_behavior',
+      label: `${contentType}_${filterType}_preference`,
+      preference_type: filterType,
+      preference_value: value,
+      content_type: contentType,
+      value: 1,
+    });
 
     // Call the appropriate callback
     switch (filterType) {

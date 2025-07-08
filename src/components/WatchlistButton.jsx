@@ -36,14 +36,34 @@ const WatchlistButton = ({
       const newStatus = toggleWatchlist(content);
       setInWatchlist(newStatus);
 
-      // Track analytics
+      // Enhanced watchlist analytics tracking
+      const action = newStatus ? 'add' : 'remove';
+      const metadata = {
+        genres: content.genres?.map(g => g.name) || [],
+        year: content.release_date ? new Date(content.release_date).getFullYear() :
+              content.first_air_date ? new Date(content.first_air_date).getFullYear() : 'Unknown',
+        rating: content.vote_average || 'Unknown',
+      };
+
+      // Track watchlist action with comprehensive metadata
+      analytics.trackWatchlistAction(action, content.type, content.id, content.title || content.name, metadata);
+
+      // Track general watchlist event
       analytics.trackEvent(newStatus ? 'watchlist_add' : 'watchlist_remove', {
         category: 'user_engagement',
         label: `${content.type}_${content.id}`,
+        event_action: action,
         content_type: content.type,
         content_id: content.id,
         content_title: content.title || content.name,
-        action: newStatus ? 'add' : 'remove'
+        content_genre: metadata.genres.join(', ') || 'Unknown',
+        content_year: metadata.year,
+        content_rating: metadata.rating,
+        action: action,
+        session_id: analytics.getSessionId(),
+        timestamp: new Date().toISOString(),
+        page_url: window.location.pathname,
+        value: 1,
       });
 
       // Call callback if provided

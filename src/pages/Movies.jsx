@@ -54,30 +54,80 @@ const Movies = () => {
     const newFilters = { ...filters, genre };
     setFilters(newFilters);
     loadMovies(1, newFilters);
+
+    // Track movies filter application
+    analytics.trackEvent('movies_filter_applied', {
+      category: 'browse',
+      label: 'movies',
+      filters: newFilters,
+      page: 1,
+      filter_changed: 'genre',
+      filter_value: genre,
+    });
   };
 
   const handleLanguageChange = (language) => {
     const newFilters = { ...filters, language };
     setFilters(newFilters);
     loadMovies(1, newFilters);
+
+    // Track movies filter application
+    analytics.trackEvent('movies_filter_applied', {
+      category: 'browse',
+      label: 'movies',
+      filters: newFilters,
+      page: 1,
+      filter_changed: 'language',
+      filter_value: language,
+    });
   };
 
   const handleYearChange = (year) => {
     const newFilters = { ...filters, year };
     setFilters(newFilters);
     loadMovies(1, newFilters);
+
+    // Track movies filter application
+    analytics.trackEvent('movies_filter_applied', {
+      category: 'browse',
+      label: 'movies',
+      filters: newFilters,
+      page: 1,
+      filter_changed: 'year',
+      filter_value: year,
+    });
   };
 
   const handleRatingChange = (rating) => {
     const newFilters = { ...filters, rating };
     setFilters(newFilters);
     loadMovies(1, newFilters);
+
+    // Track movies filter application
+    analytics.trackEvent('movies_filter_applied', {
+      category: 'browse',
+      label: 'movies',
+      filters: newFilters,
+      page: 1,
+      filter_changed: 'rating',
+      filter_value: rating,
+    });
   };
 
   const handleSortChange = (sort) => {
     const newFilters = { ...filters, sort };
     setFilters(newFilters);
     loadMovies(1, newFilters);
+
+    // Track movies filter application
+    analytics.trackEvent('movies_filter_applied', {
+      category: 'browse',
+      label: 'movies',
+      filters: newFilters,
+      page: 1,
+      filter_changed: 'sort',
+      filter_value: sort,
+    });
   };
 
   const handlePageChange = (page) => {

@@ -48,31 +48,53 @@ const ContentCard = ({
   };
 
   const handleCardClick = () => {
-    // Track content card click
-    analytics.trackEvent('content_card_click', {
+    // Enhanced content card click tracking
+    const metadata = {
+      genres: genres || [],
+      year: year,
+      rating: rating,
+      position: position || 'Unknown',
+      section: section || 'Unknown',
+    };
+
+    // Track content card interaction with comprehensive data
+    analytics.trackContentCardInteraction('click', type, id, title, metadata);
+
+    // Track content discovery pattern
+    analytics.trackEvent('content_discovery', {
       category: 'content_discovery',
       label: `${type}_${id}`,
+      event_action: 'card_click',
       content_type: type,
       content_id: id,
       content_title: title,
       content_rating: rating,
       content_year: formatDate(releaseDate),
+      content_genre: (genres || []).join(', ') || 'Unknown',
       card_size: size,
+      card_position: position || 'Unknown',
+      section_name: section || 'Unknown',
+      discovery_method: 'browse',
+      session_id: analytics.getSessionId(),
+      timestamp: new Date().toISOString(),
+      page_url: window.location.pathname,
+      value: 1,
     });
 
     // Track specific content type clicks for popularity
-    const metadata = {
-      genres: [], // Could be enhanced if genre data is available
-      year: year,
-      rating: rating,
-    };
-
     if (type === 'movie') {
       analytics.trackMovieView(id, title, metadata);
     } else if (type === 'tv') {
       analytics.trackSeriesView(id, title, metadata);
     } else if (type === 'anime') {
       analytics.trackAnimeView(id, title, metadata);
+    }
+
+    // Track genre preferences from card interactions
+    if (genres && genres.length > 0) {
+      genres.forEach(genre => {
+        analytics.trackGenreInteraction(genre, type, 'card_click');
+      });
     }
   };
 
