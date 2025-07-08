@@ -41,8 +41,8 @@ const ContentFAQ = ({ content, className = '' }) => {
       },
       {
         question: `What genre is ${title}?`,
-        answer: content?.genres?.length > 0 
-          ? `${title} is categorized under ${content.genres.map(g => g.name).join(', ')}. ${type === 'movie' ? 'This movie' : 'This TV show'} was ${year ? `released in ${year}` : 'recently released'}.`
+        answer: content?.genres?.length > 0
+          ? `${title} is categorized under ${content.genres.map(g => g.name).filter(name => name && name.trim() !== '').join(', ')}. ${type === 'movie' ? 'This movie' : 'This TV show'} was ${year ? `released in ${year}` : 'recently released'}.`
           : `${title} is a ${type} that was ${year ? `released in ${year}` : 'recently released'}. Check the details above for more information about the genre and storyline.`
       },
       {

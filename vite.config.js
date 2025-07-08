@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => ({
       buffer: 'buffer',
     },
   },
-  base: './', // For static hosting compatibility
+  base: '/', // Use absolute paths for better SPA routing
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -69,7 +69,8 @@ export default defineConfig(({ mode }) => ({
   },
   preview: {
     port: 4173,
-    host: true
+    host: true,
+    historyApiFallback: true
   },
   // Optimize dependencies
   optimizeDeps: {

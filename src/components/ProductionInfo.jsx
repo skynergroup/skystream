@@ -7,29 +7,40 @@ const ProductionInfo = ({ contentId, contentType }) => {
   const [credits, setCredits] = useState(null);
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchProductionInfo = async () => {
+  const fetchProductionInfo = async () => {
       try {
         setLoading(true);
-        
-        // Fetch credits (cast and crew)
-        const creditsData = await tmdbApi.getCredits(contentId, contentType);
+        setError(null);
+
+        // Fetch credits (cast and crew) with timeout
+        const creditsPromise = tmdbApi.getCredits(contentId, contentType);
+        const creditsData = await Promise.race([
+          creditsPromise,
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Credits request timeout')), 10000))
+        ]);
         setCredits(creditsData);
 
-        // Fetch additional details
-        const detailsData = contentType === 'movie' 
-          ? await tmdbApi.getMovieDetails(contentId)
-          : await tmdbApi.getTVDetails(contentId);
+        // Fetch additional details with timeout
+        const detailsPromise = contentType === 'movie'
+          ? tmdbApi.getMovieDetails(contentId)
+          : tmdbApi.getTVDetails(contentId);
+        const detailsData = await Promise.race([
+          detailsPromise,
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Details request timeout')), 10000))
+        ]);
         setDetails(detailsData);
-        
+
       } catch (error) {
         console.error('Failed to fetch production info:', error);
+        setError(error);
       } finally {
         setLoading(false);
       }
     };
 
+  useEffect(() => {
     if (contentId && contentType) {
       fetchProductionInfo();
     }
@@ -39,6 +50,34 @@ const ProductionInfo = ({ contentId, contentType }) => {
     return (
       <div className="production-info loading">
         <div className="loading-placeholder">Loading production information...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="production-info error">
+        <div className="error-placeholder">
+          <p>Unable to load production information</p>
+          <button
+            onClick={() => {
+              if (contentId && contentType) {
+                fetchProductionInfo();
+              }
+            }}
+            style={{
+              background: 'var(--netflix-red)',
+              color: 'white',
+              border: 'none',
+              padding: '0.5rem 1rem',
+              borderRadius: '4px',
+              marginTop: '0.5rem',
+              cursor: 'pointer'
+            }}
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }

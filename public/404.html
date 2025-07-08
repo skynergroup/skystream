@@ -62,21 +62,22 @@
 
     <script>
         // Single Page Application (SPA) redirect for static hosting
-        // This handles client-side routing for React Router
-        (function() {
-            var redirect = sessionStorage.redirect;
-            delete sessionStorage.redirect;
-            if (redirect && redirect !== location.href) {
-                history.replaceState(null, null, redirect);
+        // Store the intended path and redirect to the main app
+        (function(l) {
+            // Handle GitHub Pages style redirects
+            if (l.search[1] === '/' ) {
+                var decoded = decodeURIComponent(l.search.slice(1));
+                window.history.replaceState(null, null,
+                    l.pathname.slice(0, -1) + decoded + l.hash
+                );
             }
-        })();
+        }(window.location));
 
-        // Fallback redirect to home after 3 seconds
-        setTimeout(function() {
-            if (!sessionStorage.redirect) {
-                window.location.href = './';
-            }
-        }, 3000);
+        // Store the current path for the main app to handle
+        sessionStorage.redirect = location.pathname + location.search + location.hash;
+
+        // Redirect to the main app immediately
+        location.replace('/');
     </script>
 </body>
 </html>

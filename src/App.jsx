@@ -1,10 +1,28 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Layout } from './components';
 import { Home, Movies, TVShows, Anime, Search, Library, Watchlist, Parties, ContentDetail, PrivacyPolicy, NotFound } from './pages';
 import { analytics } from './utils';
 import ConsentBanner from './components/ConsentBanner.jsx';
 import { AuthProvider } from './contexts/AuthContext';
+
+// SPA redirect handler for static hosting
+function SPARedirectHandler() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if there's a redirect stored in sessionStorage
+    const redirect = sessionStorage.redirect;
+    if (redirect) {
+      // Clear the redirect
+      delete sessionStorage.redirect;
+      // Navigate to the intended path
+      navigate(redirect, { replace: true });
+    }
+  }, [navigate]);
+
+  return null;
+}
 
 // Analytics tracking component
 function AnalyticsTracker() {
@@ -27,6 +45,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <SPARedirectHandler />
         <AnalyticsTracker />
         <Routes>
           <Route path="/" element={<Layout />}>

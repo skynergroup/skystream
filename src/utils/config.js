@@ -44,7 +44,7 @@ export const PLAYER_CONFIG = {
     baseUrl: getEnvVar('VITE_VIDEASY_BASE_URL', 'https://player.videasy.net'),
   },
   vidsrc: {
-    baseUrl: getEnvVar('VITE_VIDSRC_BASE_URL', 'https://v2.vidsrc.me/embed'),
+    baseUrl: getEnvVar('VITE_VIDSRC_BASE_URL', 'https://vidsrc.vip/embed'),
     downloadUrl: getEnvVar('VITE_VIDSRC_DOWNLOAD_URL', 'https://dl.vidsrc.vip'),
   },
 
@@ -170,8 +170,14 @@ export const utils = {
   },
 
   // Generate download URL
-  getDownloadUrl: contentId => {
-    return `${PLAYER_CONFIG.vidsrc.downloadUrl}/${contentId}`;
+  getDownloadUrl: (contentId, contentType = 'movie') => {
+    const baseUrl = PLAYER_CONFIG.vidsrc.downloadUrl;
+    if (contentType === 'movie') {
+      return `${baseUrl}/movie/${contentId}`;
+    } else if (contentType === 'tv' || contentType === 'anime') {
+      return `${baseUrl}/tv/${contentId}`;
+    }
+    return `${baseUrl}/movie/${contentId}`; // Default fallback
   },
 
   // Log function that respects environment settings

@@ -34,14 +34,32 @@ const SeasonEpisodeSelector = ({
       setError(null);
 
       const seasonData = await tmdbApi.getTVSeasonDetails(contentId, seasonNumber);
-      setEpisodes(seasonData.episodes || []);
+      const episodeList = seasonData?.episodes || [];
 
-      // Reset to first episode when changing seasons
-      setSelectedEpisode(1);
+      setEpisodes(episodeList);
+
+      // Reset to first episode when changing seasons, or stay at 1 if no episodes
+      setSelectedEpisode(episodeList.length > 0 ? 1 : 1);
+
+      // If no episodes found, set a user-friendly error
+      if (episodeList.length === 0) {
+        setError(new Error(`No episodes found for Season ${seasonNumber}`));
+      }
     } catch (err) {
       console.error('Failed to load episodes:', err);
       setError(err);
       setEpisodes([]);
+
+      // Track episode loading error
+      analytics.trackEvent('episode_load_error', {
+        category: 'content_errors',
+        label: `${contentType}_season_${seasonNumber}`,
+        content_type: contentType,
+        content_id: contentId,
+        season: seasonNumber,
+        error_message: err.message,
+        value: 1,
+      });
     } finally {
       setLoading(false);
     }
@@ -214,7 +232,28 @@ const SeasonEpisodeSelector = ({
       {/* Error State */}
       {error && (
         <div className="selector-error">
-          <p>Failed to load episodes for Season {selectedSeason}</p>
+          <p>
+            {error.message?.includes('No episodes found')
+              ? error.message
+              : `Failed to load episodes for Season ${selectedSeason}. Please try refreshing the page.`
+            }
+          </p>
+          {!error.message?.includes('No episodes found') && (
+            <button
+              onClick={() => loadEpisodes(selectedSeason)}
+              style={{
+                background: 'var(--netflix-red)',
+                color: 'white',
+                border: 'none',
+                padding: '0.5rem 1rem',
+                borderRadius: '4px',
+                marginTop: '0.5rem',
+                cursor: 'pointer'
+              }}
+            >
+              Retry
+            </button>
+          )}
         </div>
       )}
 

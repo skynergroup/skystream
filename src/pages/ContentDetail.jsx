@@ -127,9 +127,9 @@ const ContentDetail = () => {
     }
   }, [type, id, location.pathname]);
 
-  // Auto-open player for movies when content loads
+  // Auto-open player for all content types when content loads
   useEffect(() => {
-    if (content && content.type === 'movie' && !showPlayer) {
+    if (content && !showPlayer) {
       // Small delay to ensure content is fully loaded
       const timer = setTimeout(() => {
         handlePlayClick();
@@ -243,9 +243,9 @@ const ContentDetail = () => {
       episode: episode || selectedEpisode,
     };
 
-    // Enhanced metadata for tracking
+    // Enhanced metadata for tracking with proper genre handling
     const trackingMetadata = {
-      genres: content.genres?.map(g => g.name) || [],
+      genres: content.genres?.map(g => g.name).filter(name => name && name.trim() !== '') || [],
       year: content.release_date ? new Date(content.release_date).getFullYear() :
             content.first_air_date ? new Date(content.first_air_date).getFullYear() : 'Unknown',
       rating: content.vote_average || 'Unknown',
@@ -596,14 +596,14 @@ const ContentDetail = () => {
             activeServer={selectedServer}
             availableServers={[1, 2, 3, 4, 5, 6, 7, 8]}
             serverStatus={{
-              1: 'online',
-              2: 'online',
-              3: 'online',
-              4: 'online',
-              5: 'online',
-              6: 'offline',
-              7: 'online',
-              8: 'online'
+              1: 'online',  // Videasy
+              2: 'online',  // Vidsrc
+              3: 'unavailable',
+              4: 'unavailable',
+              5: 'unavailable',
+              6: 'unavailable',
+              7: 'unavailable',
+              8: 'unavailable'
             }}
           />
         )}

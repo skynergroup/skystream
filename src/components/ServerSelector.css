@@ -110,6 +110,10 @@
   color: #F44336;
 }
 
+.status-icon.unavailable {
+  color: #9E9E9E;
+}
+
 .status-text {
   font-size: 0.85rem;
   color: var(--netflix-text-gray);

@@ -129,10 +129,12 @@ class Analytics {
       ...eventData,
     });
 
-    // Track genre preferences for each genre
-    if (metadata.genres && metadata.genres.length > 0) {
+    // Track genre preferences for each genre (with null checks)
+    if (metadata.genres && Array.isArray(metadata.genres) && metadata.genres.length > 0) {
       metadata.genres.forEach(genre => {
-        this.trackGenreInteraction(genre, contentType, 'view');
+        if (genre && typeof genre === 'string' && genre.trim() !== '') {
+          this.trackGenreInteraction(genre.trim(), contentType, 'view');
+        }
       });
     }
 
@@ -273,30 +275,7 @@ class Analytics {
     }
   }
 
-  // Track comprehensive genre interactions and preferences
-  trackGenreInteraction(genre, contentType, action = 'view') {
-    this.trackEvent('genre_interaction', {
-      category: 'genre_preferences',
-      label: `${genre}_${action}`,
-      event_action: action,
-      genre: genre,
-      content_type: contentType,
-      interaction_timestamp: new Date().toISOString(),
-      session_id: this.getSessionId(),
-      page_url: window.location.pathname,
-      value: 1,
-    });
 
-    // Track overall genre popularity
-    this.trackEvent('genre_popularity', {
-      category: 'content_analytics',
-      label: genre,
-      genre: genre,
-      content_type: contentType,
-      action: action,
-      value: 1,
-    });
-  }
 
   // Track detailed filter usage with comprehensive metadata
   trackFilterUsage(filterType, filterValue, contentType = null, allFilters = {}) {
@@ -474,11 +453,26 @@ class Analytics {
     });
   }
 
-  // Track genre preferences
+  // Track genre preferences (consolidated function)
   trackGenreInteraction(genre, contentType, action = 'view') {
+    // Skip if genre is undefined, null, or empty
+    if (!genre || genre === 'undefined' || genre.trim() === '') {
+      return;
+    }
+
     this.trackEvent('genre_preference', {
       category: 'content_preferences',
       label: `${genre}_${contentType}`,
+      genre: genre,
+      content_type: contentType,
+      action: action,
+      value: 1,
+    });
+
+    // Also track genre popularity
+    this.trackEvent('genre_popularity', {
+      category: 'content_analytics',
+      label: genre,
       genre: genre,
       content_type: contentType,
       action: action,

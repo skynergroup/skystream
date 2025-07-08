@@ -20,8 +20,18 @@ const VideoPlayer = ({
   onEpisodeSelect,
   autoPlay = true,
   preferredPlayer = 'videasy', // Default to videasy as preferred
+  selectedServer = 1, // Server number from ServerSelector
 }) => {
-  const [currentPlayer, setCurrentPlayer] = useState(preferredPlayer);
+  // Map server numbers to player types
+  const getPlayerFromServer = (serverNumber) => {
+    switch (serverNumber) {
+      case 1: return 'videasy';
+      case 2: return 'vidsrc';
+      default: return 'videasy'; // Default fallback
+    }
+  };
+
+  const [currentPlayer, setCurrentPlayer] = useState(getPlayerFromServer(selectedServer));
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
@@ -44,6 +54,16 @@ const VideoPlayer = ({
   // Progress tracking state
   const [watchProgress, setWatchProgress] = useState(0);
   const [videoDuration, setVideoDuration] = useState(null);
+
+  // Update player when selectedServer changes
+  useEffect(() => {
+    const newPlayer = getPlayerFromServer(selectedServer);
+    if (newPlayer !== currentPlayer) {
+      setCurrentPlayer(newPlayer);
+      setIsLoading(true);
+      setError(null);
+    }
+  }, [selectedServer]);
   const [currentTime, setCurrentTime] = useState(0);
   const progressUpdateInterval = useRef(null);
 
@@ -412,9 +432,21 @@ const VideoPlayer = ({
   };
 
   const handleDownload = () => {
-    // Open VidSrc download service
-    const downloadUrl = utils.getDownloadUrl(contentId);
+    // Open VidSrc download service with proper content type
+    const downloadUrl = utils.getDownloadUrl(contentId, contentType);
     window.open(downloadUrl, '_blank');
+
+    // Track download analytics
+    analytics.trackEvent('content_download', {
+      category: 'user_engagement',
+      label: `${contentType}_download`,
+      content_type: contentType,
+      content_id: contentId,
+      download_url: downloadUrl,
+      session_id: analytics.getSessionId(),
+      timestamp: new Date().toISOString(),
+      value: 1,
+    });
   };
 
   const toggleFullscreen = () => {
@@ -537,28 +569,7 @@ const VideoPlayer = ({
 
         {/* Prominent Player Switching Buttons */}
         <div className="video-player-switcher">
-          <div className="player-switch-buttons">
-            <button
-              className={`player-switch-btn ${currentPlayer === 'videasy' ? 'active' : ''}`}
-              onClick={() => switchPlayer('videasy')}
-              disabled={isLoading}
-            >
-              <span className="player-icon">⚡</span>
-              <span className="player-name">Server 1</span>
-              <span className="player-subtitle">Premium</span>
-              {currentPlayer === 'videasy' && <span className="active-indicator">●</span>}
-            </button>
-            <button
-              className={`player-switch-btn ${currentPlayer === 'vidsrc' ? 'active' : ''}`}
-              onClick={() => switchPlayer('vidsrc')}
-              disabled={isLoading}
-            >
-              <span className="player-icon">⚡</span>
-              <span className="player-name">Server 2</span>
-              <span className="player-subtitle">Premium</span>
-              {currentPlayer === 'vidsrc' && <span className="active-indicator">●</span>}
-            </button>
-          </div>
+
 
           {/* Anime Dub Toggle */}
           {contentType === 'anime' && (
@@ -695,23 +706,7 @@ const VideoPlayer = ({
           <div className="video-player-settings">
             <h4>Player Settings</h4>
 
-            <div className="setting-group">
-              <label>Video Server:</label>
-              <div className="player-options">
-                <button
-                  className={`player-option ${currentPlayer === 'videasy' ? 'active' : ''}`}
-                  onClick={() => switchPlayer('videasy')}
-                >
-                  Server 1 (Premium)
-                </button>
-                <button
-                  className={`player-option ${currentPlayer === 'vidsrc' ? 'active' : ''}`}
-                  onClick={() => switchPlayer('vidsrc')}
-                >
-                  Server 2 (Premium)
-                </button>
-              </div>
-            </div>
+
 
             <div className="setting-group">
               <label>Language Preference:</label>
