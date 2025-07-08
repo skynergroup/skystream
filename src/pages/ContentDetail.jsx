@@ -424,6 +424,18 @@ const ContentDetail = () => {
 
             {/* Action Buttons */}
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              {/* Play Button for Movies */}
+              {type === 'movie' && (
+                <Button
+                  variant="primary"
+                  size="large"
+                  icon={<Play size={20} fill="currentColor" />}
+                  onClick={() => handlePlayClick()}
+                >
+                  Play Movie
+                </Button>
+              )}
+
               <WatchlistButton
                 content={{
                   id: content.id,
@@ -448,14 +460,16 @@ const ContentDetail = () => {
 
       {/* Content Section */}
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2rem' }}>
-        <SeasonEpisodeSelector
-          contentId={content.id}
-          contentType={type}
-          totalSeasons={content.number_of_seasons || 1}
-          onEpisodeSelect={handleEpisodeSelect}
-          onPlayClick={handlePlayClick}
-        />
-      </div>
+        {/* Season/Episode Selector - Only for TV Shows and Anime */}
+        {(type === 'tv' || type === 'anime') && !showPlayer && (
+          <SeasonEpisodeSelector
+            contentId={content.id}
+            contentType={type}
+            totalSeasons={content.number_of_seasons || 1}
+            onEpisodeSelect={handleEpisodeSelect}
+            onPlayClick={handlePlayClick}
+          />
+        )}
 
         {/* Embedded Video Player */}
         <VideoPlayer
