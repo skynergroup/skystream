@@ -269,6 +269,23 @@ class TMDBApi {
   }
 
   /**
+   * Get TV show details (alias for getTVShowDetails)
+   */
+  async getTVDetails(tvId) {
+    return this.getTVShowDetails(tvId);
+  }
+
+  /**
+   * Get credits for movie or TV show
+   */
+  async getCredits(contentId, contentType) {
+    const endpoint = contentType === 'movie'
+      ? `/movie/${contentId}/credits`
+      : `/tv/${contentId}/credits`;
+    return this.makeRequest(endpoint);
+  }
+
+  /**
    * Get movie genres
    */
   async getMovieGenres() {

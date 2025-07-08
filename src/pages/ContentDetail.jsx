@@ -245,7 +245,7 @@ const ContentDetail = () => {
         items={[
           {
             label: content.type === 'movie' ? 'Movies' : content.type === 'tv' ? 'TV Shows' : 'Anime',
-            path: `/browse/${content.type === 'tv' ? 'tv' : content.type}`
+            path: `/browse/${content.type === 'movie' ? 'movies' : content.type}`
           },
           {
             label: content.title || content.name,
@@ -507,17 +507,37 @@ const ContentDetail = () => {
         )}
 
         {/* Embedded Video Player */}
-        <VideoPlayer
-          contentId={content.id}
-          contentType={type}
-          season={selectedSeason}
-          episode={selectedEpisode}
-          totalSeasons={content.number_of_seasons || 1}
-          show={showPlayer}
-          onClose={() => setShowPlayer(false)}
-          onEpisodeSelect={handleEpisodeSelect}
-          autoPlay={true}
-        />
+        {(() => {
+          try {
+            return (
+              <VideoPlayer
+                contentId={content.id}
+                contentType={type}
+                season={selectedSeason}
+                episode={selectedEpisode}
+                totalSeasons={content.number_of_seasons || 1}
+                show={showPlayer}
+                onClose={() => setShowPlayer(false)}
+                onEpisodeSelect={handleEpisodeSelect}
+                autoPlay={true}
+              />
+            );
+          } catch (error) {
+            console.error('VideoPlayer error:', error);
+            return (
+              <div style={{
+                padding: '2rem',
+                textAlign: 'center',
+                color: 'var(--netflix-text-gray)',
+                background: 'rgba(0,0,0,0.4)',
+                borderRadius: '8px',
+                margin: '1rem 0'
+              }}>
+                <p>Video player temporarily unavailable. Please try refreshing the page.</p>
+              </div>
+            );
+          }
+        })()}
       </div>
 
       {/* Comments Section */}

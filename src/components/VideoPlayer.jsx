@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Settings, Download, Maximize, ChevronDown, Play } from 'lucide-react';
 import Button from './Button';
-import { PLAYER_CONFIG, utils, analytics } from '../utils';
+import { utils, analytics } from '../utils';
 import tmdbApi from '../services/tmdbApi';
 import './VideoPlayer.css';
 
@@ -205,6 +205,12 @@ const VideoPlayer = ({
       console.log('No more players available for auto-fallback');
       setAutoRetryEnabled(false);
     }
+  };
+
+  // Get selected episode data
+  const getSelectedEpisodeData = () => {
+    if (!episodes || episodes.length === 0) return null;
+    return episodes.find(ep => ep.episode_number === selectedEpisode) || null;
   };
 
   // Analytics-aware close handler
