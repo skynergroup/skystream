@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Settings, Download, Maximize, ChevronDown, Play } from 'lucide-react';
 import Button from './Button';
+import UserPreferences from './UserPreferences';
 import { utils, analytics } from '../utils';
 import tmdbApi from '../services/tmdbApi';
+import watchHistoryService from '../services/watchHistoryService';
+import userPreferencesService from '../services/userPreferencesService';
+import trendingService from '../services/trendingService';
 import './VideoPlayer.css';
 
 const VideoPlayer = ({
@@ -21,6 +25,7 @@ const VideoPlayer = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [showPreferences, setShowPreferences] = useState(false);
   const [isDubbed, setIsDubbed] = useState(true); // Default to English dub for anime
   const [retryCount, setRetryCount] = useState(0);
   const [failedPlayers, setFailedPlayers] = useState(new Set());
@@ -36,24 +41,36 @@ const VideoPlayer = ({
   const [showEpisodeDropdown, setShowEpisodeDropdown] = useState(false);
   const [episodeLoading, setEpisodeLoading] = useState(false);
 
+  // Progress tracking state
+  const [watchProgress, setWatchProgress] = useState(0);
+  const [videoDuration, setVideoDuration] = useState(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const progressUpdateInterval = useRef(null);
+
   // Generate player URL with error handling
   const [playerUrl, setPlayerUrl] = useState('');
 
-  // Function to get saved progress from localStorage
+  // Function to get saved progress from watch history service
   const getSavedProgress = () => {
     try {
-      const key = `progress_${contentType}_${contentId}${season && episode ? `_s${season}e${episode}` : ''}`;
-      const saved = localStorage.getItem(key);
-      if (saved) {
-        const progressData = JSON.parse(saved);
-        // Only return progress if it's recent (within 30 days) and meaningful (>30 seconds)
-        const isRecent = Date.now() - progressData.timestamp < 30 * 24 * 60 * 60 * 1000;
-        if (isRecent && progressData.currentTime > 30) {
-          return progressData;
-        }
+      const progress = watchHistoryService.getItemProgress(
+        contentId,
+        contentType,
+        selectedSeason,
+        selectedEpisode
+      );
+
+      if (progress) {
+        // Convert to the expected format
+        return {
+          currentTime: progress.current_time || 0,
+          percentage: progress.progress || 0,
+          duration: progress.duration || null,
+          timestamp: new Date(progress.updated_at).getTime()
+        };
       }
     } catch (error) {
-      console.error('Error retrieving saved progress:', error);
+      console.error('Error loading saved progress:', error);
     }
     return null;
   };
@@ -130,6 +147,33 @@ const VideoPlayer = ({
       success: true,
       loadTime: null, // Could be enhanced with actual load time measurement
     });
+
+    // Track in trending service
+    trendingService.trackInteraction(contentId, contentType, 'play', {
+      player: currentPlayer,
+      season: selectedSeason,
+      episode: selectedEpisode,
+      title: contentTitle
+    });
+
+    // Add to watch history
+    const watchData = {
+      season: selectedSeason,
+      episode: selectedEpisode,
+      player_used: currentPlayer,
+      progress: 0, // Just started
+      current_time: 0
+    };
+
+    // Get content details for history (this would ideally come from props)
+    const contentData = {
+      id: contentId,
+      type: contentType,
+      title: contentTitle, // This should be the actual title from props
+      // Add other content details as available
+    };
+
+    watchHistoryService.addToHistory(contentData, watchData);
   };
 
   const handleIframeError = () => {
@@ -211,6 +255,44 @@ const VideoPlayer = ({
   const getSelectedEpisodeData = () => {
     if (!episodes || episodes.length === 0) return null;
     return episodes.find(ep => ep.episode_number === selectedEpisode) || null;
+  };
+
+  // Load existing watch progress
+  const loadWatchProgress = () => {
+    const progress = watchHistoryService.getItemProgress(
+      contentId,
+      contentType,
+      selectedSeason,
+      selectedEpisode
+    );
+
+    if (progress) {
+      setWatchProgress(progress.progress || 0);
+      setCurrentTime(progress.current_time || 0);
+      setVideoDuration(progress.duration || null);
+    }
+  };
+
+  // Update watch progress
+  const updateWatchProgress = (currentTime, duration) => {
+    if (!duration || duration === 0) return;
+
+    const progress = Math.min((currentTime / duration) * 100, 100);
+    setWatchProgress(progress);
+    setCurrentTime(currentTime);
+    setVideoDuration(duration);
+
+    // Update progress in storage (throttled)
+    if (progress > 5) { // Only track if watched more than 5%
+      watchHistoryService.updateProgress(contentId, contentType, {
+        season: selectedSeason,
+        episode: selectedEpisode,
+        progress: progress,
+        current_time: currentTime,
+        duration: duration,
+        player_used: currentPlayer
+      });
+    }
   };
 
   // Analytics-aware close handler
@@ -675,6 +757,18 @@ const VideoPlayer = ({
                 </div>
               </div>
             )}
+
+            <div className="setting-group">
+              <Button
+                variant="primary"
+                size="small"
+                icon={<Settings size={16} />}
+                onClick={() => setShowPreferences(true)}
+                className="preferences-button"
+              >
+                Advanced Preferences
+              </Button>
+            </div>
           </div>
         )}
 
@@ -785,6 +879,17 @@ const VideoPlayer = ({
           )}
         </div>
       </div>
+
+      {/* User Preferences Modal */}
+      {showPreferences && (
+        <UserPreferences
+          onClose={() => setShowPreferences(false)}
+          onPreferencesChange={(newPreferences) => {
+            // Apply preferences to current player if needed
+            console.log('Preferences updated:', newPreferences);
+          }}
+        />
+      )}
     </div>
   );
 };

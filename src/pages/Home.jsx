@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { HeroBanner, ContentGrid, Loading } from '../components';
+import { HeroBanner, ContentGrid, Loading, ContinueWatching, TrendingSection } from '../components';
 import tmdbApi from '../services/tmdbApi';
 import { analytics } from '../utils';
 
@@ -109,12 +109,20 @@ const Home = () => {
 
       {/* Content Sections */}
       <div style={{ padding: '2rem 0' }}>
-        <ContentGrid
-          title="Trending Now"
-          items={trendingContent}
-          cardSize="medium"
-          className="content-grid--horizontal"
-        />
+        {/* Continue Watching Section */}
+        <div style={{ padding: '0 2rem' }}>
+          <ContinueWatching limit={8} />
+        </div>
+
+        {/* Trending Section */}
+        <div style={{ padding: '0 2rem' }}>
+          <TrendingSection
+            contentType="all"
+            timeframe="week"
+            limit={12}
+            layout="grid"
+          />
+        </div>
 
         <ContentGrid
           title="Popular Movies"

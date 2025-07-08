@@ -19,3 +19,6 @@ export { default as ProductionInfo } from './ProductionInfo';
 export { default as CommentsSection } from './CommentsSection';
 export { default as FAQSection } from './FAQSection';
 export { default as BookmarkButton } from './BookmarkButton';
+export { default as ContinueWatching } from './ContinueWatching';
+export { default as TrendingSection } from './TrendingSection';
+export { default as UserPreferences } from './UserPreferences';
