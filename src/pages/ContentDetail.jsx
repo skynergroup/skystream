@@ -446,7 +446,7 @@ const ContentDetail = () => {
         </div>
       </div>
 
-      {/* Season/Episode Selector and Player Controls */}
+      {/* Content Section */}
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2rem' }}>
         <SeasonEpisodeSelector
           contentId={content.id}
@@ -457,17 +457,19 @@ const ContentDetail = () => {
         />
       </div>
 
-      {/* Video Player */}
-      {showPlayer && (
+        {/* Embedded Video Player */}
         <VideoPlayer
           contentId={content.id}
           contentType={type}
           season={selectedSeason}
           episode={selectedEpisode}
+          totalSeasons={content.number_of_seasons || 1}
+          show={showPlayer}
           onClose={() => setShowPlayer(false)}
+          onEpisodeSelect={handleEpisodeSelect}
           autoPlay={true}
         />
-      )}
+      </div>
     </div>
   );
 };

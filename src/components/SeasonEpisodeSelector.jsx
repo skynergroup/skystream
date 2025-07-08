@@ -78,21 +78,9 @@ const SeasonEpisodeSelector = ({
 
   const selectedEpisodeData = getSelectedEpisodeData();
 
-  // For movies, just show a play button
+  // For movies, don't render anything (play button is now in ContentDetail)
   if (contentType === 'movie') {
-    return (
-      <div className="season-episode-selector">
-        <Button
-          variant="primary"
-          size="large"
-          icon={<Play size={20} fill="currentColor" />}
-          onClick={() => onPlayClick && onPlayClick()}
-          className="play-movie-btn"
-        >
-          Play Movie
-        </Button>
-      </div>
-    );
+    return null;
   }
 
   return (
