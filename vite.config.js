@@ -3,7 +3,18 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
-  plugins: [react()],
+  plugins: [
+    react({
+      babel: {
+        plugins: [
+          // Add LocatorJS Babel plugin for data-ids variant in development mode
+          mode === 'development' && ['@locator/babel-jsx/dist', {
+            env: 'development',
+          }]
+        ].filter(Boolean)
+      }
+    })
+  ],
   base: './', // For static hosting compatibility
   build: {
     outDir: 'dist',
