@@ -1,0 +1,84 @@
+/* Bookmark Button Styles */
+.bookmark-button {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.bookmark-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.bookmark-button.bookmarked {
+  background: linear-gradient(135deg, var(--netflix-red), #ff4757);
+  border-color: var(--netflix-red);
+}
+
+.bookmark-button.bookmarked:hover {
+  background: linear-gradient(135deg, #c0392b, var(--netflix-red));
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Animation for bookmark state change */
+.bookmark-button svg {
+  transition: all 0.3s ease;
+}
+
+.bookmark-button.bookmarked svg {
+  animation: bookmarkAdded 0.5s ease;
+}
+
+@keyframes bookmarkAdded {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Loading state */
+.bookmark-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.bookmark-button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Focus states for accessibility */
+.bookmark-button:focus {
+  outline: 2px solid var(--netflix-red);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .bookmark-button.bookmarked {
+    background: var(--netflix-red);
+    border: 2px solid var(--netflix-white);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .bookmark-button,
+  .bookmark-button svg {
+    transition: none;
+  }
+  
+  .bookmark-button:hover {
+    transform: none;
+  }
+  
+  .bookmark-button.bookmarked svg {
+    animation: none;
+  }
+}

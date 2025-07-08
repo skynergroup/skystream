@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { Play, Share, ArrowLeft, X } from 'lucide-react';
-import { Button, Loading } from '../components';
+import { Button, Loading, Breadcrumb, ProductionInfo, CommentsSection, FAQSection, BookmarkButton } from '../components';
 import VideoPlayer from '../components/VideoPlayer';
 import SeasonEpisodeSelector from '../components/SeasonEpisodeSelector';
 import WatchlistButton from '../components/WatchlistButton';
@@ -240,6 +240,20 @@ const ContentDetail = () => {
 
   return (
     <div className="content-detail">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb
+        items={[
+          {
+            label: content.type === 'movie' ? 'Movies' : content.type === 'tv' ? 'TV Shows' : 'Anime',
+            path: `/browse/${content.type === 'tv' ? 'tv' : content.type}`
+          },
+          {
+            label: content.title || content.name,
+            path: `/${content.type}/${content.id}`
+          }
+        ]}
+      />
+
       {/* Hero Section */}
       <div
         style={{
@@ -450,6 +464,21 @@ const ContentDetail = () => {
                 showText={true}
               />
 
+              <BookmarkButton
+                content={{
+                  id: content.id,
+                  type: type,
+                  title: content.title || content.name,
+                  poster_path: content.poster_path,
+                  overview: content.overview,
+                  vote_average: content.vote_average,
+                  release_date: content.release_date || content.first_air_date
+                }}
+                variant="secondary"
+                size="large"
+                showText={true}
+              />
+
               <Button variant="ghost" size="large" icon={<Share size={20} />}>
                 Share
               </Button>
@@ -457,6 +486,12 @@ const ContentDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* Production Information */}
+      <ProductionInfo
+        contentId={content.id}
+        contentType={content.type}
+      />
 
       {/* Content Section */}
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2rem' }}>
@@ -484,6 +519,19 @@ const ContentDetail = () => {
           autoPlay={true}
         />
       </div>
+
+      {/* Comments Section */}
+      <CommentsSection
+        contentId={content.id}
+        contentType={content.type}
+        contentTitle={content.title || content.name}
+      />
+
+      {/* FAQ Section */}
+      <FAQSection
+        contentType={content.type}
+        contentTitle={content.title || content.name}
+      />
     </div>
   );
 };

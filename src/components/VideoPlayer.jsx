@@ -455,9 +455,9 @@ const VideoPlayer = ({
               onClick={() => switchPlayer('videasy')}
               disabled={isLoading}
             >
-              <span className="player-icon">🎬</span>
-              <span className="player-name">Videasy</span>
-              <span className="player-subtitle">Preferred</span>
+              <span className="player-icon">⚡</span>
+              <span className="player-name">Server 1</span>
+              <span className="player-subtitle">Premium</span>
               {currentPlayer === 'videasy' && <span className="active-indicator">●</span>}
             </button>
             <button
@@ -465,9 +465,9 @@ const VideoPlayer = ({
               onClick={() => switchPlayer('vidsrc')}
               disabled={isLoading}
             >
-              <span className="player-icon">📺</span>
-              <span className="player-name">VidSrc</span>
-              <span className="player-subtitle">Alternative</span>
+              <span className="player-icon">⚡</span>
+              <span className="player-name">Server 2</span>
+              <span className="player-subtitle">Premium</span>
               {currentPlayer === 'vidsrc' && <span className="active-indicator">●</span>}
             </button>
           </div>
@@ -608,19 +608,19 @@ const VideoPlayer = ({
             <h4>Player Settings</h4>
 
             <div className="setting-group">
-              <label>Video Player:</label>
+              <label>Video Server:</label>
               <div className="player-options">
                 <button
                   className={`player-option ${currentPlayer === 'videasy' ? 'active' : ''}`}
                   onClick={() => switchPlayer('videasy')}
                 >
-                  Videasy (Preferred)
+                  Server 1 (Premium)
                 </button>
                 <button
                   className={`player-option ${currentPlayer === 'vidsrc' ? 'active' : ''}`}
                   onClick={() => switchPlayer('vidsrc')}
                 >
-                  VidSrc (Alternative)
+                  Server 2 (Premium)
                 </button>
               </div>
             </div>
@@ -712,12 +712,12 @@ const VideoPlayer = ({
                 {/* Alternative player buttons - only show if not failed */}
                 {currentPlayer !== 'videasy' && !failedPlayers.has('videasy') && (
                   <Button variant="primary" onClick={() => switchPlayer('videasy')}>
-                    Try Videasy Player
+                    Try Server 1
                   </Button>
                 )}
                 {currentPlayer !== 'vidsrc' && !failedPlayers.has('vidsrc') && (
                   <Button variant="primary" onClick={() => switchPlayer('vidsrc')}>
-                    Try VidSrc Player
+                    Try Server 2
                   </Button>
                 )}
 
@@ -725,10 +725,10 @@ const VideoPlayer = ({
                 {failedPlayers.size >= 2 && (
                   <>
                     <Button variant="secondary" onClick={() => switchPlayer('videasy')}>
-                      Force Videasy
+                      Force Server 1
                     </Button>
                     <Button variant="secondary" onClick={() => switchPlayer('vidsrc')}>
-                      Force VidSrc
+                      Force Server 2
                     </Button>
                   </>
                 )}

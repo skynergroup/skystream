@@ -1,0 +1,122 @@
+/* Breadcrumb Navigation Styles */
+.breadcrumb {
+  margin: 1rem 0;
+  padding: 0 2rem;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.breadcrumb-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.breadcrumb-link {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--netflix-text-gray);
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-weight: 400;
+}
+
+.breadcrumb-link:hover {
+  color: var(--netflix-white);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.breadcrumb-link:focus {
+  outline: 2px solid var(--netflix-red);
+  outline-offset: 2px;
+}
+
+.breadcrumb-icon {
+  color: var(--netflix-text-gray);
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-link:hover .breadcrumb-icon {
+  color: var(--netflix-white);
+}
+
+.breadcrumb-text {
+  font-weight: inherit;
+}
+
+.breadcrumb-current {
+  color: var(--netflix-white);
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  background: rgba(229, 9, 20, 0.1);
+  border-radius: 4px;
+  border: 1px solid rgba(229, 9, 20, 0.3);
+}
+
+.breadcrumb-separator {
+  color: var(--netflix-text-gray);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .breadcrumb {
+    padding: 0 1rem;
+    margin: 0.75rem 0;
+  }
+
+  .breadcrumb-list {
+    font-size: 0.8rem;
+    gap: 0.25rem;
+  }
+
+  .breadcrumb-link,
+  .breadcrumb-current {
+    padding: 0.2rem 0.4rem;
+  }
+
+  .breadcrumb-icon {
+    display: none; /* Hide home icon on mobile to save space */
+  }
+}
+
+@media (max-width: 480px) {
+  .breadcrumb {
+    padding: 0 0.75rem;
+  }
+
+  .breadcrumb-list {
+    font-size: 0.75rem;
+  }
+
+  /* Truncate long breadcrumb items on very small screens */
+  .breadcrumb-text {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .breadcrumb-current {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
