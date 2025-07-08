@@ -12,6 +12,13 @@
   padding: 1rem;
 }
 
+/* Embedded Video Player Styles */
+.video-player-embedded {
+  margin: 3rem 0;
+  width: 100%;
+  padding: 0 1rem;
+}
+
 .video-player-container {
   width: 100%;
   max-width: 1200px;
@@ -24,14 +31,24 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
 }
 
+/* Embedded container styles */
+.video-player-embedded .video-player-container {
+  height: 70vh;
+  min-height: 500px;
+  max-height: 800px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 /* Header */
 .video-player-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1.5rem;
   background: var(--netflix-black);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
 }
 
 .video-player-title {
@@ -110,6 +127,7 @@
   flex: 1;
   position: relative;
   background: var(--netflix-black);
+  min-height: 0; /* Allow flex item to shrink below content size */
 }
 
 .video-player-iframe {
@@ -190,6 +208,11 @@
     border-radius: 4px;
   }
 
+  .video-player-embedded .video-player-container {
+    height: 60vh;
+    min-height: 400px;
+  }
+
   .video-player-header {
     padding: 0.75rem 1rem;
   }
@@ -219,6 +242,12 @@
   .video-player-container {
     height: 100vh;
     border-radius: 0;
+  }
+
+  .video-player-embedded .video-player-container {
+    height: 50vh;
+    min-height: 300px;
+    border-radius: 8px;
   }
 
   .video-player-header {
@@ -313,9 +342,10 @@
 
 /* Prominent Player Switching Buttons */
 .video-player-switcher {
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1.5rem;
   background: rgba(0, 0, 0, 0.3);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
 }
 
 .player-switch-buttons {
@@ -440,6 +470,145 @@
   font-weight: 600;
 }
 
+/* Episode Selector in Video Player */
+.video-player-episode-selector {
+  padding: 0.75rem 1.5rem;
+  background: rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.episode-selector-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.episode-selector-dropdown {
+  position: relative;
+  min-width: 150px;
+}
+
+.episode-selector-button {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  color: var(--netflix-white);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.episode-selector-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.episode-selector-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.episode-selector-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--netflix-dark-gray);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.episode-selector-option {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1rem;
+  color: var(--netflix-white);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-align: left;
+}
+
+.episode-selector-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.episode-selector-option.selected {
+  background: var(--netflix-red);
+  color: var(--netflix-white);
+}
+
+.episode-option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.episode-number {
+  font-weight: 600;
+}
+
+.episode-name {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+}
+
+.current-episode-info {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.episode-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--netflix-white);
+  margin: 0 0 0.75rem 0;
+}
+
+.episode-overview {
+  color: var(--netflix-text-gray);
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+}
+
+.episode-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: var(--netflix-text-gray);
+}
+
+.episode-date,
+.episode-runtime,
+.episode-rating {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.episode-rating {
+  color: #ffd700;
+}
+
 /* Responsive design for player switcher */
 @media (max-width: 768px) {
   .video-player-switcher {
@@ -463,5 +632,32 @@
   .dub-toggle-btn {
     padding: 0.4rem 0.8rem;
     font-size: 0.8rem;
+  }
+
+  .video-player-episode-selector {
+    padding: 0.75rem 1rem;
+  }
+
+  .episode-selector-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .episode-selector-dropdown {
+    min-width: auto;
+  }
+
+  .current-episode-info {
+    padding: 0.75rem;
+  }
+
+  .episode-title {
+    font-size: 1rem;
+  }
+
+  .episode-meta {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }

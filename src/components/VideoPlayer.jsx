@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Settings, Download, Maximize } from 'lucide-react';
+import { X, Settings, Download, Maximize, ChevronDown, Play } from 'lucide-react';
 import Button from './Button';
 import { PLAYER_CONFIG, utils, analytics } from '../utils';
+import tmdbApi from '../services/tmdbApi';
 import './VideoPlayer.css';
 
 const VideoPlayer = ({
@@ -9,7 +10,10 @@ const VideoPlayer = ({
   contentType = 'movie',
   season = null,
   episode = null,
+  totalSeasons = 1,
+  show = false,
   onClose,
+  onEpisodeSelect,
   autoPlay = true,
   preferredPlayer = 'videasy', // Default to videasy as preferred
 }) => {
@@ -20,8 +24,65 @@ const VideoPlayer = ({
   const [isDubbed, setIsDubbed] = useState(true); // Default to English dub for anime
   const iframeRef = useRef(null);
 
+  // Episode selector state
+  const [episodes, setEpisodes] = useState([]);
+  const [selectedSeason, setSelectedSeason] = useState(season || 1);
+  const [selectedEpisode, setSelectedEpisode] = useState(episode || 1);
+  const [showSeasonDropdown, setShowSeasonDropdown] = useState(false);
+  const [showEpisodeDropdown, setShowEpisodeDropdown] = useState(false);
+  const [episodeLoading, setEpisodeLoading] = useState(false);
+
   // Generate player URL with error handling
   const [playerUrl, setPlayerUrl] = useState('');
+
+  // Load episodes for TV shows and anime
+  const loadEpisodes = async (seasonNumber) => {
+    if (contentType !== 'tv' && contentType !== 'anime') return;
+
+    setEpisodeLoading(true);
+    try {
+      const episodeData = await tmdbApi.getTVSeasonDetails(contentId, seasonNumber);
+      setEpisodes(episodeData.episodes || []);
+    } catch (error) {
+      console.error('Failed to load episodes:', error);
+      setEpisodes([]);
+    } finally {
+      setEpisodeLoading(false);
+    }
+  };
+
+  // Load episodes when season changes
+  useEffect(() => {
+    if ((contentType === 'tv' || contentType === 'anime') && show) {
+      loadEpisodes(selectedSeason);
+    }
+  }, [selectedSeason, contentId, contentType, show]);
+
+  // Episode selection handlers
+  const handleSeasonChange = (newSeason) => {
+    setSelectedSeason(newSeason);
+    setSelectedEpisode(1);
+    setShowSeasonDropdown(false);
+
+    // Notify parent component
+    if (onEpisodeSelect) {
+      onEpisodeSelect(newSeason, 1);
+    }
+  };
+
+  const handleEpisodeChange = (newEpisode) => {
+    setSelectedEpisode(newEpisode);
+    setShowEpisodeDropdown(false);
+
+    // Notify parent component
+    if (onEpisodeSelect) {
+      onEpisodeSelect(selectedSeason, newEpisode);
+    }
+  };
+
+  const getSelectedEpisodeData = () => {
+    return episodes.find(ep => ep.episode_number === selectedEpisode);
+  };
 
   useEffect(() => {
     const generatePlayerUrl = async () => {
@@ -37,7 +98,7 @@ const VideoPlayer = ({
           playerOptions.dub = isDubbed ? 'true' : 'false';
         }
 
-        url = utils.generatePlayerUrl(currentPlayer, contentId, contentType, season, episode, playerOptions);
+        url = utils.generatePlayerUrl(currentPlayer, contentId, contentType, selectedSeason, selectedEpisode, playerOptions);
         setPlayerUrl(url);
         console.log('Generated player URL:', url);
       } catch (error) {
@@ -48,7 +109,7 @@ const VideoPlayer = ({
     };
 
     generatePlayerUrl();
-  }, [currentPlayer, contentId, contentType, season, episode, autoPlay, isDubbed]);
+  }, [currentPlayer, contentId, contentType, selectedSeason, selectedEpisode, autoPlay, isDubbed]);
 
   const handleIframeLoad = () => {
     console.log('Video player loaded successfully:', playerUrl);
@@ -58,12 +119,12 @@ const VideoPlayer = ({
     // Track successful video load with player performance
     const contentTitle = contentType === 'movie' ?
       `Movie ${contentId}` :
-      `${contentType} ${contentId} S${season}E${episode}`;
+      `${contentType} ${contentId} S${selectedSeason}E${selectedEpisode}`;
 
     const playerInfo = {
       player: currentPlayer,
-      season: season,
-      episode: episode,
+      season: selectedSeason,
+      episode: selectedEpisode,
     };
 
     analytics.trackVideoEvent('load_success', contentType, contentId, contentTitle, playerInfo);
@@ -113,12 +174,12 @@ const VideoPlayer = ({
   const handleClose = () => {
     const contentTitle = contentType === 'movie' ?
       `Movie ${contentId}` :
-      `${contentType} ${contentId} S${season}E${episode}`;
+      `${contentType} ${contentId} S${selectedSeason}E${selectedEpisode}`;
 
     const playerInfo = {
       player: currentPlayer,
-      season: season,
-      episode: episode,
+      season: selectedSeason,
+      episode: selectedEpisode,
     };
 
     analytics.trackVideoEvent('close', contentType, contentId, contentTitle, playerInfo);
@@ -143,14 +204,14 @@ const VideoPlayer = ({
         playerOptions.dub = isDubbed ? 'true' : 'false';
       }
 
-      const url = utils.generatePlayerUrl(newPlayer, contentId, contentType, season, episode, playerOptions);
+      const url = utils.generatePlayerUrl(newPlayer, contentId, contentType, selectedSeason, selectedEpisode, playerOptions);
       setPlayerUrl(url);
       console.log('Switched to player:', newPlayer, 'URL:', url);
 
       // Track player switch
       const contentTitle = contentType === 'movie' ?
         `Movie ${contentId}` :
-        `${contentType} ${contentId} S${season}E${episode}`;
+        `${contentType} ${contentId} S${selectedSeason}E${selectedEpisode}`;
       analytics.trackEvent('player_switch', {
         category: 'video',
         label: `${currentPlayer}_to_${newPlayer}`,
@@ -205,8 +266,13 @@ const VideoPlayer = ({
     }
   }, [currentPlayer, contentId, contentType, season, episode]);
 
+  // Don't render anything if not shown
+  if (!show) {
+    return null;
+  }
+
   return (
-    <div className="video-player-overlay">
+    <div className="video-player-embedded">
       <div className="video-player-container">
         {/* Header */}
         <div className="video-player-header">
@@ -294,6 +360,93 @@ const VideoPlayer = ({
             </div>
           )}
         </div>
+
+        {/* Episode Selector for TV Shows and Anime */}
+        {(contentType === 'tv' || contentType === 'anime') && (
+          <div className="video-player-episode-selector">
+            <div className="episode-selector-controls">
+              {/* Season Selector */}
+              <div className="episode-selector-dropdown">
+                <button
+                  className="episode-selector-button"
+                  onClick={() => setShowSeasonDropdown(!showSeasonDropdown)}
+                >
+                  <span>Season {selectedSeason}</span>
+                  <ChevronDown size={16} className={showSeasonDropdown ? 'rotated' : ''} />
+                </button>
+
+                {showSeasonDropdown && (
+                  <div className="episode-selector-menu">
+                    {Array.from({ length: totalSeasons }, (_, i) => i + 1).map(seasonNum => (
+                      <button
+                        key={seasonNum}
+                        className={`episode-selector-option ${seasonNum === selectedSeason ? 'selected' : ''}`}
+                        onClick={() => handleSeasonChange(seasonNum)}
+                      >
+                        Season {seasonNum}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Episode Selector */}
+              <div className="episode-selector-dropdown">
+                <button
+                  className="episode-selector-button"
+                  onClick={() => setShowEpisodeDropdown(!showEpisodeDropdown)}
+                  disabled={episodeLoading || episodes.length === 0}
+                >
+                  <span>Episode {selectedEpisode}</span>
+                  <ChevronDown size={16} className={showEpisodeDropdown ? 'rotated' : ''} />
+                </button>
+
+                {showEpisodeDropdown && (
+                  <div className="episode-selector-menu">
+                    {episodes.map(ep => (
+                      <button
+                        key={ep.episode_number}
+                        className={`episode-selector-option ${ep.episode_number === selectedEpisode ? 'selected' : ''}`}
+                        onClick={() => handleEpisodeChange(ep.episode_number)}
+                      >
+                        <div className="episode-option-content">
+                          <span className="episode-number">Episode {ep.episode_number}</span>
+                          {ep.name && <span className="episode-name">{ep.name}</span>}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Current Episode Info */}
+            {(() => {
+              const currentEpisode = getSelectedEpisodeData();
+              return currentEpisode && (
+                <div className="current-episode-info">
+                  <h4 className="episode-title">
+                    S{selectedSeason}E{selectedEpisode}: {currentEpisode.name || `Episode ${selectedEpisode}`}
+                  </h4>
+                  {currentEpisode.overview && (
+                    <p className="episode-overview">{currentEpisode.overview}</p>
+                  )}
+                  <div className="episode-meta">
+                    {currentEpisode.air_date && (
+                      <span className="episode-date">Aired: {new Date(currentEpisode.air_date).toLocaleDateString()}</span>
+                    )}
+                    {currentEpisode.runtime && (
+                      <span className="episode-runtime">{currentEpisode.runtime} min</span>
+                    )}
+                    {currentEpisode.vote_average > 0 && (
+                      <span className="episode-rating">★ {currentEpisode.vote_average.toFixed(1)}</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        )}
 
         {/* Settings Panel */}
         {showSettings && (

@@ -423,6 +423,18 @@ const ContentDetail = () => {
 
             {/* Action Buttons */}
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              {/* Play Button for Movies */}
+              {content.type === 'movie' && (
+                <Button
+                  variant="primary"
+                  size="large"
+                  icon={<Play size={20} fill="currentColor" />}
+                  onClick={() => handlePlayClick()}
+                >
+                  Play Movie
+                </Button>
+              )}
+
               <Button variant="secondary" size="large" icon={<Plus size={20} />}>
                 Add to Watchlist
               </Button>
@@ -435,28 +447,32 @@ const ContentDetail = () => {
         </div>
       </div>
 
-      {/* Season/Episode Selector and Player Controls */}
+      {/* Content Section */}
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2rem' }}>
-        <SeasonEpisodeSelector
-          contentId={content.id}
-          contentType={content.type}
-          totalSeasons={content.number_of_seasons || 1}
-          onEpisodeSelect={handleEpisodeSelect}
-          onPlayClick={handlePlayClick}
-        />
-      </div>
+        {/* Season/Episode Selector - Only for TV Shows and Anime */}
+        {(content.type === 'tv' || content.type === 'anime') && !showPlayer && (
+          <SeasonEpisodeSelector
+            contentId={content.id}
+            contentType={content.type}
+            totalSeasons={content.number_of_seasons || 1}
+            onEpisodeSelect={handleEpisodeSelect}
+            onPlayClick={handlePlayClick}
+          />
+        )}
 
-      {/* Video Player */}
-      {showPlayer && (
+        {/* Embedded Video Player */}
         <VideoPlayer
           contentId={content.id}
           contentType={content.type}
           season={selectedSeason}
           episode={selectedEpisode}
+          totalSeasons={content.number_of_seasons || 1}
+          show={showPlayer}
           onClose={() => setShowPlayer(false)}
+          onEpisodeSelect={handleEpisodeSelect}
           autoPlay={true}
         />
-      )}
+      </div>
     </div>
   );
 };
