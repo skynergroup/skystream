@@ -114,6 +114,122 @@ class TMDBApi {
   }
 
   /**
+   * Advanced search with filters
+   */
+  async advancedSearch(query, filters = {}, page = 1) {
+    const { type, genre, year, rating, sortBy } = filters;
+
+    // If no query and no filters, return empty results
+    if (!query && !genre && !year && !rating) {
+      return { results: [], total_pages: 0, total_results: 0 };
+    }
+
+    let endpoint;
+    let params = { page };
+
+    // Determine search strategy based on type and query
+    if (query) {
+      // Text search with optional type filtering
+      if (type === 'movie') {
+        endpoint = '/search/movie';
+      } else if (type === 'tv') {
+        endpoint = '/search/tv';
+      } else {
+        endpoint = '/search/multi';
+      }
+      params.query = query;
+    } else {
+      // Discovery search with filters only
+      if (type === 'movie' || type === 'all') {
+        endpoint = '/discover/movie';
+      } else if (type === 'tv') {
+        endpoint = '/discover/tv';
+      } else if (type === 'anime') {
+        endpoint = '/discover/tv';
+        // Add anime-specific filters
+        const genres = await this.getTVGenres();
+        const animationGenre = genres.genres.find(g => g.name === 'Animation');
+        if (animationGenre) {
+          params.with_genres = animationGenre.id;
+          params.with_origin_country = 'JP';
+        }
+      } else {
+        endpoint = '/discover/movie'; // Default fallback
+      }
+    }
+
+    // Add genre filter
+    if (genre) {
+      if (endpoint.includes('/search/')) {
+        // For search endpoints, we'll filter results after getting them
+        // since search endpoints don't support genre filtering directly
+      } else {
+        params.with_genres = genre;
+      }
+    }
+
+    // Add year filter
+    if (year) {
+      if (endpoint.includes('movie')) {
+        params.year = year;
+      } else if (endpoint.includes('tv')) {
+        params.first_air_date_year = year;
+      }
+    }
+
+    // Add rating filter
+    if (rating) {
+      const [minRating, maxRating] = rating.split('-').map(Number);
+      if (!isNaN(minRating)) {
+        params['vote_average.gte'] = minRating;
+      }
+      if (!isNaN(maxRating)) {
+        params['vote_average.lte'] = maxRating;
+      }
+    }
+
+    // Add sorting
+    if (sortBy && endpoint.includes('/discover/')) {
+      params.sort_by = sortBy;
+    }
+
+    try {
+      const results = await this.makeRequest(endpoint, params);
+
+      // Post-process results for search endpoints with genre filtering
+      if (endpoint.includes('/search/') && genre) {
+        results.results = results.results.filter(item => {
+          return item.genre_ids && item.genre_ids.includes(parseInt(genre));
+        });
+      }
+
+      // Filter out people for multi-search
+      if (endpoint === '/search/multi') {
+        results.results = results.results.filter(item => item.media_type !== 'person');
+      }
+
+      // Apply type filtering for multi-search
+      if (endpoint === '/search/multi' && type !== 'all') {
+        results.results = results.results.filter(item => {
+          if (type === 'anime') {
+            return item.media_type === 'tv' &&
+                   item.genre_ids &&
+                   item.genre_ids.includes(16) && // Animation genre ID
+                   item.origin_country &&
+                   item.origin_country.includes('JP');
+          }
+          return item.media_type === type;
+        });
+      }
+
+      return results;
+    } catch (error) {
+      console.error('Advanced search failed:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Search specifically for movies
    */
   async searchMovies(query, page = 1) {
@@ -150,6 +266,23 @@ class TMDBApi {
    */
   async getTVSeasonDetails(tvId, seasonNumber) {
     return this.makeRequest(`/tv/${tvId}/season/${seasonNumber}`);
+  }
+
+  /**
+   * Get TV show details (alias for getTVShowDetails)
+   */
+  async getTVDetails(tvId) {
+    return this.getTVShowDetails(tvId);
+  }
+
+  /**
+   * Get credits for movie or TV show
+   */
+  async getCredits(contentId, contentType) {
+    const endpoint = contentType === 'movie'
+      ? `/movie/${contentId}/credits`
+      : `/tv/${contentId}/credits`;
+    return this.makeRequest(endpoint);
   }
 
   /**
@@ -234,21 +367,41 @@ class TMDBApi {
   /**
    * Get content for homepage
    */
+  /**
+   * Get popular anime content
+   */
+  async getPopularAnime() {
+    try {
+      const response = await this.makeRequest('/discover/tv', {
+        with_origin_country: 'JP',
+        with_genres: '16', // Animation genre
+        sort_by: 'popularity.desc',
+        page: 1
+      });
+      return response;
+    } catch (error) {
+      utils.error('Failed to fetch popular anime:', error);
+      throw error;
+    }
+  }
+
   async getHomePageContent() {
     try {
-      const [trending, popularMovies, popularTV, topRatedMovies] = await Promise.all([
+      const [trending, popularMovies, popularTV, topRatedMovies, popularAnime] = await Promise.all([
         this.getTrending('all', 'week'),
         this.getPopularMovies(),
         this.getPopularTVShows(),
         this.getTopRatedMovies(),
+        this.getPopularAnime(),
       ]);
 
       return {
-        featured: trending.results[0] ? this.transformContent(trending.results[0]) : null,
+        featured: trending.results.slice(0, 5).map(item => this.transformContent(item)), // Multiple featured items for carousel
         trending: trending.results.slice(0, 20).map(item => this.transformContent(item)),
         popularMovies: popularMovies.results.slice(0, 20).map(item => this.transformContent(item)),
         popularTV: popularTV.results.slice(0, 20).map(item => this.transformContent(item)),
         topRated: topRatedMovies.results.slice(0, 20).map(item => this.transformContent(item)),
+        popularAnime: popularAnime.results.slice(0, 20).map(item => this.transformContent(item)),
       };
     } catch (error) {
       utils.error('Failed to fetch homepage content:', error);

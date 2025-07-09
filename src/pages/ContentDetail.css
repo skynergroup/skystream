@@ -1,0 +1,279 @@
+/* ContentDetail Page Styles */
+
+.content-detail {
+  min-height: 100vh;
+  background: var(--netflix-black);
+  color: var(--netflix-white);
+}
+
+/* Hero Section Improvements */
+.content-hero {
+  position: relative;
+  height: 70vh;
+  min-height: 500px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+}
+
+.content-hero__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to right, 
+    rgba(0,0,0,0.8) 0%, 
+    rgba(0,0,0,0.4) 50%, 
+    transparent 100%
+  ), 
+  linear-gradient(
+    to top, 
+    rgba(0,0,0,0.8) 0%, 
+    transparent 60%
+  );
+}
+
+.content-hero__content {
+  position: relative;
+  z-index: 2;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  width: 100%;
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.content-hero__poster {
+  width: 300px;
+  height: 450px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  flex-shrink: 0;
+}
+
+.content-hero__info {
+  flex: 1;
+  max-width: 600px;
+}
+
+.content-hero__title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--netflix-white);
+  margin: 0 0 1rem 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+  line-height: 1.1;
+}
+
+/* Meta Information */
+.content-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.content-meta__item {
+  background: rgba(0,0,0,0.6);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  color: var(--netflix-white);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.content-meta__item--rating {
+  color: #ffd700;
+}
+
+/* Genres */
+.content-genres {
+  margin-bottom: 1.5rem;
+}
+
+.content-genre {
+  display: inline-block;
+  background: var(--netflix-red);
+  color: var(--netflix-white);
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Description Section */
+.content-description {
+  margin-bottom: 2rem;
+}
+
+.content-description__text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--netflix-text-gray);
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+.content-description__toggle {
+  background: none;
+  border: none;
+  color: var(--netflix-red);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.content-description__toggle:hover {
+  color: #ff4757;
+}
+
+/* Action Buttons */
+.content-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+/* Content Sections */
+.content-section {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  margin-bottom: 3rem;
+}
+
+.content-section--compact {
+  margin-bottom: 2rem;
+}
+
+/* Production Info Compact Layout */
+.production-info-compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .content-hero__content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+  
+  .content-hero__poster {
+    width: 250px;
+    height: 375px;
+  }
+  
+  .content-hero__title {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-hero {
+    height: auto;
+    min-height: 400px;
+    padding: 2rem 0;
+  }
+  
+  .content-hero__poster {
+    width: 200px;
+    height: 300px;
+  }
+  
+  .content-hero__title {
+    font-size: 2rem;
+  }
+  
+  .content-meta {
+    justify-content: center;
+  }
+  
+  .content-meta__item {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .content-description__text {
+    font-size: 1rem;
+  }
+  
+  .content-actions {
+    justify-content: center;
+  }
+  
+  .production-info-compact {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-hero__content {
+    padding: 0 1rem;
+  }
+  
+  .content-hero__poster {
+    width: 150px;
+    height: 225px;
+  }
+  
+  .content-hero__title {
+    font-size: 1.5rem;
+  }
+  
+  .content-section {
+    padding: 0 1rem;
+  }
+}
+
+/* Animation for description toggle */
+.content-description__text {
+  transition: max-height 0.3s ease-out;
+}
+
+/* Focus states for accessibility */
+.content-description__toggle:focus {
+  outline: 2px solid var(--netflix-red);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .content-meta__item {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .production-info-compact {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .content-description__toggle,
+  .content-description__text {
+    transition: none;
+  }
+}

@@ -634,6 +634,71 @@ VITE_ENABLE_CONSOLE_LOGS=true
 | 403 | Access denied | Check if domain is whitelisted |
 | 500 | Server error | Try again later or contact support |
 
+## 🚧 Development Roadmap
+
+### 🔴 HIGH PRIORITY - Missing Core Features
+
+#### 1. Missing Pages (Referenced in Footer)
+- [x] **Terms of Service** (`/terms`) - ✅ Complete with comprehensive legal information
+- [x] **Contact Us** (`/contact`) - ✅ Complete with contact form and developer info
+- [x] **About** (`/about`) - ✅ Complete with features, mission, and company info
+
+#### 2. Incomplete Features with TODOs
+- [ ] **Party System** - Currently shows "Coming soon!" alerts
+  - [ ] Create party functionality
+  - [ ] Join party functionality
+  - [ ] Real-time watch parties
+- [ ] **Testing Infrastructure** - All test scripts are placeholders
+  - [ ] Unit tests configuration (Jest)
+  - [ ] E2E tests configuration (Playwright)
+  - [ ] TypeScript configuration
+
+### 🟡 MEDIUM PRIORITY - Enhancement Features
+
+#### 3. BoredFlix Feature Parity
+- [ ] **Comments System** - User comments on content pages
+- [ ] **FAQ Section** - Frequently asked questions
+- [ ] **Enhanced Breadcrumb Navigation** - More detailed navigation paths
+- [ ] **Detailed Director/Production Info** - Comprehensive cast and crew information
+
+#### 4. Advanced Analytics Features
+- [ ] **Google Analytics for Production** - Proper GA4 configuration for production builds
+- [ ] **Detailed Viewing Analytics** - Comprehensive tracking of user viewing behavior
+- [ ] **Genre Preference Analytics** - Track and analyze user content preferences
+
+#### 5. Video Player Enhancements
+- [ ] **LocatorJS Integration** - React development mode integration
+- [ ] **Expanded Player Servers** - Additional streaming server options
+- [ ] **Enhanced Episode Descriptions** - Detailed episode information and descriptions
+
+### 🟢 LOW PRIORITY - Polish & Optimization
+
+#### 6. Performance & SEO
+- [ ] **Enhanced Meta Tags** - Improved SEO optimization
+- [ ] **Open Graph Tags** - Better social media sharing
+- [ ] **Sitemap Generation** - Automated sitemap for search engines
+- [ ] **Service Worker** - Offline functionality and advanced caching
+
+#### 7. Accessibility & UX
+- [ ] **Enhanced Keyboard Navigation** - Complete keyboard accessibility
+- [ ] **Improved Screen Reader Support** - Better accessibility for visually impaired users
+- [ ] **High Contrast Mode Implementation** - Visual accessibility improvements
+- [ ] **Reduced Motion Support** - Motion sensitivity accommodations
+
+#### 8. Content Discovery
+- [ ] **Advanced Filtering** - Genre, year, rating filters on browse pages
+- [ ] **Recommendation Engine** - AI-powered content recommendations
+- [ ] **Personalized Homepage** - User-specific content curation
+
+### ✅ RECENTLY COMPLETED
+- ✅ Episode selector styling fixed
+- ✅ Download URLs for series/anime with season/episode
+- ✅ Trending section using real TMDB API data (single row)
+- ✅ Discord button removed
+- ✅ **Terms of Service page** - Complete legal documentation
+- ✅ **Contact Us page** - Contact form with category selection
+- ✅ **About page** - Comprehensive company and feature information
+
 ## 🤝 Contributing
 
 ### Development Workflow

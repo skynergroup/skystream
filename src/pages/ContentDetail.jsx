@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { Play, Plus, Share, ArrowLeft, X } from 'lucide-react';
-import { Button, Loading } from '../components';
+import { Play, Share, ArrowLeft, X, Download, Users, Heart } from 'lucide-react';
+import { Button, Loading, Breadcrumb, ProductionInfo, CommentsSection, FAQSection, BookmarkButton, ServerSelector, ContentFAQ } from '../components';
 import VideoPlayer from '../components/VideoPlayer';
 import SeasonEpisodeSelector from '../components/SeasonEpisodeSelector';
+import WatchlistButton from '../components/WatchlistButton';
 import tmdbApi from '../services/tmdbApi';
 import { utils, analytics } from '../utils';
+import './ContentDetail.css';
 
 const ContentDetail = () => {
   const { id } = useParams();
@@ -16,6 +18,8 @@ const ContentDetail = () => {
   const [showPlayer, setShowPlayer] = useState(false);
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [selectedEpisode, setSelectedEpisode] = useState(1);
+  const [selectedServer, setSelectedServer] = useState(1);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   // Extract type from pathname
   const type = location.pathname.split('/')[1]; // Gets 'movie', 'tv', or 'anime'
@@ -76,21 +80,36 @@ const ContentDetail = () => {
         episodes: transformedContent.number_of_episodes,
       };
 
-      analytics.trackContentView(type, id, transformedContent.title, metadata);
+      // Enhanced content view tracking with comprehensive metadata
+      const enhancedMetadata = {
+        ...metadata,
+        genres: transformedContent.genres?.map(g => g.name) || [],
+        cast: transformedContent.credits?.cast?.slice(0, 10).map(c => c.name) || [],
+        director: transformedContent.credits?.crew?.find(c => c.job === 'Director')?.name || 'Unknown',
+        country: transformedContent.production_countries?.[0]?.name || 'Unknown',
+        language: transformedContent.original_language || 'Unknown',
+        budget: transformedContent.budget || 0,
+        revenue: transformedContent.revenue || 0,
+        popularity: transformedContent.popularity || 0,
+        vote_average: transformedContent.vote_average || 0,
+        vote_count: transformedContent.vote_count || 0,
+      };
+
+      analytics.trackContentView(type, id, transformedContent.title, enhancedMetadata);
 
       // Track specific content type popularity
       if (type === 'movie') {
-        analytics.trackMovieView(id, transformedContent.title, metadata);
+        analytics.trackMovieView(id, transformedContent.title, enhancedMetadata);
       } else if (type === 'tv') {
-        analytics.trackSeriesView(id, transformedContent.title, metadata);
+        analytics.trackSeriesView(id, transformedContent.title, enhancedMetadata);
       } else if (type === 'anime') {
-        analytics.trackAnimeView(id, transformedContent.title, metadata);
+        analytics.trackAnimeView(id, transformedContent.title, enhancedMetadata);
       }
 
       // Track genre preferences
       if (transformedContent.genres?.length > 0) {
         transformedContent.genres.forEach(genre => {
-          analytics.trackGenreInteraction(genre, type, 'view');
+          analytics.trackGenreInteraction(genre.name, type, 'view');
         });
       }
     } catch (err) {
@@ -110,9 +129,9 @@ const ContentDetail = () => {
     }
   }, [type, id, location.pathname]);
 
-  // Auto-open player for movies when content loads
+  // Auto-open player for all content types when content loads
   useEffect(() => {
-    if (content && content.type === 'movie' && !showPlayer) {
+    if (content && !showPlayer) {
       // Small delay to ensure content is fully loaded
       const timer = setTimeout(() => {
         handlePlayClick();
@@ -187,15 +206,63 @@ const ContentDetail = () => {
     setSelectedEpisode(episode);
   };
 
+  const handleServerChange = (serverNumber) => {
+    setSelectedServer(serverNumber);
+
+    // Enhanced server change tracking
+    analytics.trackEvent('server_change', {
+      category: 'player_behavior',
+      label: `server_${serverNumber}`,
+      event_action: 'server_change',
+      content_type: content?.type,
+      content_id: content?.id,
+      content_title: content?.title,
+      server_from: selectedServer,
+      server_to: serverNumber,
+      content_genre: content?.genres?.map(g => g.name).join(', ') || 'Unknown',
+      session_id: analytics.getSessionId(),
+      timestamp: new Date().toISOString(),
+      value: 1,
+    });
+
+    // Track server preference
+    analytics.trackEvent('server_preference', {
+      category: 'player_preferences',
+      label: `Server ${serverNumber}`,
+      server_name: `Server ${serverNumber}`,
+      content_type: content?.type,
+      content_id: content?.id,
+      value: 1,
+    });
+  };
+
   const handlePlayClick = (season = null, episode = null) => {
     const playerInfo = {
-      player: utils.PLAYER_CONFIG?.defaults?.player || 'unknown',
+      playerType: utils.PLAYER_CONFIG?.defaults?.player || 'videasy',
+      serverName: `Server ${selectedServer}`,
+      quality: 'Auto',
       season: season || selectedSeason,
       episode: episode || selectedEpisode,
     };
 
+    // Enhanced metadata for tracking with proper genre handling
+    const trackingMetadata = {
+      genres: content.genres?.map(g => g.name).filter(name => name && name.trim() !== '') || [],
+      year: content.release_date ? new Date(content.release_date).getFullYear() :
+            content.first_air_date ? new Date(content.first_air_date).getFullYear() : 'Unknown',
+      rating: content.vote_average || 'Unknown',
+      runtime: content.runtime || content.episode_run_time?.[0] || 'Unknown',
+    };
+
     if (content.type === 'movie') {
       setShowPlayer(true);
+
+      // Track "Watch Now" button click
+      analytics.trackWatchNowClick(content.type, content.id, content.title, trackingMetadata);
+
+      // Track actual watch start
+      analytics.trackWatchStart(content.type, content.id, content.title, trackingMetadata, playerInfo);
+
       // Track movie play with player info
       analytics.trackVideoEvent('play', content.type, content.id, content.title, playerInfo);
     } else if (content.type === 'tv' || content.type === 'anime') {
@@ -205,6 +272,14 @@ const ContentDetail = () => {
       setSelectedSeason(currentSeason);
       setSelectedEpisode(currentEpisode);
       setShowPlayer(true);
+
+      const episodeTitle = `${content.title} S${currentSeason}E${currentEpisode}`;
+
+      // Track "Watch Now" button click for episodes
+      analytics.trackWatchNowClick(content.type, content.id, episodeTitle, trackingMetadata);
+
+      // Track actual watch start for episodes
+      analytics.trackWatchStart(content.type, content.id, episodeTitle, trackingMetadata, playerInfo);
 
       // Track episode view
       analytics.trackEpisodeView(
@@ -217,9 +292,135 @@ const ContentDetail = () => {
       );
 
       // Track TV/anime episode play with player info
-      analytics.trackVideoEvent('play', content.type, content.id,
-        `${content.title} S${currentSeason}E${currentEpisode}`, playerInfo);
+      analytics.trackVideoEvent('play', content.type, content.id, episodeTitle, playerInfo);
     }
+  };
+
+  // Share functionality
+  const handleShare = async () => {
+    const shareData = {
+      title: `${content.title || content.name} - SkyStream`,
+      text: `Watch ${content.title || content.name} on SkyStream - Free streaming platform`,
+      url: window.location.href
+    };
+
+    try {
+      // Use Web Share API if available (mobile devices)
+      if (navigator.share) {
+        await navigator.share(shareData);
+        analytics.trackEvent('content_share', {
+          category: 'user_engagement',
+          label: 'web_share_api',
+          content_type: content.type,
+          content_id: content.id,
+          content_title: content.title || content.name
+        });
+      } else {
+        // Fallback: Copy to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+
+        // Show feedback (you could enhance this with a toast notification)
+        alert('Link copied to clipboard!');
+
+        analytics.trackEvent('content_share', {
+          category: 'user_engagement',
+          label: 'clipboard_copy',
+          content_type: content.type,
+          content_id: content.id,
+          content_title: content.title || content.name
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      // Fallback: Copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
+      } catch (clipboardError) {
+        console.error('Clipboard error:', clipboardError);
+        alert('Unable to share. Please copy the URL manually.');
+      }
+    }
+  };
+
+  // Save to favorites functionality
+  const handleSave = () => {
+    const favorites = JSON.parse(localStorage.getItem('skystream_favorites') || '[]');
+    const contentData = {
+      id: content.id,
+      type: content.type,
+      title: content.title || content.name,
+      poster_path: content.poster_path,
+      overview: content.overview,
+      vote_average: content.vote_average,
+      release_date: content.release_date || content.first_air_date,
+      savedAt: new Date().toISOString()
+    };
+
+    const existingIndex = favorites.findIndex(item =>
+      item.id === content.id && item.type === content.type
+    );
+
+    let action = '';
+    if (existingIndex >= 0) {
+      favorites.splice(existingIndex, 1);
+      action = 'removed';
+      alert('Removed from favorites!');
+    } else {
+      favorites.unshift(contentData);
+      action = 'added';
+      alert('Added to favorites!');
+    }
+
+    localStorage.setItem('skystream_favorites', JSON.stringify(favorites));
+
+    analytics.trackEvent('content_favorite', {
+      category: 'user_engagement',
+      label: `${action}_favorite`,
+      content_type: content.type,
+      content_id: content.id,
+      content_title: content.title || content.name,
+      action: action
+    });
+  };
+
+  // Party functionality
+  const handleParty = () => {
+    const partyUrl = `/parties?content=${content.type}/${content.id}`;
+
+    // For now, navigate to parties page with content parameter
+    window.location.href = partyUrl;
+
+    analytics.trackEvent('party_create', {
+      category: 'social_features',
+      label: 'party_button_click',
+      content_type: content.type,
+      content_id: content.id,
+      content_title: content.title || content.name
+    });
+  };
+
+  // Download functionality
+  const handleDownload = () => {
+    // For TV shows and anime, use current season/episode; for movies, season/episode will be null
+    const downloadUrl = utils.getDownloadUrl(
+      content.id,
+      content.type,
+      content.type === 'movie' ? null : selectedSeason,
+      content.type === 'movie' ? null : selectedEpisode
+    );
+    window.open(downloadUrl, '_blank');
+
+    analytics.trackEvent('content_download', {
+      category: 'user_engagement',
+      label: `${content.type}_download`,
+      content_type: content.type,
+      content_id: content.id,
+      content_title: content.title || content.name,
+      season: content.type === 'movie' ? null : selectedSeason,
+      episode: content.type === 'movie' ? null : selectedEpisode,
+      download_url: downloadUrl
+    });
   };
 
   const backdropUrl = utils.getBackdropUrl(content.backdrop_path);
@@ -237,65 +438,68 @@ const ContentDetail = () => {
     return `${hours}h ${mins}m`;
   };
 
+  // Helper function to truncate description
+  const truncateDescription = (text, maxLength = 300) => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+
+    // Find the last complete sentence within the limit
+    const truncated = text.substring(0, maxLength);
+    const lastSentence = truncated.lastIndexOf('.');
+    const lastSpace = truncated.lastIndexOf(' ');
+
+    // Use last sentence if found, otherwise use last space
+    const cutPoint = lastSentence > maxLength * 0.7 ? lastSentence + 1 : lastSpace;
+    return text.substring(0, cutPoint) + '...';
+  };
+
+  const getDisplayDescription = () => {
+    if (!content?.overview) return '';
+    if (showFullDescription || content.overview.length <= 300) {
+      return content.overview;
+    }
+    return truncateDescription(content.overview);
+  };
+
   return (
     <div className="content-detail">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb
+        items={[
+          {
+            label: content.type === 'movie' ? 'Movies' : content.type === 'tv' ? 'TV Shows' : 'Anime',
+            path: `/browse/${content.type === 'movie' ? 'movies' : content.type}`
+          },
+          {
+            label: content.title || content.name,
+            path: `/${content.type}/${content.id}`
+          }
+        ]}
+      />
+
       {/* Hero Section */}
       <div
+        className="content-hero"
         style={{
-          position: 'relative',
-          height: '70vh',
-          minHeight: '500px',
           background: backdropUrl ? `url(${backdropUrl})` : 'var(--netflix-dark-gray)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          display: 'flex',
-          alignItems: 'center',
         }}
       >
         {/* Overlay */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background:
-              'linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%), linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)',
-          }}
-        />
+        <div className="content-hero__overlay" />
 
         {/* Content */}
-        <div
-          style={{
-            position: 'relative',
-            zIndex: 2,
-            maxWidth: '1400px',
-            margin: '0 auto',
-            padding: '0 2rem',
-            width: '100%',
-            display: 'flex',
-            gap: '2rem',
-            alignItems: 'center',
-          }}
-        >
+        <div className="content-hero__content">
           {/* Poster */}
           {posterUrl && (
             <img
               src={posterUrl}
               alt={content.title || content.name}
-              style={{
-                width: '300px',
-                height: '450px',
-                objectFit: 'cover',
-                borderRadius: '8px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-              }}
+              className="content-hero__poster"
             />
           )}
 
           {/* Info */}
-          <div style={{ flex: 1, maxWidth: '600px' }}>
+          <div className="content-hero__info">
             {/* Back Button */}
             <Button
               as={Link}
@@ -308,77 +512,30 @@ const ContentDetail = () => {
               Back
             </Button>
 
-            <h1
-              style={{
-                fontSize: '3rem',
-                fontWeight: '700',
-                color: 'var(--netflix-white)',
-                margin: '0 0 1rem 0',
-                textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-              }}
-            >
+            <h1 className="content-hero__title">
               {content.title || content.name}
             </h1>
 
             {/* Meta Info */}
-            <div
-              style={{
-                display: 'flex',
-                gap: '1rem',
-                marginBottom: '1.5rem',
-                flexWrap: 'wrap',
-              }}
-            >
-              <span
-                style={{
-                  background: 'rgba(0,0,0,0.6)',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '6px',
-                  color: 'var(--netflix-white)',
-                  fontWeight: '500',
-                }}
-              >
+            <div className="content-meta">
+              <span className="content-meta__item">
                 {formatDate(content.release_date || content.first_air_date)}
               </span>
 
               {content.vote_average && (
-                <span
-                  style={{
-                    background: 'rgba(0,0,0,0.6)',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '6px',
-                    color: '#ffd700',
-                    fontWeight: '500',
-                  }}
-                >
+                <span className="content-meta__item content-meta__item--rating">
                   ★ {Math.round(content.vote_average * 10) / 10}
                 </span>
               )}
 
               {content.runtime && (
-                <span
-                  style={{
-                    background: 'rgba(0,0,0,0.6)',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '6px',
-                    color: 'var(--netflix-white)',
-                    fontWeight: '500',
-                  }}
-                >
+                <span className="content-meta__item">
                   {formatRuntime(content.runtime)}
                 </span>
               )}
 
               {content.number_of_seasons && (
-                <span
-                  style={{
-                    background: 'rgba(0,0,0,0.6)',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '6px',
-                    color: 'var(--netflix-white)',
-                    fontWeight: '500',
-                  }}
-                >
+                <span className="content-meta__item">
                   {content.number_of_seasons} Season{content.number_of_seasons !== 1 ? 's' : ''}
                 </span>
               )}
@@ -386,22 +543,9 @@ const ContentDetail = () => {
 
             {/* Genres */}
             {content.genres && (
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div className="content-genres">
                 {content.genres.map(genre => (
-                  <span
-                    key={genre}
-                    style={{
-                      display: 'inline-block',
-                      background: 'var(--netflix-red)',
-                      color: 'var(--netflix-white)',
-                      padding: '0.25rem 0.75rem',
-                      borderRadius: '4px',
-                      fontSize: '0.8rem',
-                      fontWeight: '500',
-                      marginRight: '0.5rem',
-                      marginBottom: '0.5rem',
-                    }}
-                  >
+                  <span key={genre} className="content-genre">
                     {genre}
                   </span>
                 ))}
@@ -409,54 +553,191 @@ const ContentDetail = () => {
             )}
 
             {/* Overview */}
-            <p
-              style={{
-                fontSize: '1.1rem',
-                lineHeight: '1.6',
-                color: 'var(--netflix-text-gray)',
-                margin: '0 0 2rem 0',
-                textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
-              }}
-            >
-              {content.overview}
-            </p>
+            <div className="content-description">
+              <p className="content-description__text">
+                {getDisplayDescription()}
+              </p>
+
+              {/* Read More/Less Toggle */}
+              {content.overview && content.overview.length > 300 && (
+                <button
+                  onClick={() => setShowFullDescription(!showFullDescription)}
+                  className="content-description__toggle"
+                >
+                  {showFullDescription ? 'Read Less' : 'Read More'}
+                </button>
+              )}
+            </div>
 
             {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <Button variant="secondary" size="large" icon={<Plus size={20} />}>
-                Add to Watchlist
+            <div className="content-actions">
+              {/* Play Button for Movies */}
+              {type === 'movie' && (
+                <Button
+                  variant="primary"
+                  size="large"
+                  icon={<Play size={20} fill="currentColor" />}
+                  onClick={() => handlePlayClick()}
+                >
+                  Play Movie
+                </Button>
+              )}
+
+              <WatchlistButton
+                content={{
+                  id: content.id,
+                  type: type,
+                  title: content.title || content.name,
+                  poster_path: content.poster_path,
+                  overview: content.overview,
+                  vote_average: content.vote_average,
+                  release_date: content.release_date || content.first_air_date
+                }}
+                variant="large"
+                showText={true}
+              />
+
+              <BookmarkButton
+                content={{
+                  id: content.id,
+                  type: type,
+                  title: content.title || content.name,
+                  poster_path: content.poster_path,
+                  overview: content.overview,
+                  vote_average: content.vote_average,
+                  release_date: content.release_date || content.first_air_date
+                }}
+                variant="secondary"
+                size="large"
+                showText={true}
+              />
+
+              <Button
+                variant="ghost"
+                size="large"
+                icon={<Share size={20} />}
+                onClick={handleShare}
+              >
+                Share
               </Button>
 
-              <Button variant="ghost" size="large" icon={<Share size={20} />}>
-                Share
+              <Button
+                variant="ghost"
+                size="large"
+                icon={<Heart size={20} />}
+                onClick={handleSave}
+              >
+                Save
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="large"
+                icon={<Users size={20} />}
+                onClick={handleParty}
+              >
+                Party
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="large"
+                icon={<Download size={20} />}
+                onClick={handleDownload}
+              >
+                Download
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Season/Episode Selector and Player Controls */}
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2rem' }}>
-        <SeasonEpisodeSelector
+      {/* Production Information */}
+      <div className="content-section content-section--compact">
+        <ProductionInfo
           contentId={content.id}
           contentType={content.type}
-          totalSeasons={content.number_of_seasons || 1}
-          onEpisodeSelect={handleEpisodeSelect}
-          onPlayClick={handlePlayClick}
         />
       </div>
 
-      {/* Video Player */}
-      {showPlayer && (
-        <VideoPlayer
-          contentId={content.id}
-          contentType={content.type}
-          season={selectedSeason}
-          episode={selectedEpisode}
-          onClose={() => setShowPlayer(false)}
-          autoPlay={true}
-        />
-      )}
+      {/* Content Section */}
+      <div className="content-section">
+        {/* Season/Episode Selector - Only for TV Shows and Anime */}
+        {(type === 'tv' || type === 'anime') && !showPlayer && (
+          <SeasonEpisodeSelector
+            contentId={content.id}
+            contentType={type}
+            totalSeasons={content.number_of_seasons || 1}
+            onEpisodeSelect={handleEpisodeSelect}
+            onPlayClick={handlePlayClick}
+          />
+        )}
+
+        {/* BoredFlix-style Server Selector */}
+        {showPlayer && (
+          <ServerSelector
+            onServerChange={handleServerChange}
+            activeServer={selectedServer}
+            availableServers={[1, 2, 3, 4, 5, 6, 7, 8]}
+            serverStatus={{
+              1: 'online',  // Videasy
+              2: 'online',  // Vidsrc
+              3: 'unavailable',
+              4: 'unavailable',
+              5: 'unavailable',
+              6: 'unavailable',
+              7: 'unavailable',
+              8: 'unavailable'
+            }}
+          />
+        )}
+
+        {/* Embedded Video Player */}
+        {(() => {
+          try {
+            return (
+              <VideoPlayer
+                contentId={content.id}
+                contentType={type}
+                season={selectedSeason}
+                episode={selectedEpisode}
+                totalSeasons={content.number_of_seasons || 1}
+                show={showPlayer}
+                onClose={() => setShowPlayer(false)}
+                onEpisodeSelect={handleEpisodeSelect}
+                autoPlay={true}
+                selectedServer={selectedServer}
+              />
+            );
+          } catch (error) {
+            console.error('VideoPlayer error:', error);
+            return (
+              <div style={{
+                padding: '2rem',
+                textAlign: 'center',
+                color: 'var(--netflix-text-gray)',
+                background: 'rgba(0,0,0,0.4)',
+                borderRadius: '8px',
+                margin: '1rem 0'
+              }}>
+                <p>Video player temporarily unavailable. Please try refreshing the page.</p>
+              </div>
+            );
+          }
+        })()}
+      </div>
+
+      {/* Comments Section */}
+      <CommentsSection
+        contentId={content.id}
+        contentType={content.type}
+        contentTitle={content.title || content.name}
+      />
+
+      {/* BoredFlix-style FAQ Section */}
+      <div className="content-section">
+        <ContentFAQ content={content} />
+      </div>
     </div>
   );
 };

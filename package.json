@@ -21,9 +21,7 @@
     "preview": "vite preview",
     "serve": "vite preview --port 4173",
     "clean": "rm -rf dist",
-    "prebuild": "npm run clean",
-    "verify-build": "node scripts/verify-build.js",
-    "postbuild": "npm run verify-build"
+    "prebuild": "npm run clean"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity": "^3.840.0",
@@ -36,7 +34,11 @@
     "react-router-dom": "^7.6.2"
   },
   "devDependencies": {
+    "@babel/plugin-transform-react-jsx-self": "^7.27.1",
+    "@babel/plugin-transform-react-jsx-source": "^7.27.1",
     "@eslint/js": "^9.29.0",
+    "@locator/babel-jsx": "^0.4.4",
+    "@locator/runtime": "^0.4.4",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.5.2",

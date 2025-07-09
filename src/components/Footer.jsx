@@ -46,6 +46,41 @@ const Footer = () => {
           </p>
         </div>
 
+        {/* Trending & Latest Content Section */}
+        <div className="footer__trending">
+          <h4 className="footer__trending-title">Trending & Latest Content</h4>
+
+          <div className="footer__trending-section">
+            <h5 className="footer__trending-subtitle">Trending Movies</h5>
+            <div className="footer__trending-links">
+              <Link to="/movie/1061474" className="footer__trending-link">Superman (2025)</Link>
+              <Link to="/movie/1011477" className="footer__trending-link">Karate Kid: Legends (2025)</Link>
+              <Link to="/movie/541671" className="footer__trending-link">Ballerina (2025)</Link>
+              <Link to="/movie/986056" className="footer__trending-link">Thunderbolts* (2025)</Link>
+              <Link to="/movie/749170" className="footer__trending-link">Heads of State (2025)</Link>
+              <Link to="/movie/1234821" className="footer__trending-link">Jurassic World Rebirth (2025)</Link>
+            </div>
+          </div>
+
+          <div className="footer__trending-section">
+            <h5 className="footer__trending-subtitle">Trending TV Shows</h5>
+            <div className="footer__trending-links">
+              <Link to="/tv/79166" className="footer__trending-link">Grand Blue Dreaming (2018)</Link>
+              <Link to="/tv/93405" className="footer__trending-link">Squid Game (2021)</Link>
+              <Link to="/tv/123249" className="footer__trending-link">My Dress-Up Darling (2022)</Link>
+              <Link to="/tv/256721" className="footer__trending-link">Gachiakuta (2025)</Link>
+              <Link to="/tv/82739" className="footer__trending-link">Rascal Does Not Dream of Bunny Girl Senpai (2018)</Link>
+              <Link to="/tv/90802" className="footer__trending-link">The Sandman (2022)</Link>
+            </div>
+          </div>
+
+          <div className="footer__quick-links">
+            <Link to="/browse/movies" className="footer__quick-link">All Movies</Link>
+            <Link to="/browse/tv" className="footer__quick-link">All TV Shows</Link>
+            <Link to="/browse/anime" className="footer__quick-link">Anime</Link>
+          </div>
+        </div>
+
         {/* Links Sections */}
         <div className="footer__links">
           {/* Browse Section */}
@@ -96,6 +131,9 @@ const Footer = () => {
           <div className="footer__copyright">
             <p className="footer__copyright-text">
               © {currentYear} SkyStream. All rights reserved.
+            </p>
+            <p className="footer__love-text">
+              Made with ❤️ for movie lovers
             </p>
             <p className="footer__version">
               Developed by{' '}

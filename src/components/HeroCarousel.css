@@ -1,0 +1,261 @@
+/* BoredFlix-style Hero Carousel */
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  min-height: 70vh;
+  overflow: hidden;
+  background: var(--netflix-black);
+  margin-bottom: 2rem;
+}
+
+.hero-carousel.loading,
+.hero-carousel.single-item {
+  min-height: 70vh;
+}
+
+/* Carousel Container */
+.hero-carousel-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+/* Carousel Items */
+.hero-carousel-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Remove margin from BoredFlixHero when inside carousel */
+.hero-carousel-item .boredflix-hero {
+  margin-bottom: 0;
+}
+
+.hero-carousel-item.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Navigation Arrows */
+.hero-carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--netflix-white);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.hero-carousel-nav:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.hero-carousel-nav--prev {
+  left: 2rem;
+}
+
+.hero-carousel-nav--next {
+  right: 2rem;
+}
+
+/* Dots Indicator */
+.hero-carousel-dots {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.75rem;
+  z-index: 10;
+}
+
+.hero-carousel-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hero-carousel-dot:hover {
+  border-color: rgba(255, 255, 255, 0.8);
+  transform: scale(1.2);
+}
+
+.hero-carousel-dot.active {
+  background: var(--netflix-red);
+  border-color: var(--netflix-red);
+  transform: scale(1.3);
+}
+
+/* Progress Bar */
+.hero-carousel-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 10;
+}
+
+.hero-carousel-progress-bar {
+  height: 100%;
+  background: var(--netflix-red);
+  width: 0;
+  animation: progressBar linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes progressBar {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .hero-carousel {
+    min-height: 70vh;
+  }
+
+  .hero-carousel.loading,
+  .hero-carousel.single-item {
+    min-height: 70vh;
+  }
+
+  .hero-carousel-nav {
+    width: 45px;
+    height: 45px;
+  }
+
+  .hero-carousel-nav--prev {
+    left: 1rem;
+  }
+
+  .hero-carousel-nav--next {
+    right: 1rem;
+  }
+
+  .hero-carousel-dots {
+    bottom: 1.5rem;
+  }
+
+  .hero-carousel-dot {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-carousel {
+    min-height: 60vh;
+  }
+
+  .hero-carousel.loading,
+  .hero-carousel.single-item {
+    min-height: 60vh;
+  }
+
+  .hero-carousel-nav {
+    width: 40px;
+    height: 40px;
+  }
+
+  .hero-carousel-nav--prev {
+    left: 0.5rem;
+  }
+
+  .hero-carousel-nav--next {
+    right: 0.5rem;
+  }
+
+  .hero-carousel-dots {
+    bottom: 1rem;
+    gap: 0.5rem;
+  }
+
+  .hero-carousel-dot {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-carousel {
+    min-height: 60vh;
+  }
+
+  .hero-carousel.loading,
+  .hero-carousel.single-item {
+    min-height: 60vh;
+  }
+
+  .hero-carousel-nav {
+    width: 35px;
+    height: 35px;
+  }
+
+  .hero-carousel-dots {
+    bottom: 0.75rem;
+  }
+}
+
+/* Accessibility */
+.hero-carousel-nav:focus,
+.hero-carousel-dot:focus {
+  outline: 2px solid var(--netflix-red);
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for better UX */
+.hero-carousel-item * {
+  transition: inherit;
+}
+
+/* Preload next/previous items for smoother transitions */
+.hero-carousel-item:not(.active) {
+  visibility: hidden;
+}
+
+.hero-carousel-item.active {
+  visibility: visible;
+}
+
+/* Loading state */
+.hero-carousel.loading .hero-carousel-nav,
+.hero-carousel.loading .hero-carousel-dots,
+.hero-carousel.loading .hero-carousel-progress {
+  display: none;
+}
+
+/* Single item state */
+.hero-carousel.single-item .hero-carousel-nav,
+.hero-carousel.single-item .hero-carousel-dots,
+.hero-carousel.single-item .hero-carousel-progress {
+  display: none;
+}

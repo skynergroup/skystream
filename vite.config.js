@@ -3,8 +3,27 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
-  plugins: [react()],
-  base: './', // For static hosting compatibility
+  plugins: [
+    react({
+      babel: {
+        plugins: [
+          // Add LocatorJS Babel plugin for data-ids variant in development mode
+          mode === 'development' && ['@locator/babel-jsx/dist', {
+            env: 'development',
+          }]
+        ].filter(Boolean)
+      }
+    })
+  ],
+  define: {
+    global: 'globalThis',
+  },
+  resolve: {
+    alias: {
+      buffer: 'buffer',
+    },
+  },
+  base: '/', // Use absolute paths for better SPA routing
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -50,11 +69,12 @@ export default defineConfig(({ mode }) => ({
   },
   preview: {
     port: 4173,
-    host: true
+    host: true,
+    historyApiFallback: true
   },
   // Optimize dependencies
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', 'lucide-react']
+    include: ['react', 'react-dom', 'react-router-dom', 'lucide-react', 'buffer']
   },
   // Environment variables configuration
   envDir: './',

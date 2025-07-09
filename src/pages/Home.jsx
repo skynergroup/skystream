@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
-import { HeroBanner, ContentGrid, Loading } from '../components';
+import { HeroBanner, ContentGrid, Loading, ContinueWatching, TrendingSection, BoredFlixHero, HeroCarousel } from '../components';
+import { useAuth } from '../contexts/AuthContext';
 import tmdbApi from '../services/tmdbApi';
 import { analytics } from '../utils';
+import { getRandomFeaturedContent } from '../utils/boredflixHelpers';
 
 const Home = () => {
-  const [featuredContent, setFeaturedContent] = useState(null);
+  const { isAuthenticated } = useAuth();
+  const [featuredContent, setFeaturedContent] = useState([]);
   const [trendingContent, setTrendingContent] = useState([]);
   const [popularMovies, setPopularMovies] = useState([]);
   const [popularTV, setPopularTV] = useState([]);
+  const [popularAnime, setPopularAnime] = useState([]);
   const [topRated, setTopRated] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,6 +29,7 @@ const Home = () => {
       setPopularMovies(homeContent.popularMovies);
       setPopularTV(homeContent.popularTV);
       setTopRated(homeContent.topRated);
+      setPopularAnime(homeContent.popularAnime || []);
 
       // Track home page content load
       analytics.trackEvent('home_content_loaded', {
@@ -35,6 +40,7 @@ const Home = () => {
         popular_movies_count: homeContent.popularMovies?.length || 0,
         popular_tv_count: homeContent.popularTV?.length || 0,
         top_rated_count: homeContent.topRated?.length || 0,
+        popular_anime_count: homeContent.popularAnime?.length || 0,
       });
     } catch (err) {
       console.error('Failed to load content:', err);
@@ -104,35 +110,47 @@ const Home = () => {
 
   return (
     <div className="home-page">
-      {/* Hero Banner */}
-      <HeroBanner content={featuredContent} />
+      {/* BoredFlix-style Hero Carousel */}
+      <HeroCarousel content={featuredContent} autoPlay={true} interval={6000} />
 
-      {/* Content Sections */}
+      {/* Content Sections - BoredFlix Layout */}
       <div style={{ padding: '2rem 0' }}>
+        {/* Continue Watching Section - Only show when authenticated */}
+        {isAuthenticated && (
+          <div style={{ padding: '0 2rem' }}>
+            <ContinueWatching limit={8} />
+          </div>
+        )}
+
+        {/* Trending Section - TMDB API Data */}
+        <div style={{ padding: '0 2rem' }}>
+          <TrendingSection
+            timeframe="week"
+            limit={20}
+            showTitle={true}
+          />
+        </div>
+
+        {/* Top Rated */}
         <ContentGrid
-          title="Trending Now"
-          items={trendingContent}
+          title="Top Rated"
+          items={topRated}
           cardSize="medium"
           className="content-grid--horizontal"
         />
 
+        {/* Popular */}
         <ContentGrid
-          title="Popular Movies"
+          title="Popular"
           items={popularMovies}
           cardSize="medium"
           className="content-grid--horizontal"
         />
 
+        {/* Popular Anime */}
         <ContentGrid
-          title="Popular TV Shows"
-          items={popularTV}
-          cardSize="medium"
-          className="content-grid--horizontal"
-        />
-
-        <ContentGrid
-          title="Top Rated"
-          items={topRated}
+          title="Popular Anime"
+          items={popularAnime}
           cardSize="medium"
           className="content-grid--horizontal"
         />

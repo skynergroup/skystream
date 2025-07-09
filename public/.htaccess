@@ -68,7 +68,7 @@
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     
     # Content Security Policy (adjust as needed)
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; media-src 'self' https:; frame-src 'self' https://player.videasy.net https://v2.vidsrc.me https://vidsrc.in https://vidsrc.pm https://vidsrc.xyz https://vidsrc.net; connect-src 'self' https:; object-src 'none'; base-uri 'self';"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; media-src 'self' https:; frame-src 'self' https://player.videasy.net https://vidsrc.vip https://vidsrc.in https://vidsrc.pm https://vidsrc.xyz https://vidsrc.net; connect-src 'self' https:; object-src 'none'; base-uri 'self';"
 </IfModule>
 
 # SPA routing fallback

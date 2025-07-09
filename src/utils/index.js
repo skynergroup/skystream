@@ -9,3 +9,4 @@ export {
 
 export { default as analytics, Analytics } from './analytics';
 export { default as analyticsTest } from './analytics-test';
+export * as watchlist from './watchlist';

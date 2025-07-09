@@ -3,6 +3,7 @@ import { ChevronDown, Play } from 'lucide-react';
 import Button from './Button';
 import Loading from './Loading';
 import tmdbApi from '../services/tmdbApi';
+import { analytics } from '../utils';
 import './SeasonEpisodeSelector.css';
 
 const SeasonEpisodeSelector = ({
@@ -33,14 +34,32 @@ const SeasonEpisodeSelector = ({
       setError(null);
 
       const seasonData = await tmdbApi.getTVSeasonDetails(contentId, seasonNumber);
-      setEpisodes(seasonData.episodes || []);
+      const episodeList = seasonData?.episodes || [];
 
-      // Reset to first episode when changing seasons
-      setSelectedEpisode(1);
+      setEpisodes(episodeList);
+
+      // Reset to first episode when changing seasons, or stay at 1 if no episodes
+      setSelectedEpisode(episodeList.length > 0 ? 1 : 1);
+
+      // If no episodes found, set a user-friendly error
+      if (episodeList.length === 0) {
+        setError(new Error(`No episodes found for Season ${seasonNumber}`));
+      }
     } catch (err) {
       console.error('Failed to load episodes:', err);
       setError(err);
       setEpisodes([]);
+
+      // Track episode loading error
+      analytics.trackEvent('episode_load_error', {
+        category: 'content_errors',
+        label: `${contentType}_season_${seasonNumber}`,
+        content_type: contentType,
+        content_id: contentId,
+        season: seasonNumber,
+        error_message: err.message,
+        value: 1,
+      });
     } finally {
       setLoading(false);
     }
@@ -49,11 +68,60 @@ const SeasonEpisodeSelector = ({
   const handleSeasonChange = season => {
     setSelectedSeason(season);
     setShowSeasonDropdown(false);
+
+    // Track season selection analytics
+    analytics.trackEvent('season_selection', {
+      category: 'series_navigation',
+      label: `${contentType}_season_${season}`,
+      event_action: 'season_change',
+      content_type: contentType,
+      content_id: contentId,
+      season_from: selectedSeason,
+      season_to: season,
+      session_id: analytics.getSessionId(),
+      timestamp: new Date().toISOString(),
+      page_url: window.location.pathname,
+      value: 1,
+    });
   };
 
   const handleEpisodeChange = episode => {
     setSelectedEpisode(episode);
     setShowEpisodeDropdown(false);
+
+    // Get episode details for analytics
+    const episodeData = episodes.find(ep => ep.episode_number === episode);
+
+    // Track episode selection analytics
+    analytics.trackEvent('episode_selection', {
+      category: 'series_navigation',
+      label: `${contentType}_S${selectedSeason}E${episode}`,
+      event_action: 'episode_change',
+      content_type: contentType,
+      content_id: contentId,
+      season: selectedSeason,
+      episode_from: selectedEpisode,
+      episode_to: episode,
+      episode_title: episodeData?.name || `Episode ${episode}`,
+      episode_air_date: episodeData?.air_date || 'Unknown',
+      episode_rating: episodeData?.vote_average || 'Unknown',
+      session_id: analytics.getSessionId(),
+      timestamp: new Date().toISOString(),
+      page_url: window.location.pathname,
+      value: 1,
+    });
+
+    // Track episode discovery pattern
+    analytics.trackEvent('episode_discovery', {
+      category: 'content_discovery',
+      label: `${contentType}_episode_browse`,
+      content_type: contentType,
+      content_id: contentId,
+      season: selectedSeason,
+      episode: episode,
+      discovery_method: 'episode_selector',
+      value: 1,
+    });
 
     // Notify parent component
     if (onEpisodeSelect) {
@@ -78,21 +146,9 @@ const SeasonEpisodeSelector = ({
 
   const selectedEpisodeData = getSelectedEpisodeData();
 
-  // For movies, just show a play button
+  // For movies, don't render anything (play button is now in ContentDetail)
   if (contentType === 'movie') {
-    return (
-      <div className="season-episode-selector">
-        <Button
-          variant="primary"
-          size="large"
-          icon={<Play size={20} fill="currentColor" />}
-          onClick={() => onPlayClick && onPlayClick()}
-          className="play-movie-btn"
-        >
-          Play Movie
-        </Button>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -176,7 +232,28 @@ const SeasonEpisodeSelector = ({
       {/* Error State */}
       {error && (
         <div className="selector-error">
-          <p>Failed to load episodes for Season {selectedSeason}</p>
+          <p>
+            {error.message?.includes('No episodes found')
+              ? error.message
+              : `Failed to load episodes for Season ${selectedSeason}. Please try refreshing the page.`
+            }
+          </p>
+          {!error.message?.includes('No episodes found') && (
+            <button
+              onClick={() => loadEpisodes(selectedSeason)}
+              style={{
+                background: 'var(--netflix-red)',
+                color: 'white',
+                border: 'none',
+                padding: '0.5rem 1rem',
+                borderRadius: '4px',
+                marginTop: '0.5rem',
+                cursor: 'pointer'
+              }}
+            >
+              Retry
+            </button>
+          )}
         </div>
       )}
 

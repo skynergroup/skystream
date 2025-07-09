@@ -44,8 +44,8 @@ export const PLAYER_CONFIG = {
     baseUrl: getEnvVar('VITE_VIDEASY_BASE_URL', 'https://player.videasy.net'),
   },
   vidsrc: {
-    baseUrl: getEnvVar('VITE_VIDSRC_BASE_URL', 'https://v2.vidsrc.me/embed'),
-    downloadUrl: getEnvVar('VITE_VIDSRC_DOWNLOAD_URL', 'https://dl.vidsrc.me'),
+    baseUrl: getEnvVar('VITE_VIDSRC_BASE_URL', 'https://vidsrc.vip/embed'),
+    downloadUrl: getEnvVar('VITE_VIDSRC_DOWNLOAD_URL', 'https://dl.vidsrc.vip'),
   },
 
   defaults: {
@@ -58,7 +58,7 @@ export const PLAYER_CONFIG = {
 
 // Analytics Configuration
 export const ANALYTICS_CONFIG = {
-  enabled: getBooleanEnvVar('VITE_ENABLE_ANALYTICS', false),
+  enabled: getBooleanEnvVar('VITE_ENABLE_ANALYTICS', true), // Enable analytics by default for testing
   trackingId: getEnvVar('VITE_GA_TRACKING_ID', 'G-CR3ZVV9BE1'),
 };
 
@@ -170,8 +170,20 @@ export const utils = {
   },
 
   // Generate download URL
-  getDownloadUrl: contentId => {
-    return `${PLAYER_CONFIG.vidsrc.downloadUrl}/${contentId}`;
+  getDownloadUrl: (contentId, contentType = 'movie', season = null, episode = null) => {
+    const baseUrl = PLAYER_CONFIG.vidsrc.downloadUrl;
+    if (contentType === 'movie') {
+      return `${baseUrl}/movie/${contentId}`;
+    } else if (contentType === 'tv' || contentType === 'anime') {
+      // For TV shows and anime, include season and episode in the URL
+      if (season && episode) {
+        return `${baseUrl}/tv/${contentId}/${season}/${episode}`;
+      } else {
+        // Fallback to generic TV URL if season/episode not provided
+        return `${baseUrl}/tv/${contentId}`;
+      }
+    }
+    return `${baseUrl}/movie/${contentId}`; // Default fallback
   },
 
   // Log function that respects environment settings

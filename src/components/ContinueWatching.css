@@ -1,0 +1,370 @@
+/* Continue Watching Component Styles */
+.continue-watching {
+  margin: 2rem 0;
+}
+
+.continue-watching-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.continue-watching-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--netflix-white);
+  margin: 0;
+}
+
+.continue-watching-title svg {
+  color: var(--netflix-red);
+}
+
+.item-count {
+  color: var(--netflix-text-gray);
+  font-size: 0.9rem;
+}
+
+/* Grid Layout */
+.continue-watching-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Continue Watching Item */
+.continue-watching-item {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.continue-watching-item:hover {
+  transform: translateY(-4px);
+  border-color: rgba(229, 9, 20, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Poster Container */
+.item-poster-container {
+  position: relative;
+  aspect-ratio: 2/3;
+  overflow: hidden;
+}
+
+.item-poster-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.item-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.continue-watching-item:hover .item-poster {
+  transform: scale(1.05);
+}
+
+/* Play Overlay */
+.play-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(229, 9, 20, 0.9);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.continue-watching-item:hover .play-overlay {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.play-overlay svg {
+  color: var(--netflix-white);
+  margin-left: 2px; /* Slight offset for play icon */
+}
+
+/* Progress Bar */
+.progress-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--netflix-red);
+  transition: width 0.3s ease;
+}
+
+/* Remove Button */
+.remove-item {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--netflix-white);
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.continue-watching-item:hover .remove-item {
+  opacity: 1;
+}
+
+.remove-item:hover {
+  background: var(--netflix-red);
+  transform: scale(1.1);
+}
+
+/* Item Info */
+.item-info {
+  padding: 1rem;
+}
+
+.item-title-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.item-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--netflix-white);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.3s ease;
+}
+
+.item-title-link:hover .item-title {
+  color: var(--netflix-red);
+}
+
+.item-details {
+  margin-bottom: 0.5rem;
+}
+
+.episode-info {
+  color: var(--netflix-red);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.episode-title {
+  color: var(--netflix-text-gray);
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.item-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+}
+
+.progress-text {
+  color: var(--netflix-red);
+  font-weight: 500;
+}
+
+.watch-time {
+  color: var(--netflix-text-gray);
+}
+
+.item-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.continue-button {
+  flex: 1;
+}
+
+/* Footer */
+.continue-watching-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.view-all-link {
+  color: var(--netflix-red);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.view-all-link:hover {
+  color: var(--netflix-white);
+}
+
+/* Empty State */
+.continue-watching.empty {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-state {
+  color: var(--netflix-text-gray);
+}
+
+.empty-state svg {
+  color: var(--netflix-text-gray);
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.empty-subtitle {
+  font-size: 0.9rem !important;
+  opacity: 0.7;
+}
+
+/* Loading States */
+.continue-watching.loading .continue-watching-grid {
+  opacity: 0.7;
+}
+
+.loading-placeholder {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.loading-text {
+  height: 1.2rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.loading-text-small {
+  height: 0.9rem;
+  border-radius: 4px;
+  width: 60%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .continue-watching-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+
+  .continue-watching-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .continue-watching-title {
+    font-size: 1.25rem;
+  }
+
+  .item-info {
+    padding: 0.75rem;
+  }
+
+  .play-overlay {
+    width: 50px;
+    height: 50px;
+  }
+
+  .play-overlay svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .continue-watching-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .continue-watching-title {
+    font-size: 1.1rem;
+  }
+
+  .item-title {
+    font-size: 0.9rem;
+  }
+
+  .item-meta {
+    font-size: 0.75rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .continue-watching-item {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .continue-watching-item:hover {
+    border-color: var(--netflix-red);
+  }
+  
+  .progress-container {
+    background: rgba(255, 255, 255, 0.4);
+  }
+}
