@@ -170,12 +170,18 @@ export const utils = {
   },
 
   // Generate download URL
-  getDownloadUrl: (contentId, contentType = 'movie') => {
+  getDownloadUrl: (contentId, contentType = 'movie', season = null, episode = null) => {
     const baseUrl = PLAYER_CONFIG.vidsrc.downloadUrl;
     if (contentType === 'movie') {
       return `${baseUrl}/movie/${contentId}`;
     } else if (contentType === 'tv' || contentType === 'anime') {
-      return `${baseUrl}/tv/${contentId}`;
+      // For TV shows and anime, include season and episode in the URL
+      if (season && episode) {
+        return `${baseUrl}/tv/${contentId}/${season}/${episode}`;
+      } else {
+        // Fallback to generic TV URL if season/episode not provided
+        return `${baseUrl}/tv/${contentId}`;
+      }
     }
     return `${baseUrl}/movie/${contentId}`; // Default fallback
   },

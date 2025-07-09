@@ -402,7 +402,13 @@ const ContentDetail = () => {
 
   // Download functionality
   const handleDownload = () => {
-    const downloadUrl = utils.getDownloadUrl(content.id, content.type);
+    // For TV shows and anime, use current season/episode; for movies, season/episode will be null
+    const downloadUrl = utils.getDownloadUrl(
+      content.id,
+      content.type,
+      content.type === 'movie' ? null : selectedSeason,
+      content.type === 'movie' ? null : selectedEpisode
+    );
     window.open(downloadUrl, '_blank');
 
     analytics.trackEvent('content_download', {
@@ -411,6 +417,8 @@ const ContentDetail = () => {
       content_type: content.type,
       content_id: content.id,
       content_title: content.title || content.name,
+      season: content.type === 'movie' ? null : selectedSeason,
+      episode: content.type === 'movie' ? null : selectedEpisode,
       download_url: downloadUrl
     });
   };

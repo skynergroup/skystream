@@ -484,16 +484,18 @@ const VideoPlayer = ({
   };
 
   const handleDownload = () => {
-    // Open VidSrc download service with proper content type
-    const downloadUrl = utils.getDownloadUrl(contentId, contentType);
+    // Open VidSrc download service with proper content type and episode info
+    const downloadUrl = utils.getDownloadUrl(contentId, contentType, selectedSeason, selectedEpisode);
     window.open(downloadUrl, '_blank');
 
-    // Track download analytics
+    // Track download analytics with episode info
     analytics.trackEvent('content_download', {
       category: 'user_engagement',
       label: `${contentType}_download`,
       content_type: contentType,
       content_id: contentId,
+      season: selectedSeason || null,
+      episode: selectedEpisode || null,
       download_url: downloadUrl,
       session_id: analytics.getSessionId(),
       timestamp: new Date().toISOString(),
