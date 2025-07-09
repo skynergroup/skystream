@@ -110,8 +110,8 @@ VITE_TMDB_BASE_URL=https://api.themoviedb.org/3
 
 # Video Players
 VITE_VIDEASY_BASE_URL=https://player.videasy.net
-VITE_VIDSRC_BASE_URL=https://v2.vidsrc.me/embed
-VITE_VIDSRC_DOWNLOAD_URL=https://dl.vidsrc.me
+VITE_VIDSRC_BASE_URL=https://vidsrc.xyz/embed
+VITE_VIDSRC_DOWNLOAD_URL=https://dl.vidsrc.vip
 VITE_DEFAULT_PLAYER=videasy
 VITE_PLAYER_COLOR=e50914
 VITE_AUTO_PLAY=true
@@ -179,9 +179,9 @@ src/
 - **Anime**: `https://player.videasy.net/anime/{anilist_id}/{episode}`
 
 #### 2. VidSrc Player
-- **Features**: Alternative player, download functionality, color customization
-- **Movies**: `https://v2.vidsrc.me/embed/{imdb_id}`
-- **TV Shows**: `https://v2.vidsrc.me/embed/{imdb_id}/{season}-{episode}`
+- **Features**: Alternative player, download functionality, auto-next episode
+- **Movies**: `https://vidsrc.xyz/embed/movie?tmdb={tmdb_id}`
+- **TV Shows**: `https://vidsrc.xyz/embed/tv?tmdb={tmdb_id}&season={season}&episode={episode}`
 
 #### 3. GoDrive Player
 - **Features**: IMDB integration, series support
@@ -358,8 +358,8 @@ export const PLAYER_CONFIG = {
     baseUrl: 'https://player.videasy.net',
   },
   vidsrc: {
-    baseUrl: 'https://v2.vidsrc.me/embed',
-    downloadUrl: 'https://dl.vidsrc.me',
+    baseUrl: 'https://vidsrc.xyz/embed',
+    downloadUrl: 'https://dl.vidsrc.vip',
   },
   godrive: {
     baseUrl: 'https://godriveplayer.com/player.php',
@@ -539,7 +539,7 @@ const playerOptions = {
 ### Content Security Policy
 ```html
 <meta http-equiv="Content-Security-Policy" 
-      content="frame-src 'self' https://player.videasy.net https://v2.vidsrc.me https://godriveplayer.com;">
+      content="frame-src 'self' https://player.videasy.net https://vidsrc.xyz https://godriveplayer.com;">
 ```
 
 ### Iframe Security

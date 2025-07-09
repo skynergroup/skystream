@@ -44,7 +44,7 @@ export const PLAYER_CONFIG = {
     baseUrl: getEnvVar('VITE_VIDEASY_BASE_URL', 'https://player.videasy.net'),
   },
   vidsrc: {
-    baseUrl: getEnvVar('VITE_VIDSRC_BASE_URL', 'https://vidsrc.vip/embed'),
+    baseUrl: getEnvVar('VITE_VIDSRC_BASE_URL', 'https://vidsrc.xyz/embed'),
     downloadUrl: getEnvVar('VITE_VIDSRC_DOWNLOAD_URL', 'https://dl.vidsrc.vip'),
   },
 
@@ -109,17 +109,27 @@ export const utils = {
         playerOptions.autoplayNextEpisode = 'true';
       } else if (contentType === 'anime') {
         if (episode) {
+          // For anime episodes, use anilist ID format
           url = `${PLAYER_CONFIG.videasy.baseUrl}/anime/${contentId}/${episode}`;
         } else {
+          // For anime movies
           url = `${PLAYER_CONFIG.videasy.baseUrl}/anime/${contentId}`;
         }
-        // Add dub option for anime - default to English dub if available
+        // Add dub option for anime - default to sub (false) unless specified
         if (!Object.prototype.hasOwnProperty.call(playerOptions, 'dub')) {
-          playerOptions.dub = 'true'; // Default to English dub
+          playerOptions.dub = 'false'; // Default to sub
         }
       }
 
-      const params = new URLSearchParams(playerOptions);
+      // Clean up playerOptions - remove undefined/null values
+      const cleanOptions = {};
+      Object.keys(playerOptions).forEach(key => {
+        if (playerOptions[key] !== undefined && playerOptions[key] !== null) {
+          cleanOptions[key] = playerOptions[key];
+        }
+      });
+
+      const params = new URLSearchParams(cleanOptions);
       return `${url}?${params}`;
     }
 
@@ -127,11 +137,22 @@ export const utils = {
       let url = '';
 
       if (contentType === 'movie') {
-        // VidSrc movie format: https://vidsrc.net/embed/movie?tmdb=TMDB_ID
+        // VidSrc movie format: https://vidsrc.xyz/embed/movie?tmdb=TMDB_ID
         url = `${PLAYER_CONFIG.vidsrc.baseUrl}/movie?tmdb=${contentId}`;
       } else if (contentType === 'tv' || contentType === 'anime') {
-        // VidSrc TV format: https://vidsrc.net/embed/tv?tmdb=TMDB_ID&season=SEASON&episode=EPISODE
+        // VidSrc TV format: https://vidsrc.xyz/embed/tv?tmdb=TMDB_ID&season=SEASON&episode=EPISODE
         url = `${PLAYER_CONFIG.vidsrc.baseUrl}/tv?tmdb=${contentId}&season=${season}&episode=${episode}`;
+
+        // Add VidSrc specific options for TV shows
+        if (playerOptions.autoplay !== 'false') {
+          url += '&autoplay=1';
+        }
+        url += '&autonext=1'; // Enable auto next episode
+      }
+
+      // Add subtitle language if specified
+      if (playerOptions.language && playerOptions.language !== 'en') {
+        url += `&ds_lang=${playerOptions.language}`;
       }
 
       return url;
