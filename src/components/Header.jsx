@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Menu, X, User, MessageCircle } from 'lucide-react';
+import { Search, Menu, X, User } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import UserProfile from './UserProfile';
 import AuthModal from './AuthModal';
@@ -101,19 +101,7 @@ const Header = () => {
             </form>
           </div>
 
-          {/* Discord Button */}
-          <div className="header__discord">
-            <Button
-              variant="ghost"
-              size="small"
-              icon={<MessageCircle size={18} />}
-              onClick={() => window.open('https://discord.gg/skystream', '_blank')}
-              className="header__discord-btn"
-              title="Join Discord"
-            >
-              Discord
-            </Button>
-          </div>
+
 
           {/* Authentication */}
           <div className="header__auth">
