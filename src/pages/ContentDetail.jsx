@@ -296,6 +296,125 @@ const ContentDetail = () => {
     }
   };
 
+  // Share functionality
+  const handleShare = async () => {
+    const shareData = {
+      title: `${content.title || content.name} - SkyStream`,
+      text: `Watch ${content.title || content.name} on SkyStream - Free streaming platform`,
+      url: window.location.href
+    };
+
+    try {
+      // Use Web Share API if available (mobile devices)
+      if (navigator.share) {
+        await navigator.share(shareData);
+        analytics.trackEvent('content_share', {
+          category: 'user_engagement',
+          label: 'web_share_api',
+          content_type: content.type,
+          content_id: content.id,
+          content_title: content.title || content.name
+        });
+      } else {
+        // Fallback: Copy to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+
+        // Show feedback (you could enhance this with a toast notification)
+        alert('Link copied to clipboard!');
+
+        analytics.trackEvent('content_share', {
+          category: 'user_engagement',
+          label: 'clipboard_copy',
+          content_type: content.type,
+          content_id: content.id,
+          content_title: content.title || content.name
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      // Fallback: Copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
+      } catch (clipboardError) {
+        console.error('Clipboard error:', clipboardError);
+        alert('Unable to share. Please copy the URL manually.');
+      }
+    }
+  };
+
+  // Save to favorites functionality
+  const handleSave = () => {
+    const favorites = JSON.parse(localStorage.getItem('skystream_favorites') || '[]');
+    const contentData = {
+      id: content.id,
+      type: content.type,
+      title: content.title || content.name,
+      poster_path: content.poster_path,
+      overview: content.overview,
+      vote_average: content.vote_average,
+      release_date: content.release_date || content.first_air_date,
+      savedAt: new Date().toISOString()
+    };
+
+    const existingIndex = favorites.findIndex(item =>
+      item.id === content.id && item.type === content.type
+    );
+
+    let action = '';
+    if (existingIndex >= 0) {
+      favorites.splice(existingIndex, 1);
+      action = 'removed';
+      alert('Removed from favorites!');
+    } else {
+      favorites.unshift(contentData);
+      action = 'added';
+      alert('Added to favorites!');
+    }
+
+    localStorage.setItem('skystream_favorites', JSON.stringify(favorites));
+
+    analytics.trackEvent('content_favorite', {
+      category: 'user_engagement',
+      label: `${action}_favorite`,
+      content_type: content.type,
+      content_id: content.id,
+      content_title: content.title || content.name,
+      action: action
+    });
+  };
+
+  // Party functionality
+  const handleParty = () => {
+    const partyUrl = `/parties?content=${content.type}/${content.id}`;
+
+    // For now, navigate to parties page with content parameter
+    window.location.href = partyUrl;
+
+    analytics.trackEvent('party_create', {
+      category: 'social_features',
+      label: 'party_button_click',
+      content_type: content.type,
+      content_id: content.id,
+      content_title: content.title || content.name
+    });
+  };
+
+  // Download functionality
+  const handleDownload = () => {
+    const downloadUrl = utils.getDownloadUrl(content.id, content.type);
+    window.open(downloadUrl, '_blank');
+
+    analytics.trackEvent('content_download', {
+      category: 'user_engagement',
+      label: `${content.type}_download`,
+      content_type: content.type,
+      content_id: content.id,
+      content_title: content.title || content.name,
+      download_url: downloadUrl
+    });
+  };
+
   const backdropUrl = utils.getBackdropUrl(content.backdrop_path);
   const posterUrl = utils.getPosterUrl(content.poster_path);
 
@@ -485,19 +604,39 @@ const ContentDetail = () => {
                 showText={true}
               />
 
-              <Button variant="ghost" size="large" icon={<Share size={20} />}>
+              <Button
+                variant="ghost"
+                size="large"
+                icon={<Share size={20} />}
+                onClick={handleShare}
+              >
                 Share
               </Button>
 
-              <Button variant="ghost" size="large" icon={<Heart size={20} />}>
+              <Button
+                variant="ghost"
+                size="large"
+                icon={<Heart size={20} />}
+                onClick={handleSave}
+              >
                 Save
               </Button>
 
-              <Button variant="ghost" size="large" icon={<Users size={20} />}>
+              <Button
+                variant="ghost"
+                size="large"
+                icon={<Users size={20} />}
+                onClick={handleParty}
+              >
                 Party
               </Button>
 
-              <Button variant="ghost" size="large" icon={<Download size={20} />}>
+              <Button
+                variant="ghost"
+                size="large"
+                icon={<Download size={20} />}
+                onClick={handleDownload}
+              >
                 Download
               </Button>
             </div>
