@@ -188,19 +188,7 @@ const TrendingSection = ({
                 </span>
               </div>
 
-              <div className="trending-stats">
-                <span className="stat-item">
-                  <Eye size={12} />
-                  {formatTrendingScore(item.popularity)} popularity
-                </span>
 
-                {item.vote_count && (
-                  <span className="stat-item">
-                    <Flame size={12} />
-                    {item.vote_count} votes
-                  </span>
-                )}
-              </div>
               
               <div className="item-actions">
                 <Button
