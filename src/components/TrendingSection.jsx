@@ -1,36 +1,44 @@
 import { useState, useEffect } from 'react';
 import { TrendingUp, Flame, Eye, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import trendingService from '../services/trendingService';
+import tmdbApi from '../services/tmdbApi';
 import Button from './Button';
 import './TrendingSection.css';
 
 const TrendingSection = ({
-  contentType = 'all',
   timeframe = 'week',
   limit = 20,
   showTitle = true,
-  layout = 'grid', // 'grid' or 'carousel'
-  className = '',
-  showLive = false, // BoredFlix-style live indicator
-  showContentTypeToggle = false // BoredFlix-style Movies/TV Shows toggle
+  className = ''
 }) => {
   const [trendingItems, setTrendingItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTimeframe, setSelectedTimeframe] = useState(timeframe);
-  const [selectedContentType, setSelectedContentType] = useState(contentType);
 
   useEffect(() => {
     loadTrending();
-  }, [selectedContentType, selectedTimeframe, limit]);
+  }, [selectedTimeframe, limit]);
 
   const loadTrending = async () => {
     try {
       setLoading(true);
-      const items = await trendingService.getTrending(selectedContentType, limit, selectedTimeframe);
-      setTrendingItems(items);
+
+      // Get trending data from TMDB API
+      const response = await tmdbApi.getTrending('all', selectedTimeframe);
+
+      // Transform and limit the results
+      const transformedItems = response.results.slice(0, limit).map(item => ({
+        ...item,
+        type: item.media_type === 'movie' ? 'movie' :
+              item.media_type === 'tv' ? 'tv' : 'movie', // Default to movie for unknown types
+        title: item.title || item.name,
+        name: item.name || item.title
+      }));
+
+      setTrendingItems(transformedItems);
     } catch (error) {
       console.error('Failed to load trending content:', error);
+      setTrendingItems([]);
     } finally {
       setLoading(false);
     }
@@ -40,19 +48,16 @@ const TrendingSection = ({
     setSelectedTimeframe(newTimeframe);
   };
 
-  const handleContentTypeChange = (newContentType) => {
-    setSelectedContentType(newContentType);
-  };
-
   const getContentUrl = (item) => {
     return `/${item.type}/${item.id}`;
   };
 
-  const formatTrendingScore = (score) => {
-    if (score >= 1000) {
-      return `${(score / 1000).toFixed(1)}k`;
+  const formatTrendingScore = (popularity) => {
+    if (!popularity) return '0';
+    if (popularity >= 1000) {
+      return `${(popularity / 1000).toFixed(1)}k`;
     }
-    return score.toString();
+    return Math.round(popularity).toString();
   };
 
   const getTrendingIcon = (index) => {
@@ -74,7 +79,7 @@ const TrendingSection = ({
     return (
       <div className={`trending-section loading ${className}`}>
         {showTitle && <h2 className="trending-title">Trending Now</h2>}
-        <div className={`trending-${layout}`}>
+        <div className="trending-grid">
           {[...Array(8)].map((_, index) => (
             <div key={index} className="trending-item loading-placeholder">
               <div className="item-poster loading-shimmer"></div>
@@ -110,29 +115,11 @@ const TrendingSection = ({
             <h2 className="trending-title">
               <TrendingUp size={24} />
               Trending {getTimeframeLabel(selectedTimeframe)}
-              {showLive && <span className="live-indicator">Live</span>}
             </h2>
-
-            {showContentTypeToggle && (
-              <div className="content-type-toggle">
-                <button
-                  className={`toggle-btn ${selectedContentType === 'movie' ? 'active' : ''}`}
-                  onClick={() => handleContentTypeChange('movie')}
-                >
-                  Movies
-                </button>
-                <button
-                  className={`toggle-btn ${selectedContentType === 'tv' ? 'active' : ''}`}
-                  onClick={() => handleContentTypeChange('tv')}
-                >
-                  TV Shows
-                </button>
-              </div>
-            )}
           </div>
 
           <div className="timeframe-selector">
-            {['day', 'week', 'month'].map((tf) => (
+            {['day', 'week'].map((tf) => (
               <button
                 key={tf}
                 className={`timeframe-btn ${selectedTimeframe === tf ? 'active' : ''}`}
@@ -144,19 +131,19 @@ const TrendingSection = ({
           </div>
         </div>
       )}
-      
-      <div className={`trending-${layout}`}>
+
+      <div className="trending-grid">
         {trendingItems.map((item, index) => (
           <div key={`${item.id}_${item.type}`} className="trending-item">
             <div className="trending-rank">
               {getTrendingIcon(index)}
               <span className="rank-number">#{index + 1}</span>
             </div>
-            
+
             <div className="item-poster-container">
               <Link to={getContentUrl(item)} className="item-poster-link">
                 <img
-                  src={item.poster_path 
+                  src={item.poster_path
                     ? `https://image.tmdb.org/t/p/w300${item.poster_path}`
                     : '/placeholder-poster.jpg'
                   }
@@ -168,52 +155,49 @@ const TrendingSection = ({
                   <Play size={32} />
                 </div>
               </Link>
-              
+
               <div className="trending-badge">
                 <TrendingUp size={12} />
-                <span>{formatTrendingScore(item.trending_score)}</span>
+                <span>{formatTrendingScore(item.popularity)}</span>
               </div>
             </div>
-            
+
             <div className="item-info">
               <Link to={getContentUrl(item)} className="item-title-link">
                 <h3 className="item-title">{item.title || item.name}</h3>
               </Link>
-              
+
               <div className="item-meta">
                 <span className="item-year">
-                  {item.release_date 
+                  {item.release_date
                     ? new Date(item.release_date).getFullYear()
-                    : item.first_air_date 
+                    : item.first_air_date
                     ? new Date(item.first_air_date).getFullYear()
                     : 'N/A'
                   }
                 </span>
-                
+
                 {item.vote_average && (
                   <span className="item-rating">
                     ★ {item.vote_average.toFixed(1)}
                   </span>
                 )}
-                
+
                 <span className="item-type">
-                  {item.type === 'tv' ? 'TV Show' : 
-                   item.type === 'anime' ? 'Anime' : 'Movie'}
+                  {item.media_type === 'tv' ? 'TV Show' : 'Movie'}
                 </span>
               </div>
-              
+
               <div className="trending-stats">
-                {item.unique_views && (
-                  <span className="stat-item">
-                    <Eye size={12} />
-                    {item.unique_views} views
-                  </span>
-                )}
-                
-                {item.trending_interactions && (
+                <span className="stat-item">
+                  <Eye size={12} />
+                  {formatTrendingScore(item.popularity)} popularity
+                </span>
+
+                {item.vote_count && (
                   <span className="stat-item">
                     <Flame size={12} />
-                    {Object.values(item.trending_interactions).reduce((a, b) => a + b, 0)} interactions
+                    {item.vote_count} votes
                   </span>
                 )}
               </div>
@@ -234,11 +218,11 @@ const TrendingSection = ({
           </div>
         ))}
       </div>
-      
+
       {trendingItems.length >= limit && (
         <div className="trending-footer">
-          <Link to={`/trending?type=${contentType}&timeframe=${selectedTimeframe}`} className="view-all-link">
-            View All Trending {contentType === 'all' ? 'Content' : contentType} →
+          <Link to={`/trending?timeframe=${selectedTimeframe}`} className="view-all-link">
+            View All Trending Content →
           </Link>
         </div>
       )}

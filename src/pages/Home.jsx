@@ -122,28 +122,12 @@ const Home = () => {
           </div>
         )}
 
-        {/* Trending Today - BoredFlix Style */}
+        {/* Trending Section - TMDB API Data */}
         <div style={{ padding: '0 2rem' }}>
           <TrendingSection
-            contentType="all"
-            timeframe="day"
-            limit={20}
-            layout="grid"
-            showTitle={true}
-            showLive={true}
-            showContentTypeToggle={true}
-          />
-        </div>
-
-        {/* Trending This Week - BoredFlix Style */}
-        <div style={{ padding: '0 2rem' }}>
-          <TrendingSection
-            contentType="all"
             timeframe="week"
             limit={20}
-            layout="grid"
             showTitle={true}
-            showContentTypeToggle={true}
           />
         </div>
 
