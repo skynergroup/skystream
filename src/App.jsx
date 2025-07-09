@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Layout } from './components';
-import { Home, Movies, TVShows, Anime, Search, Library, Watchlist, Parties, ContentDetail, PrivacyPolicy, NotFound } from './pages';
+import { Home, Movies, TVShows, Anime, Search, Library, Watchlist, Parties, ContentDetail, PrivacyPolicy, Terms, Contact, About, NotFound } from './pages';
 import { analytics } from './utils';
 import ConsentBanner from './components/ConsentBanner.jsx';
 import { AuthProvider } from './contexts/AuthContext';
@@ -61,6 +61,9 @@ function App() {
             <Route path="tv/:id" element={<ContentDetail />} />
             <Route path="anime/:id" element={<ContentDetail />} />
             <Route path="privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="terms" element={<Terms />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="about" element={<About />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
