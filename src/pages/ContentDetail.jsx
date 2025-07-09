@@ -7,6 +7,7 @@ import SeasonEpisodeSelector from '../components/SeasonEpisodeSelector';
 import WatchlistButton from '../components/WatchlistButton';
 import tmdbApi from '../services/tmdbApi';
 import { utils, analytics } from '../utils';
+import './ContentDetail.css';
 
 const ContentDetail = () => {
   const { id } = useParams();
@@ -18,6 +19,7 @@ const ContentDetail = () => {
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [selectedEpisode, setSelectedEpisode] = useState(1);
   const [selectedServer, setSelectedServer] = useState(1);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   // Extract type from pathname
   const type = location.pathname.split('/')[1]; // Gets 'movie', 'tv', or 'anime'
@@ -309,6 +311,29 @@ const ContentDetail = () => {
     return `${hours}h ${mins}m`;
   };
 
+  // Helper function to truncate description
+  const truncateDescription = (text, maxLength = 300) => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+
+    // Find the last complete sentence within the limit
+    const truncated = text.substring(0, maxLength);
+    const lastSentence = truncated.lastIndexOf('.');
+    const lastSpace = truncated.lastIndexOf(' ');
+
+    // Use last sentence if found, otherwise use last space
+    const cutPoint = lastSentence > maxLength * 0.7 ? lastSentence + 1 : lastSpace;
+    return text.substring(0, cutPoint) + '...';
+  };
+
+  const getDisplayDescription = () => {
+    if (!content?.overview) return '';
+    if (showFullDescription || content.overview.length <= 300) {
+      return content.overview;
+    }
+    return truncateDescription(content.overview);
+  };
+
   return (
     <div className="content-detail">
       {/* Breadcrumb Navigation */}
@@ -327,61 +352,27 @@ const ContentDetail = () => {
 
       {/* Hero Section */}
       <div
+        className="content-hero"
         style={{
-          position: 'relative',
-          height: '70vh',
-          minHeight: '500px',
           background: backdropUrl ? `url(${backdropUrl})` : 'var(--netflix-dark-gray)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          display: 'flex',
-          alignItems: 'center',
         }}
       >
         {/* Overlay */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background:
-              'linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%), linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)',
-          }}
-        />
+        <div className="content-hero__overlay" />
 
         {/* Content */}
-        <div
-          style={{
-            position: 'relative',
-            zIndex: 2,
-            maxWidth: '1400px',
-            margin: '0 auto',
-            padding: '0 2rem',
-            width: '100%',
-            display: 'flex',
-            gap: '2rem',
-            alignItems: 'center',
-          }}
-        >
+        <div className="content-hero__content">
           {/* Poster */}
           {posterUrl && (
             <img
               src={posterUrl}
               alt={content.title || content.name}
-              style={{
-                width: '300px',
-                height: '450px',
-                objectFit: 'cover',
-                borderRadius: '8px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-              }}
+              className="content-hero__poster"
             />
           )}
 
           {/* Info */}
-          <div style={{ flex: 1, maxWidth: '600px' }}>
+          <div className="content-hero__info">
             {/* Back Button */}
             <Button
               as={Link}
@@ -394,77 +385,30 @@ const ContentDetail = () => {
               Back
             </Button>
 
-            <h1
-              style={{
-                fontSize: '3rem',
-                fontWeight: '700',
-                color: 'var(--netflix-white)',
-                margin: '0 0 1rem 0',
-                textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-              }}
-            >
+            <h1 className="content-hero__title">
               {content.title || content.name}
             </h1>
 
             {/* Meta Info */}
-            <div
-              style={{
-                display: 'flex',
-                gap: '1rem',
-                marginBottom: '1.5rem',
-                flexWrap: 'wrap',
-              }}
-            >
-              <span
-                style={{
-                  background: 'rgba(0,0,0,0.6)',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '6px',
-                  color: 'var(--netflix-white)',
-                  fontWeight: '500',
-                }}
-              >
+            <div className="content-meta">
+              <span className="content-meta__item">
                 {formatDate(content.release_date || content.first_air_date)}
               </span>
 
               {content.vote_average && (
-                <span
-                  style={{
-                    background: 'rgba(0,0,0,0.6)',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '6px',
-                    color: '#ffd700',
-                    fontWeight: '500',
-                  }}
-                >
+                <span className="content-meta__item content-meta__item--rating">
                   ★ {Math.round(content.vote_average * 10) / 10}
                 </span>
               )}
 
               {content.runtime && (
-                <span
-                  style={{
-                    background: 'rgba(0,0,0,0.6)',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '6px',
-                    color: 'var(--netflix-white)',
-                    fontWeight: '500',
-                  }}
-                >
+                <span className="content-meta__item">
                   {formatRuntime(content.runtime)}
                 </span>
               )}
 
               {content.number_of_seasons && (
-                <span
-                  style={{
-                    background: 'rgba(0,0,0,0.6)',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '6px',
-                    color: 'var(--netflix-white)',
-                    fontWeight: '500',
-                  }}
-                >
+                <span className="content-meta__item">
                   {content.number_of_seasons} Season{content.number_of_seasons !== 1 ? 's' : ''}
                 </span>
               )}
@@ -472,22 +416,9 @@ const ContentDetail = () => {
 
             {/* Genres */}
             {content.genres && (
-              <div style={{ marginBottom: '1.5rem' }}>
+              <div className="content-genres">
                 {content.genres.map(genre => (
-                  <span
-                    key={genre}
-                    style={{
-                      display: 'inline-block',
-                      background: 'var(--netflix-red)',
-                      color: 'var(--netflix-white)',
-                      padding: '0.25rem 0.75rem',
-                      borderRadius: '4px',
-                      fontSize: '0.8rem',
-                      fontWeight: '500',
-                      marginRight: '0.5rem',
-                      marginBottom: '0.5rem',
-                    }}
-                  >
+                  <span key={genre} className="content-genre">
                     {genre}
                   </span>
                 ))}
@@ -495,20 +426,24 @@ const ContentDetail = () => {
             )}
 
             {/* Overview */}
-            <p
-              style={{
-                fontSize: '1.1rem',
-                lineHeight: '1.6',
-                color: 'var(--netflix-text-gray)',
-                margin: '0 0 2rem 0',
-                textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
-              }}
-            >
-              {content.overview}
-            </p>
+            <div className="content-description">
+              <p className="content-description__text">
+                {getDisplayDescription()}
+              </p>
+
+              {/* Read More/Less Toggle */}
+              {content.overview && content.overview.length > 300 && (
+                <button
+                  onClick={() => setShowFullDescription(!showFullDescription)}
+                  className="content-description__toggle"
+                >
+                  {showFullDescription ? 'Read Less' : 'Read More'}
+                </button>
+              )}
+            </div>
 
             {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <div className="content-actions">
               {/* Play Button for Movies */}
               {type === 'movie' && (
                 <Button
@@ -571,13 +506,15 @@ const ContentDetail = () => {
       </div>
 
       {/* Production Information */}
-      <ProductionInfo
-        contentId={content.id}
-        contentType={content.type}
-      />
+      <div className="content-section content-section--compact">
+        <ProductionInfo
+          contentId={content.id}
+          contentType={content.type}
+        />
+      </div>
 
       {/* Content Section */}
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2rem' }}>
+      <div className="content-section">
         {/* Season/Episode Selector - Only for TV Shows and Anime */}
         {(type === 'tv' || type === 'anime') && !showPlayer && (
           <SeasonEpisodeSelector
@@ -651,7 +588,7 @@ const ContentDetail = () => {
       />
 
       {/* BoredFlix-style FAQ Section */}
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 2rem' }}>
+      <div className="content-section">
         <ContentFAQ content={content} />
       </div>
     </div>
