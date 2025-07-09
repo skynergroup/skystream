@@ -64,6 +64,35 @@ const VideoPlayer = ({
       setError(null);
     }
   }, [selectedServer]);
+
+  // Load episodes for TV shows and anime
+  useEffect(() => {
+    if (contentType === 'tv' || contentType === 'anime') {
+      loadEpisodes(selectedSeason);
+    }
+  }, [selectedSeason, contentId, contentType]);
+
+  const loadEpisodes = async (seasonNumber) => {
+    try {
+      setEpisodeLoading(true);
+
+      const tmdbApi = await import('../services/tmdbApi');
+      const seasonData = await tmdbApi.default.getTVSeasonDetails(contentId, seasonNumber);
+      const episodeList = seasonData?.episodes || [];
+
+      setEpisodes(episodeList);
+      setEpisodeLoading(false);
+
+      // If no episodes found, log for debugging
+      if (episodeList.length === 0) {
+        console.warn(`No episodes found for Season ${seasonNumber} of content ${contentId}`);
+      }
+    } catch (error) {
+      console.error('Failed to load episodes:', error);
+      setEpisodes([]);
+      setEpisodeLoading(false);
+    }
+  };
   const [currentTime, setCurrentTime] = useState(0);
   const progressUpdateInterval = useRef(null);
 
@@ -268,6 +297,29 @@ const VideoPlayer = ({
     } else {
       console.log('No more players available for auto-fallback');
       setAutoRetryEnabled(false);
+    }
+  };
+
+  // Season change handler
+  const handleSeasonChange = (seasonNumber) => {
+    setSelectedSeason(seasonNumber);
+    setSelectedEpisode(1); // Reset to first episode
+    setShowSeasonDropdown(false);
+
+    // Notify parent component if callback provided
+    if (onEpisodeSelect) {
+      onEpisodeSelect(seasonNumber, 1);
+    }
+  };
+
+  // Episode change handler
+  const handleEpisodeChange = (episodeNumber) => {
+    setSelectedEpisode(episodeNumber);
+    setShowEpisodeDropdown(false);
+
+    // Notify parent component if callback provided
+    if (onEpisodeSelect) {
+      onEpisodeSelect(selectedSeason, episodeNumber);
     }
   };
 

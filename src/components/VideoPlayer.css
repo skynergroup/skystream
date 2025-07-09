@@ -261,6 +261,25 @@
   .video-player-settings {
     padding: 0.75rem;
   }
+
+  /* Episode selector mobile styles */
+  .video-player-episode-selector {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .episode-selector-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .episode-selector-option {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .episode-name {
+    font-size: 0.75rem;
+  }
 }
 
 /* Animations */
@@ -511,6 +530,132 @@
   transition: width 0.3s ease;
 }
 
+/* Episode Selector Styles */
+.video-player-episode-selector {
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1.5rem;
+  flex-shrink: 0;
+}
+
+.episode-selector-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.episode-selector-dropdown {
+  position: relative;
+  min-width: 150px;
+}
+
+.episode-selector-button {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  color: var(--netflix-white);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.episode-selector-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.episode-selector-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.episode-selector-button .rotated {
+  transform: rotate(180deg);
+}
+
+.episode-selector-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--netflix-gray);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  margin-top: 0.25rem;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.episode-selector-option {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0.75rem 1rem;
+  color: var(--netflix-white);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.episode-selector-option:last-child {
+  border-bottom: none;
+}
+
+.episode-selector-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.episode-selector-option.selected {
+  background: var(--netflix-red);
+  color: var(--netflix-white);
+}
+
+.episode-option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.episode-number {
+  font-weight: 500;
+}
+
+.episode-name {
+  font-size: 0.8rem;
+  color: var(--netflix-text-gray);
+  opacity: 0.8;
+}
+
+/* Scrollbar for episode selector menus */
+.episode-selector-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.episode-selector-menu::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.episode-selector-menu::-webkit-scrollbar-thumb {
+  background: var(--netflix-red);
+  border-radius: 3px;
+}
+
+.episode-selector-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--netflix-red-dark);
+}
+
 /* Responsive design for player switcher */
 @media (max-width: 768px) {
   .video-player-switcher {
@@ -543,5 +688,30 @@
 
   .resume-info {
     font-size: 0.8rem;
+  }
+
+  /* Episode selector responsive styles */
+  .video-player-episode-selector {
+    padding: 0.75rem 1rem;
+  }
+
+  .episode-selector-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .episode-selector-dropdown {
+    min-width: auto;
+  }
+
+  .episode-selector-button {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .episode-selector-option {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.85rem;
   }
 }
