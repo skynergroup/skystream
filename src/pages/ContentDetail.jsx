@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { Play, Share, ArrowLeft, X, Download, Users, Heart } from 'lucide-react';
+import { Play, Share, ArrowLeft, X, Download, Users } from 'lucide-react';
 import { Button, Loading, Breadcrumb, ProductionInfo, CommentsSection, FAQSection, BookmarkButton, ServerSelector, ContentFAQ } from '../components';
 import VideoPlayer from '../components/VideoPlayer';
 import SeasonEpisodeSelector from '../components/SeasonEpisodeSelector';
@@ -576,7 +576,7 @@ const ContentDetail = () => {
                 <Button
                   variant="primary"
                   size="large"
-                  icon={<Play size={20} fill="currentColor" />}
+                  icon={<Play size={16} fill="currentColor" />}
                   onClick={() => handlePlayClick()}
                 >
                   Play Movie
@@ -593,7 +593,8 @@ const ContentDetail = () => {
                   vote_average: content.vote_average,
                   release_date: content.release_date || content.first_air_date
                 }}
-                variant="large"
+                variant="secondary"
+                size="large"
                 showText={true}
               />
 
@@ -607,7 +608,7 @@ const ContentDetail = () => {
                   vote_average: content.vote_average,
                   release_date: content.release_date || content.first_air_date
                 }}
-                variant="secondary"
+                variant="ghost"
                 size="large"
                 showText={true}
               />
@@ -615,7 +616,7 @@ const ContentDetail = () => {
               <Button
                 variant="ghost"
                 size="large"
-                icon={<Share size={20} />}
+                icon={<Share size={16} />}
                 onClick={handleShare}
               >
                 Share
@@ -624,16 +625,7 @@ const ContentDetail = () => {
               <Button
                 variant="ghost"
                 size="large"
-                icon={<Heart size={20} />}
-                onClick={handleSave}
-              >
-                Save
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="large"
-                icon={<Users size={20} />}
+                icon={<Users size={16} />}
                 onClick={handleParty}
               >
                 Party
@@ -642,7 +634,7 @@ const ContentDetail = () => {
               <Button
                 variant="ghost"
                 size="large"
-                icon={<Download size={20} />}
+                icon={<Download size={16} />}
                 onClick={handleDownload}
               >
                 Download
