@@ -257,6 +257,18 @@ const ContentDetail = () => {
     if (content.type === 'movie') {
       setShowPlayer(true);
 
+      // Scroll to video player after a short delay to ensure it's rendered
+      setTimeout(() => {
+        const playerElement = document.querySelector('.video-player-embedded');
+        if (playerElement) {
+          playerElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'nearest'
+          });
+        }
+      }, 100);
+
       // Track "Watch Now" button click
       analytics.trackWatchNowClick(content.type, content.id, content.title, trackingMetadata);
 
@@ -272,6 +284,18 @@ const ContentDetail = () => {
       setSelectedSeason(currentSeason);
       setSelectedEpisode(currentEpisode);
       setShowPlayer(true);
+
+      // Scroll to video player after a short delay to ensure it's rendered
+      setTimeout(() => {
+        const playerElement = document.querySelector('.video-player-embedded');
+        if (playerElement) {
+          playerElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'nearest'
+          });
+        }
+      }, 100);
 
       const episodeTitle = `${content.title} S${currentSeason}E${currentEpisode}`;
 
