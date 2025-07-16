@@ -5,6 +5,7 @@ import { Home, Movies, TVShows, Anime, Search, Library, Watchlist, Parties, Cont
 import { analytics } from './utils';
 import ConsentBanner from './components/ConsentBanner.jsx';
 import { AuthProvider } from './contexts/AuthContext';
+import useScrollToTop from './hooks/useScrollToTop';
 
 // SPA redirect handler for static hosting
 function SPARedirectHandler() {
@@ -41,12 +42,19 @@ function AnalyticsTracker() {
   return null;
 }
 
+// Scroll to top component
+function ScrollToTopHandler() {
+  useScrollToTop();
+  return null;
+}
+
 function App() {
   return (
     <AuthProvider>
       <Router>
         <SPARedirectHandler />
         <AnalyticsTracker />
+        <ScrollToTopHandler />
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />

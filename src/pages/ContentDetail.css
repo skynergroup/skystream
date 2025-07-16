@@ -63,7 +63,7 @@
 }
 
 .content-hero__title {
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 700;
   color: var(--netflix-white);
   margin: 0 0 1rem 0;
@@ -142,9 +142,46 @@
 /* Action Buttons */
 .content-actions {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+/* BoredFlix-style compact action buttons */
+.content-actions .btn {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 6px;
+  min-height: auto;
+}
+
+.content-actions .btn--large {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+  min-height: auto;
+}
+
+/* Primary play button styling */
+.content-actions .btn--primary {
+  background: var(--netflix-red);
+  border: none;
+  font-weight: 600;
+}
+
+/* Secondary and ghost buttons more compact */
+.content-actions .btn--secondary,
+.content-actions .btn--ghost {
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  border-width: 1px;
+}
+
+/* Reduce icon sizes in action buttons */
+.content-actions .btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* Content Sections */
@@ -186,7 +223,7 @@
   }
   
   .content-hero__title {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
 }
 
@@ -240,7 +277,7 @@
   }
   
   .content-hero__title {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
   
   .content-section {

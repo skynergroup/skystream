@@ -30,9 +30,91 @@ const TVShows = () => {
         page
       });
 
-      // For now, use popular TV shows as the base
-      // In a real app, you'd apply the filters to the API call
-      const response = await tmdbApi.getPopularTVShows(page);
+      let response;
+
+      // Check if any filters are applied (not default values)
+      const hasFilters = appliedFilters.genre !== 'All Genres' ||
+                        appliedFilters.language !== 'Language' ||
+                        appliedFilters.year !== 'All Years' ||
+                        appliedFilters.rating !== 'Any Rating' ||
+                        appliedFilters.sort !== 'Smart Filter (Recommended)';
+
+      if (hasFilters) {
+        // Use discover endpoint with filters
+        const params = { page };
+
+        // Apply genre filter
+        if (appliedFilters.genre !== 'All Genres') {
+          const tvGenres = await tmdbApi.getTVGenres();
+          const genre = tvGenres.genres.find(g => g.name === appliedFilters.genre);
+          if (genre) {
+            params.with_genres = genre.id;
+          }
+        }
+
+        // Apply year filter
+        if (appliedFilters.year !== 'All Years') {
+          if (appliedFilters.year.includes('s')) {
+            // Handle decade filters like "2010s", "2000s"
+            const decade = appliedFilters.year.replace('s', '');
+            const startYear = parseInt(decade);
+            const endYear = startYear + 9;
+            params['first_air_date.gte'] = `${startYear}-01-01`;
+            params['first_air_date.lte'] = `${endYear}-12-31`;
+          } else {
+            params.first_air_date_year = appliedFilters.year;
+          }
+        }
+
+        // Apply rating filter
+        if (appliedFilters.rating !== 'Any Rating') {
+          const minRating = parseFloat(appliedFilters.rating.replace('+', ''));
+          params['vote_average.gte'] = minRating;
+        }
+
+        // Apply language filter
+        if (appliedFilters.language !== 'Language') {
+          const languageMap = {
+            'English': 'en',
+            'Spanish': 'es',
+            'French': 'fr',
+            'German': 'de',
+            'Italian': 'it',
+            'Portuguese': 'pt',
+            'Russian': 'ru',
+            'Japanese': 'ja',
+            'Korean': 'ko',
+            'Chinese': 'zh',
+            'Hindi': 'hi',
+            'Arabic': 'ar'
+          };
+          if (languageMap[appliedFilters.language]) {
+            params.with_original_language = languageMap[appliedFilters.language];
+          }
+        }
+
+        // Apply sort filter
+        if (appliedFilters.sort !== 'Smart Filter (Recommended)') {
+          const sortMap = {
+            'Popularity (High to Low)': 'popularity.desc',
+            'Popularity (Low to High)': 'popularity.asc',
+            'Rating (High to Low)': 'vote_average.desc',
+            'Rating (Low to High)': 'vote_average.asc',
+            'Release Date (Newest)': 'first_air_date.desc',
+            'Release Date (Oldest)': 'first_air_date.asc',
+            'Title (A-Z)': 'name.asc',
+            'Title (Z-A)': 'name.desc'
+          };
+          params.sort_by = sortMap[appliedFilters.sort] || 'popularity.desc';
+        } else {
+          params.sort_by = 'popularity.desc';
+        }
+
+        response = await tmdbApi.discoverTVShows(params);
+      } else {
+        // Use popular TV shows as default
+        response = await tmdbApi.getPopularTVShows(page);
+      }
 
       setTvShows(response.results.map(show => tmdbApi.transformContent(show)));
       setTotalPages(Math.min(response.total_pages, 1000)); // TMDB limits to 1000 pages
