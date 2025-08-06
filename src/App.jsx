@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Layout } from './components';
 import { Home, Movies, TVShows, Anime, Search, Library, Watchlist, Parties, ContentDetail, PrivacyPolicy, Terms, Contact, About, NotFound } from './pages';
 import { analytics } from './utils';
@@ -76,6 +78,8 @@ function App() {
           </Route>
         </Routes>
         <ConsentBanner />
+        <Analytics />
+        <SpeedInsights />
       </Router>
     </AuthProvider>
   );

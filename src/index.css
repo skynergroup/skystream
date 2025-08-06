@@ -1,4 +1,5 @@
 /* Netflix-inspired Global Styles */
+@import './styles/responsive.css';
 :root {
   /* Netflix Color Palette */
   --netflix-red: #e50914;
@@ -147,6 +148,18 @@ button {
 }
 
 /* Responsive Design */
+/* iPad and larger tablets */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+  }
+}
+
+/* iPad Portrait and smaller tablets */
 @media (max-width: 768px) {
   h1 {
     font-size: 2rem;
@@ -156,10 +169,47 @@ button {
     font-size: 1.5rem;
   }
 
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
   .btn-primary,
   .btn-secondary {
-    padding: 10px 20px;
+    padding: 12px 24px;
     font-size: 0.9rem;
+    min-height: 44px; /* Touch-friendly minimum */
+  }
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  .container {
+    padding: 0 0.75rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 14px 20px;
+    font-size: 0.9rem;
+    min-height: 44px;
+    width: 100%;
+    max-width: 280px;
   }
 }
 
