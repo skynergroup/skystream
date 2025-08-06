@@ -198,6 +198,32 @@
 }
 
 /* Responsive Design */
+/* iPad and larger tablets */
+@media (max-width: 1024px) {
+  .video-player-container {
+    border-radius: 8px;
+  }
+
+  .video-player-controls {
+    padding: 1rem 1.5rem;
+  }
+
+  .video-player-controls button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .player-selector {
+    gap: 0.75rem;
+  }
+
+  .player-option {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* iPad Portrait and smaller tablets */
 @media (max-width: 768px) {
   .video-player-overlay {
     padding: 0.5rem;

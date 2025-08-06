@@ -171,6 +171,7 @@
 }
 
 /* Responsive Design */
+/* Large screens */
 @media (max-width: 1200px) {
   .hero-banner__title {
     font-size: 3rem;
@@ -178,6 +179,34 @@
 
   .hero-banner__overview {
     font-size: 1rem;
+  }
+}
+
+/* iPad and larger tablets */
+@media (max-width: 1024px) {
+  .hero-banner {
+    height: 75vh;
+    min-height: 550px;
+  }
+
+  .hero-banner__title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .hero-banner__overview {
+    font-size: 0.95rem;
+    max-width: 500px;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-banner__actions {
+    gap: 1rem;
+  }
+
+  .hero-banner__btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.95rem;
   }
 }
 
@@ -232,6 +261,7 @@
   }
 }
 
+/* Mobile phones */
 @media (max-width: 480px) {
   .hero-banner {
     height: 60vh;
@@ -243,12 +273,14 @@
   }
 
   .hero-banner__title {
-    font-size: 2rem;
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
   }
 
   .hero-banner__meta {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     gap: 0.5rem;
+    margin-bottom: 0.75rem;
   }
 
   .hero-banner__year,

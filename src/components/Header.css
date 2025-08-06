@@ -275,6 +275,23 @@
 }
 
 /* Responsive Design */
+/* iPad and larger tablets */
+@media (max-width: 1024px) {
+  .header__container {
+    padding: 1rem 1.5rem;
+  }
+
+  .header__nav-link {
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .header__search-input {
+    width: 200px;
+  }
+}
+
+/* iPad Portrait and smaller tablets */
 @media (max-width: 768px) {
   .header__container {
     padding: 1rem;
