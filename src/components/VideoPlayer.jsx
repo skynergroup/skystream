@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { X, Settings, Download, Maximize, ChevronDown, Play } from 'lucide-react';
 import Button from './Button';
 import UserPreferences from './UserPreferences';
+import { ProtectedVideoPlayer } from './ProtectedRoute';
 import { utils, analytics } from '../utils';
 import tmdbApi from '../services/tmdbApi';
 import watchHistoryService from '../services/watchHistoryService';
@@ -9,7 +10,7 @@ import userPreferencesService from '../services/userPreferencesService';
 import trendingService from '../services/trendingService';
 import './VideoPlayer.css';
 
-const VideoPlayer = ({
+const VideoPlayerComponent = ({
   contentId,
   contentType = 'movie',
   season = null,
@@ -940,6 +941,15 @@ const VideoPlayer = ({
         />
       )}
     </div>
+  );
+};
+
+// Wrap VideoPlayer with authentication protection
+const VideoPlayer = (props) => {
+  return (
+    <ProtectedVideoPlayer>
+      <VideoPlayerComponent {...props} />
+    </ProtectedVideoPlayer>
   );
 };
 
