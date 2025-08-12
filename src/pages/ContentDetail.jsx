@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { Play, Share, ArrowLeft, X, Download, Users } from 'lucide-react';
-import { Button, Loading, Breadcrumb, ProductionInfo, CommentsSection, FAQSection, BookmarkButton, ServerSelector, ContentFAQ } from '../components';
+import { Button, Loading, Breadcrumb, ProductionInfo, CommentsSection, FAQSection, BookmarkButton, ServerSelector, ContentFAQ, AuthModal } from '../components';
 import VideoPlayer from '../components/VideoPlayer';
 import SeasonEpisodeSelector from '../components/SeasonEpisodeSelector';
 import WatchlistButton from '../components/WatchlistButton';
+import { useAuth } from '../contexts/AuthContext';
 import tmdbApi from '../services/tmdbApi';
 import { utils, analytics } from '../utils';
 import './ContentDetail.css';
@@ -12,6 +13,7 @@ import './ContentDetail.css';
 const ContentDetail = () => {
   const { id } = useParams();
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,6 +22,7 @@ const ContentDetail = () => {
   const [selectedEpisode, setSelectedEpisode] = useState(1);
   const [selectedServer, setSelectedServer] = useState(1);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Extract type from pathname
   const type = location.pathname.split('/')[1]; // Gets 'movie', 'tv', or 'anime'
@@ -237,6 +240,12 @@ const ContentDetail = () => {
   };
 
   const handlePlayClick = (season = null, episode = null) => {
+    // Check authentication first
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
+
     const playerInfo = {
       playerType: utils.PLAYER_CONFIG?.defaults?.player || 'videasy',
       serverName: `Server ${selectedServer}`,
@@ -754,6 +763,13 @@ const ContentDetail = () => {
       <div className="content-section">
         <ContentFAQ content={content} />
       </div>
+
+      {/* Authentication Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode="signin"
+      />
     </div>
   );
 };

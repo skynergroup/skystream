@@ -1,18 +1,22 @@
 import { useState, useEffect } from 'react';
 import { Heart, Plus, Check } from 'lucide-react';
 import { isInWatchlist, toggleWatchlist } from '../utils/watchlist';
+import { useAuth } from '../contexts/AuthContext';
 import { analytics } from '../utils';
+import AuthModal from './AuthModal';
 import './WatchlistButton.css';
 
-const WatchlistButton = ({ 
-  content, 
+const WatchlistButton = ({
+  content,
   variant = 'default', // 'default', 'compact', 'large'
   showText = true,
   className = '',
   onToggle = null // Callback for when watchlist status changes
 }) => {
+  const { isAuthenticated } = useAuth();
   const [inWatchlist, setInWatchlist] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Check initial watchlist status
   useEffect(() => {
@@ -24,6 +28,12 @@ const WatchlistButton = ({
   const handleToggle = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Check authentication first
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
 
     if (!content?.id || !content?.type) {
       console.error('Invalid content for watchlist:', content);
@@ -118,14 +128,22 @@ const WatchlistButton = ({
   ].filter(Boolean).join(' ');
 
   return (
-    <button
-      className={buttonClasses}
-      onClick={handleToggle}
-      title={inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
-      aria-label={inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
-    >
-      {getButtonContent()}
-    </button>
+    <>
+      <button
+        className={buttonClasses}
+        onClick={handleToggle}
+        title={inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
+        aria-label={inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
+      >
+        {getButtonContent()}
+      </button>
+
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode="signin"
+      />
+    </>
   );
 };
 

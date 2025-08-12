@@ -10,6 +10,7 @@ import {
   getContentTypeDisplay
 } from '../utils/boredflixHelpers';
 import WatchlistButton from './WatchlistButton';
+import AuthenticatedLink from './AuthenticatedLink';
 import './ContentCard.css';
 
 const ContentCard = ({
@@ -137,9 +138,13 @@ const ContentCard = ({
         {/* Hover Overlay */}
         <div className="content-card__overlay">
           <div className="content-card__actions">
-            <Link to={getContentUrl()} className="content-card__action content-card__action--play">
+            <AuthenticatedLink
+              to={getContentUrl()}
+              className="content-card__action content-card__action--play"
+              requireAuth={true}
+            >
               <Play size={20} fill="currentColor" />
-            </Link>
+            </AuthenticatedLink>
             <WatchlistButton
               content={content || {
                 id,

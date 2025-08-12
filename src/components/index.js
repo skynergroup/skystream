@@ -28,3 +28,8 @@ export { default as BoredFlixHero } from './BoredFlixHero';
 export { default as HeroCarousel } from './HeroCarousel';
 export { default as ServerSelector } from './ServerSelector';
 export { default as ContentFAQ } from './ContentFAQ';
+
+// Authentication Components
+export { default as AuthModal } from './AuthModal';
+export { default as AuthenticatedLink } from './AuthenticatedLink';
+export { default as ProtectedRoute, ProtectedVideoPlayer, ProtectedLibrary, ProtectedWatchlist, withAuthProtection } from './ProtectedRoute';
