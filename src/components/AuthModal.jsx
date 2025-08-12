@@ -353,6 +353,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
                     placeholder="Enter your full name"
                     required
                     disabled={isLoading}
+                    autoComplete="name"
                   />
                 </div>
               </div>
@@ -373,6 +374,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
                     placeholder="Enter your email"
                     required
                     disabled={isLoading || mode === 'reset'}
+                    autoComplete="email"
                   />
                 </div>
               </div>
@@ -415,6 +417,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
                     required
                     disabled={isLoading}
                     minLength={mode === 'signup' || mode === 'reset' ? 8 : undefined}
+                    autoComplete={mode === 'signin' ? 'current-password' : mode === 'signup' ? 'new-password' : 'new-password'}
                   />
                   <button
                     type="button"
@@ -443,6 +446,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'signin' }) => {
                     placeholder="Confirm your password"
                     required
                     disabled={isLoading}
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"
