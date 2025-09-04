@@ -1,30 +1,17 @@
 import { ANALYTICS_CONFIG } from './config';
-import consentManager from './consentManager.js';
 
-// Google Analytics utility functions with consent management
+// Simplified Google Analytics utility functions
 class Analytics {
   constructor() {
     this.isInitialized = false;
     this.trackingId = ANALYTICS_CONFIG.trackingId;
     this.enabled = ANALYTICS_CONFIG.enabled;
-    this.consentGiven = false;
-
-    // Set up consent change listener
-    consentManager.onConsentChange((consent) => {
-      this.consentGiven = consent.analytics;
-      if (this.consentGiven && !this.isInitialized) {
-        this.init();
-      }
-    });
-
-    // Check if consent already exists
-    const currentConsent = consentManager.getConsent();
-    this.consentGiven = currentConsent.analytics;
+    this.consentGiven = true; // Always enabled for streamlined app
   }
 
-  // Initialize Google Analytics (only called when consent is given)
+  // Initialize Google Analytics
   init() {
-    if (!this.enabled || !this.trackingId || this.isInitialized || !this.consentGiven) {
+    if (!this.enabled || !this.trackingId || this.isInitialized) {
       return;
     }
 
@@ -51,7 +38,7 @@ class Analytics {
       });
 
       this.isInitialized = true;
-      console.log('[Analytics] Google Analytics initialized with consent and privacy settings');
+      console.log('[Analytics] Google Analytics initialized');
     } catch (error) {
       console.error('[Analytics] Failed to initialize Google Analytics:', error);
     }
@@ -356,10 +343,7 @@ class Analytics {
       return false;
     }
 
-    if (!this.consentGiven) {
-      console.log('[Analytics] User consent not given for analytics');
-      return false;
-    }
+
 
     if (!this.trackingId) {
       console.warn('[Analytics] No tracking ID configured');

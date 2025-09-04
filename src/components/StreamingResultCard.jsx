@@ -1,0 +1,117 @@
+import { useState } from 'react';
+import { Play, Star, Calendar, Info } from 'lucide-react';
+import streamingServices from '../services/streamingServices';
+import './StreamingResultCard.css';
+
+const StreamingResultCard = ({ content, onPlay }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  const posterUrl = content.poster_path 
+    ? `https://image.tmdb.org/t/p/w500${content.poster_path}`
+    : null;
+
+  const releaseYear = content.release_date 
+    ? new Date(content.release_date).getFullYear()
+    : null;
+
+  const rating = content.vote_average 
+    ? Math.round(content.vote_average * 10) / 10
+    : null;
+
+  const handlePlayVidsrc = () => {
+    const urls = streamingServices.getAllStreamingUrls(content);
+    onPlay?.(content, 'vidsrc', urls.vidsrc);
+  };
+
+  const handlePlayVideasy = () => {
+    const urls = streamingServices.getAllStreamingUrls(content);
+    onPlay?.(content, 'videasy', urls.videasy);
+  };
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
+    setImageLoaded(true);
+  };
+
+  return (
+    <div className="streaming-result-card">
+      <div className="streaming-result-card__poster">
+        {posterUrl && !imageError ? (
+          <img
+            src={posterUrl}
+            alt={content.title}
+            className={`streaming-result-card__image ${imageLoaded ? 'loaded' : ''}`}
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+          />
+        ) : (
+          <div className="streaming-result-card__placeholder">
+            <Info size={32} />
+          </div>
+        )}
+        
+        <div className="streaming-result-card__overlay">
+          <div className="streaming-result-card__play-buttons">
+            <button
+              className="streaming-result-card__play-btn streaming-result-card__play-btn--server1"
+              onClick={handlePlayVidsrc}
+              title="Play on Server 1"
+            >
+              <Play size={16} />
+              Server 1
+            </button>
+            <button
+              className="streaming-result-card__play-btn streaming-result-card__play-btn--server2"
+              onClick={handlePlayVideasy}
+              title="Play on Server 2"
+            >
+              <Play size={16} />
+              Server 2
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="streaming-result-card__info">
+        <h3 className="streaming-result-card__title" title={content.title}>
+          {content.title}
+        </h3>
+        
+        <div className="streaming-result-card__meta">
+          {releaseYear && (
+            <span className="streaming-result-card__year">
+              <Calendar size={12} />
+              {releaseYear}
+            </span>
+          )}
+          
+          {rating && (
+            <span className="streaming-result-card__rating">
+              <Star size={12} />
+              {rating}
+            </span>
+          )}
+          
+          <span className="streaming-result-card__type">
+            {content.type === 'movie' ? 'Movie' : 'TV Show'}
+          </span>
+        </div>
+
+        {content.overview && (
+          <p className="streaming-result-card__overview">
+            {content.overview.length > 120 
+              ? `${content.overview.substring(0, 120)}...` 
+              : content.overview}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default StreamingResultCard;

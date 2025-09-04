@@ -1,0 +1,240 @@
+.streaming-player-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  backdrop-filter: blur(10px);
+}
+
+.streaming-player-modal__content {
+  background: var(--netflix-dark-gray);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 1200px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.streaming-player-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.streaming-player-modal__title h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--netflix-white);
+  line-height: 1.3;
+}
+
+.streaming-player-modal__platform {
+  font-size: 0.8rem;
+  color: var(--netflix-text-gray);
+  font-weight: 400;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.streaming-player-modal__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.streaming-player-modal__control-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: var(--netflix-text-gray);
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.streaming-player-modal__control-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--netflix-white);
+}
+
+.streaming-player-modal__close:hover {
+  background: var(--netflix-red);
+  color: white;
+}
+
+.streaming-player-modal__player {
+  flex: 1;
+  position: relative;
+  background: #000;
+  min-height: 400px;
+}
+
+.streaming-player-modal__iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #000;
+  min-height: 400px;
+}
+
+.streaming-player-modal__footer {
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.streaming-player-modal__disclaimer {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--netflix-text-gray);
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .streaming-player-modal {
+    padding: 0.5rem;
+  }
+  
+  .streaming-player-modal__content {
+    max-height: 95vh;
+    border-radius: 8px;
+  }
+  
+  .streaming-player-modal__header {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .streaming-player-modal__title h2 {
+    font-size: 1.1rem;
+  }
+  
+  .streaming-player-modal__controls {
+    align-self: flex-end;
+  }
+  
+  .streaming-player-modal__player {
+    min-height: 300px;
+  }
+  
+  .streaming-player-modal__iframe {
+    min-height: 300px;
+  }
+  
+  .streaming-player-modal__footer {
+    padding: 0.625rem 1rem;
+  }
+  
+  .streaming-player-modal__disclaimer {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .streaming-player-modal {
+    padding: 0.25rem;
+  }
+  
+  .streaming-player-modal__content {
+    border-radius: 6px;
+  }
+  
+  .streaming-player-modal__header {
+    padding: 0.625rem 0.75rem;
+  }
+  
+  .streaming-player-modal__title h2 {
+    font-size: 1rem;
+  }
+  
+  .streaming-player-modal__player {
+    min-height: 250px;
+  }
+  
+  .streaming-player-modal__iframe {
+    min-height: 250px;
+  }
+  
+  .streaming-player-modal__footer {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* Animation */
+.streaming-player-modal {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.streaming-player-modal__content {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Focus states for accessibility */
+.streaming-player-modal__control-btn:focus-visible {
+  outline: 2px solid var(--netflix-red);
+  outline-offset: 2px;
+}
+
+/* Loading state for iframe */
+.streaming-player-modal__iframe {
+  background: linear-gradient(
+    45deg,
+    #000 25%,
+    transparent 25%,
+    transparent 75%,
+    #000 75%,
+    #000
+  ),
+  linear-gradient(
+    45deg,
+    #000 25%,
+    transparent 25%,
+    transparent 75%,
+    #000 75%,
+    #000
+  );
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}
