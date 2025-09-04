@@ -1,14 +1,1 @@
 export { default as Home } from './Home';
-export { default as Movies } from './Movies';
-export { default as TVShows } from './TVShows';
-export { default as Anime } from './Anime';
-export { default as Search } from './Search';
-export { default as Library } from './Library';
-export { default as Watchlist } from './Watchlist';
-export { default as Parties } from './Parties';
-export { default as ContentDetail } from './ContentDetail';
-export { default as PrivacyPolicy } from './PrivacyPolicy';
-export { default as Terms } from './Terms';
-export { default as Contact } from './Contact';
-export { default as About } from './About';
-export { default as NotFound } from './NotFound';

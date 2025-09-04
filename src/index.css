@@ -234,3 +234,62 @@ a:focus-visible {
   outline: 2px solid var(--netflix-red);
   outline-offset: 2px;
 }
+
+/* Streaming App Specific Styles */
+.streaming-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.streaming-hero {
+  background: linear-gradient(135deg, var(--netflix-black) 0%, var(--netflix-dark-gray) 100%);
+  padding: 4rem 2rem 2rem 2rem;
+  text-align: center;
+}
+
+.streaming-hero h1 {
+  background: linear-gradient(135deg, var(--netflix-white) 0%, var(--netflix-red) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+}
+
+/* Enhanced mobile responsiveness for streaming features */
+@media (max-width: 768px) {
+  .streaming-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .streaming-hero {
+    padding: 2rem 1rem 1rem 1rem;
+  }
+
+  .streaming-hero h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .streaming-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .streaming-hero {
+    padding: 1.5rem 0.75rem 1rem 0.75rem;
+  }
+
+  .streaming-hero h1 {
+    font-size: 1.75rem;
+  }
+}

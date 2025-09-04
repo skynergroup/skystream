@@ -1,160 +1,306 @@
-import { useState, useEffect } from 'react';
-import { HeroBanner, ContentGrid, Loading, ContinueWatching, TrendingSection, BoredFlixHero, HeroCarousel } from '../components';
-import { useAuth } from '../contexts/AuthContext';
+import { useState, useCallback } from 'react';
+import { Search as SearchIcon } from 'lucide-react';
+import MaintenanceBanner from '../components/MaintenanceBanner';
+import StreamingSearchBar from '../components/StreamingSearchBar';
+import StreamingResultCard from '../components/StreamingResultCard';
+import StreamingPlayerModal from '../components/StreamingPlayerModal';
+import { Loading } from '../components';
 import tmdbApi from '../services/tmdbApi';
 import { analytics } from '../utils';
-import { getRandomFeaturedContent } from '../utils/boredflixHelpers';
 
 const Home = () => {
-  const { isAuthenticated } = useAuth();
-  const [featuredContent, setFeaturedContent] = useState([]);
-  const [trendingContent, setTrendingContent] = useState([]);
-  const [popularMovies, setPopularMovies] = useState([]);
-  const [popularTV, setPopularTV] = useState([]);
-  const [popularAnime, setPopularAnime] = useState([]);
-  const [topRated, setTopRated] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [playerModal, setPlayerModal] = useState({
+    isOpen: false,
+    content: null,
+    platform: null,
+    embedUrl: null
+  });
 
-  // Load content from TMDB API
-  const loadContent = async () => {
+  // Handle search
+  const handleSearch = useCallback(async (query) => {
     try {
       setLoading(true);
       setError(null);
+      setHasSearched(true);
 
-      const homeContent = await tmdbApi.getHomePageContent();
+      // Search using TMDB API
+      const searchResults = await tmdbApi.search(query);
 
-      setFeaturedContent(homeContent.featured);
-      setTrendingContent(homeContent.trending);
-      setPopularMovies(homeContent.popularMovies);
-      setPopularTV(homeContent.popularTV);
-      setTopRated(homeContent.topRated);
-      setPopularAnime(homeContent.popularAnime || []);
+      // Transform results
+      const transformedResults = searchResults.results
+        .filter(item => item.media_type !== 'person') // Filter out people
+        .map(item => tmdbApi.transformContent(item))
+        .slice(0, 20); // Limit to 20 results
 
-      // Track home page content load
-      analytics.trackEvent('home_content_loaded', {
-        category: 'content_discovery',
-        label: 'homepage',
-        featured_count: homeContent.featured?.length || 0,
-        trending_count: homeContent.trending?.length || 0,
-        popular_movies_count: homeContent.popularMovies?.length || 0,
-        popular_tv_count: homeContent.popularTV?.length || 0,
-        top_rated_count: homeContent.topRated?.length || 0,
-        popular_anime_count: homeContent.popularAnime?.length || 0,
-      });
+      setSearchResults(transformedResults);
+
+      // Track search analytics
+      analytics.trackSearch(query, transformedResults.length);
+
     } catch (err) {
-      console.error('Failed to load content:', err);
+      console.error('Search failed:', err);
       setError(err);
+      setSearchResults([]);
 
-      // Track home page load error
-      analytics.trackError(`Home page load failed: ${err.message}`, 'home_page_error');
+      // Track search error
+      analytics.trackError(`Search failed: ${err.message}`, 'search_error');
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    loadContent();
   }, []);
 
-  if (loading) {
-    return (
-      <div
-        style={{
+  // Handle clear search
+  const handleClearSearch = useCallback(() => {
+    setSearchResults([]);
+    setHasSearched(false);
+    setError(null);
+  }, []);
+
+  // Handle play content
+  const handlePlay = useCallback((content, platform, embedUrl) => {
+    setPlayerModal({
+      isOpen: true,
+      content,
+      platform,
+      embedUrl
+    });
+
+    // Track play event
+    analytics.trackEvent('content_play', {
+      category: 'streaming',
+      label: platform === 'vidsrc' ? 'server1' : 'server2',
+      content_id: content.id,
+      content_type: content.type,
+      content_title: content.title
+    });
+  }, []);
+
+  // Handle close player modal
+  const handleClosePlayer = useCallback(() => {
+    setPlayerModal({
+      isOpen: false,
+      content: null,
+      platform: null,
+      embedUrl: null
+    });
+  }, []);
+
+  return (
+    <div className="streaming-app">
+      {/* Simple Header */}
+      <header style={{
+        background: 'var(--netflix-black)',
+        padding: '1rem 2rem',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+        backdropFilter: 'blur(10px)'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          maxWidth: '1200px',
+          margin: '0 auto'
+        }}>
+          <h1 style={{
+            fontSize: 'clamp(1.25rem, 4vw, 1.5rem)',
+            fontWeight: '700',
+            color: 'var(--netflix-white)',
+            margin: 0,
+            background: 'linear-gradient(135deg, var(--netflix-white) 0%, var(--netflix-red) 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            SkyStream
+          </h1>
+        </div>
+      </header>
+
+      {/* Maintenance Banner */}
+      <MaintenanceBanner
+        message="We are currently under maintenance. Some features may be temporarily unavailable."
+        type="warning"
+        dismissible={true}
+      />
+
+      {/* Hero Section */}
+      <div style={{
+        padding: 'clamp(2rem, 8vw, 4rem) clamp(1rem, 4vw, 2rem) clamp(1rem, 4vw, 2rem) clamp(1rem, 4vw, 2rem)',
+        textAlign: 'center',
+        background: 'linear-gradient(135deg, var(--netflix-black) 0%, var(--netflix-dark-gray) 100%)'
+      }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <h1 style={{
+            fontSize: 'clamp(2rem, 8vw, 3rem)',
+            fontWeight: '700',
+            color: 'var(--netflix-white)',
+            margin: '0 0 1rem 0',
+            background: 'linear-gradient(135deg, var(--netflix-white) 0%, var(--netflix-red) 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            SkyStream
+          </h1>
+
+          <p style={{
+            fontSize: 'clamp(1rem, 3vw, 1.25rem)',
+            color: 'var(--netflix-text-gray)',
+            margin: '0 0 clamp(2rem, 6vw, 3rem) 0',
+            lineHeight: '1.6'
+          }}>
+            Search and stream your favorite movies, TV shows, and anime instantly
+          </p>
+
+          {/* Search Bar */}
+          <StreamingSearchBar
+            onSearch={handleSearch}
+            onClear={handleClearSearch}
+            placeholder="Search for movies, TV shows, anime..."
+            autoFocus={true}
+          />
+        </div>
+      </div>
+
+      {/* Search Results */}
+      {loading && (
+        <div style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          minHeight: '60vh',
-        }}
-      >
-        <Loading size="large" text="Loading amazing content..." />
-      </div>
-    );
-  }
+          minHeight: '300px',
+          padding: '2rem'
+        }}>
+          <Loading text="Searching..." />
+        </div>
+      )}
 
-  if (error) {
-    return (
-      <div
-        style={{
+      {error && (
+        <div style={{
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          minHeight: '60vh',
+          minHeight: '300px',
           textAlign: 'center',
-          padding: '2rem',
-        }}
-      >
-        <h2 style={{ color: 'var(--netflix-red)', marginBottom: '1rem' }}>
-          Failed to Load Content
-        </h2>
-        <p style={{ color: 'var(--netflix-text-gray)', marginBottom: '2rem' }}>
-          Unable to fetch content from TMDB. Please check your API key and try again.
-        </p>
-        <button
-          onClick={loadContent}
-          style={{
-            background: 'var(--netflix-red)',
-            color: 'white',
-            border: 'none',
-            padding: '0.75rem 1.5rem',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="home-page">
-      {/* BoredFlix-style Hero Carousel */}
-      <HeroCarousel content={featuredContent} autoPlay={true} interval={6000} />
-
-      {/* Content Sections - BoredFlix Layout */}
-      <div style={{ padding: '2rem 0' }}>
-        {/* Continue Watching Section - Only show when authenticated */}
-        {isAuthenticated && (
-          <div style={{ padding: '0 2rem' }}>
-            <ContinueWatching limit={8} />
-          </div>
-        )}
-
-        {/* Trending Section - TMDB API Data */}
-        <div style={{ padding: '0 2rem' }}>
-          <TrendingSection
-            timeframe="week"
-            limit={20}
-            showTitle={true}
-          />
+          padding: '2rem'
+        }}>
+          <h3 style={{ color: 'var(--netflix-red)', marginBottom: '1rem' }}>
+            Search Failed
+          </h3>
+          <p style={{ color: 'var(--netflix-text-gray)', marginBottom: '2rem' }}>
+            Unable to search content. Please try again.
+          </p>
         </div>
+      )}
 
-        {/* Top Rated */}
-        <ContentGrid
-          title="Top Rated"
-          items={topRated}
-          cardSize="medium"
-          className="content-grid--horizontal"
-        />
+      {!loading && hasSearched && searchResults.length > 0 && (
+        <div style={{ padding: '2rem' }}>
+          <h2 style={{
+            color: 'var(--netflix-white)',
+            fontSize: '1.5rem',
+            fontWeight: '600',
+            margin: '0 0 2rem 0',
+            textAlign: 'center'
+          }}>
+            Search Results ({searchResults.length})
+          </h2>
 
-        {/* Popular */}
-        <ContentGrid
-          title="Popular"
-          items={popularMovies}
-          cardSize="medium"
-          className="content-grid--horizontal"
-        />
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+            gap: '1.5rem',
+            maxWidth: '1200px',
+            margin: '0 auto'
+          }}>
+            {searchResults.map((content) => (
+              <StreamingResultCard
+                key={`${content.type}-${content.id}`}
+                content={content}
+                onPlay={handlePlay}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
-        {/* Popular Anime */}
-        <ContentGrid
-          title="Popular Anime"
-          items={popularAnime}
-          cardSize="medium"
-          className="content-grid--horizontal"
-        />
-      </div>
+      {!loading && hasSearched && searchResults.length === 0 && !error && (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '300px',
+          textAlign: 'center',
+          padding: '2rem'
+        }}>
+          <SearchIcon
+            size={64}
+            style={{ color: 'var(--netflix-text-gray)', marginBottom: '1rem' }}
+          />
+          <h3 style={{
+            color: 'var(--netflix-white)',
+            fontSize: '1.5rem',
+            margin: '0 0 0.5rem 0'
+          }}>
+            No Results Found
+          </h3>
+          <p style={{
+            color: 'var(--netflix-text-gray)',
+            fontSize: '1rem',
+            maxWidth: '400px',
+            margin: 0
+          }}>
+            Try searching with different keywords or check your spelling.
+          </p>
+        </div>
+      )}
+
+      {/* Streaming Player Modal */}
+      <StreamingPlayerModal
+        isOpen={playerModal.isOpen}
+        onClose={handleClosePlayer}
+        content={playerModal.content}
+        platform={playerModal.platform}
+        embedUrl={playerModal.embedUrl}
+      />
+
+      {/* Simple Footer */}
+      <footer style={{
+        background: 'var(--netflix-dark-gray)',
+        padding: '2rem',
+        textAlign: 'center',
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+        marginTop: '4rem'
+      }}>
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto'
+        }}>
+          <p style={{
+            color: 'var(--netflix-text-gray)',
+            fontSize: '0.9rem',
+            margin: '0 0 1rem 0'
+          }}>
+            SkyStream - Search and stream your favorite content instantly
+          </p>
+          <p style={{
+            color: 'var(--netflix-text-gray)',
+            fontSize: '0.8rem',
+            margin: 0,
+            opacity: 0.7
+          }}>
+            Content provided by third-party services. We do not host any content.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

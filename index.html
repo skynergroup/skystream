@@ -11,7 +11,7 @@
     <meta name="robots" content="index, follow" />
 
     <!-- Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://accounts.google.com https://www.google.com; script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://accounts.google.com https://www.google.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://api.themoviedb.org https://player.videasy.net https://vidsrc.xyz https://cognito-idp.us-east-1.amazonaws.com https://cognito-identity.us-east-1.amazonaws.com https://*.amazonaws.com; frame-src 'self' https://player.videasy.net https://vidsrc.xyz; img-src 'self' data: https: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; font-src 'self' https://fonts.gstatic.com;">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com; script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://api.themoviedb.org https://player.videasy.net https://vidsrc.xyz https://vitals.vercel-insights.com https://*.vercel-insights.com; frame-src 'self' https://player.videasy.net https://vidsrc.xyz; img-src 'self' data: https: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -55,22 +55,12 @@
       });
     </script>
 
-    <!-- SPA Redirect Script for Static Hosting -->
-    <script src="/spa-redirect.js"></script>
+
   </head>
   <body>
     <div id="root"></div>
 
-    <!-- Handle SPA redirect on page load -->
-    <script>
-      (function() {
-        var redirect = sessionStorage.redirect;
-        delete sessionStorage.redirect;
-        if (redirect && redirect !== location.href) {
-          history.replaceState(null, null, redirect);
-        }
-      })();
-    </script>
+
 
     <script type="module" src="/src/main.jsx"></script>
   </body>
