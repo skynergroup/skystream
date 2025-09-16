@@ -17,7 +17,10 @@ const Home = () => {
     isOpen: false,
     content: null,
     platform: null,
-    embedUrl: null
+    embedUrl: null,
+    contentType: 'movie',
+    season: null,
+    episode: null
   });
 
   // Handle search
@@ -61,12 +64,17 @@ const Home = () => {
   }, []);
 
   // Handle play content
-  const handlePlay = useCallback((content, platform, embedUrl) => {
+  const handlePlay = useCallback((content, platform, embedUrl, options = {}) => {
+    const { season = null, episode = null } = options;
+
     setPlayerModal({
       isOpen: true,
       content,
       platform,
-      embedUrl
+      embedUrl,
+      contentType: content.type || 'movie',
+      season,
+      episode
     });
 
     // Track play event
@@ -75,7 +83,9 @@ const Home = () => {
       label: platform === 'vidsrc' ? 'server1' : 'server2',
       content_id: content.id,
       content_type: content.type,
-      content_title: content.title
+      content_title: content.title,
+      season,
+      episode
     });
   }, []);
 
@@ -85,7 +95,10 @@ const Home = () => {
       isOpen: false,
       content: null,
       platform: null,
-      embedUrl: null
+      embedUrl: null,
+      contentType: 'movie',
+      season: null,
+      episode: null
     });
   }, []);
 
@@ -270,6 +283,9 @@ const Home = () => {
         content={playerModal.content}
         platform={playerModal.platform}
         embedUrl={playerModal.embedUrl}
+        contentType={playerModal.contentType}
+        season={playerModal.season}
+        episode={playerModal.episode}
       />
 
       {/* Simple Footer */}

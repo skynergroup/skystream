@@ -1,14 +1,49 @@
-import { useEffect } from 'react';
-import { X, ExternalLink } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { X, ExternalLink, Download } from 'lucide-react';
+import streamingServices from '../services/streamingServices';
 import './StreamingPlayerModal.css';
 
-const StreamingPlayerModal = ({ 
-  isOpen, 
-  onClose, 
-  content, 
-  platform, 
-  embedUrl 
+const StreamingPlayerModal = ({
+  isOpen,
+  onClose,
+  content,
+  platform,
+  embedUrl,
+  contentType = 'movie',
+  season = null,
+  episode = null
 }) => {
+  // State for season and episode selection
+  const [selectedSeason, setSelectedSeason] = useState(season || 1);
+  const [selectedEpisode, setSelectedEpisode] = useState(episode || 1);
+  const [currentEmbedUrl, setCurrentEmbedUrl] = useState(embedUrl);
+
+  // Update embed URL when season/episode changes
+  useEffect(() => {
+    if (contentType === 'tv' && content?.id) {
+      const urls = streamingServices.getAllStreamingUrls(content, {
+        season: selectedSeason,
+        episode: selectedEpisode
+      });
+
+      if (platform === 'vidsrc') {
+        setCurrentEmbedUrl(urls.vidsrc);
+      } else if (platform === 'videasy') {
+        setCurrentEmbedUrl(urls.videasy);
+      }
+    } else {
+      setCurrentEmbedUrl(embedUrl);
+    }
+  }, [selectedSeason, selectedEpisode, contentType, content, platform, embedUrl]);
+
+  // Reset season/episode when modal opens with new content
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedSeason(season || 1);
+      setSelectedEpisode(episode || 1);
+    }
+  }, [isOpen, season, episode]);
+
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e) => {
@@ -40,6 +75,76 @@ const StreamingPlayerModal = ({
     window.open(embedUrl, '_blank', 'noopener,noreferrer');
   };
 
+  // Extract season and episode from selected values or embed URL
+  const extractSeasonEpisode = () => {
+    // Use selected values if available
+    if (selectedSeason && selectedEpisode) {
+      return { season: selectedSeason, episode: selectedEpisode };
+    }
+
+    // Fall back to props
+    if (season && episode) {
+      return { season, episode };
+    }
+
+    if (embedUrl && contentType === 'tv') {
+      try {
+        const url = new URL(embedUrl);
+        const urlSeason = url.searchParams.get('season');
+        const urlEpisode = url.searchParams.get('episode');
+
+        if (urlSeason && urlEpisode) {
+          return {
+            season: parseInt(urlSeason),
+            episode: parseInt(urlEpisode)
+          };
+        }
+      } catch (e) {
+        console.warn('Failed to parse embed URL:', e);
+      }
+    }
+
+    // Default to season 1, episode 1 for TV series
+    return { season: 1, episode: 1 };
+  };
+
+  // Generate download URL
+  const generateDownloadUrl = () => {
+    if (!content?.id) return null;
+
+    const baseUrl = 'https://dl.vidsrc.vip';
+
+    if (contentType === 'movie') {
+      // Movie format: https://dl.vidsrc.vip/movie/986056
+      return `${baseUrl}/movie/${content.id}`;
+    } else if (contentType === 'tv') {
+      // TV format: https://dl.vidsrc.vip/tv/60572/1/1
+      const { season: extractedSeason, episode: extractedEpisode } = extractSeasonEpisode();
+      return `${baseUrl}/tv/${content.id}/${extractedSeason}/${extractedEpisode}`;
+    }
+
+    return null;
+  };
+
+  // Handle download
+  const handleDownload = () => {
+    const downloadUrl = generateDownloadUrl();
+    if (downloadUrl) {
+      window.open(downloadUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  // Get download button title
+  const getDownloadTitle = () => {
+    if (contentType === 'movie') {
+      return 'Download movie';
+    } else if (contentType === 'tv') {
+      const { season: extractedSeason, episode: extractedEpisode } = extractSeasonEpisode();
+      return `Download S${extractedSeason}E${extractedEpisode}`;
+    }
+    return 'Download content';
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -55,8 +160,54 @@ const StreamingPlayerModal = ({
               Playing on {platform === 'vidsrc' ? 'Server 1' : 'Server 2'}
             </span>
           </div>
-          
+
+          {/* Season and Episode Selectors for TV Series */}
+          {contentType === 'tv' && (
+            <div className="streaming-player-modal__episode-controls">
+              <div className="streaming-player-modal__selector">
+                <label htmlFor="season-select">Season:</label>
+                <select
+                  id="season-select"
+                  value={selectedSeason}
+                  onChange={(e) => setSelectedSeason(parseInt(e.target.value))}
+                  className="streaming-player-modal__select"
+                >
+                  {Array.from({ length: 20 }, (_, i) => i + 1).map(seasonNum => (
+                    <option key={seasonNum} value={seasonNum}>
+                      Season {seasonNum}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="streaming-player-modal__selector">
+                <label htmlFor="episode-select">Episode:</label>
+                <select
+                  id="episode-select"
+                  value={selectedEpisode}
+                  onChange={(e) => setSelectedEpisode(parseInt(e.target.value))}
+                  className="streaming-player-modal__select"
+                >
+                  {Array.from({ length: 50 }, (_, i) => i + 1).map(episodeNum => (
+                    <option key={episodeNum} value={episodeNum}>
+                      Episode {episodeNum}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+
           <div className="streaming-player-modal__controls">
+            {generateDownloadUrl() && (
+              <button
+                className="streaming-player-modal__control-btn"
+                onClick={handleDownload}
+                title={getDownloadTitle()}
+              >
+                <Download size={18} />
+              </button>
+            )}
             <button
               className="streaming-player-modal__control-btn"
               onClick={handleOpenInNewTab}
@@ -76,12 +227,12 @@ const StreamingPlayerModal = ({
 
         <div className="streaming-player-modal__player">
           <iframe
-            src={embedUrl}
+            src={currentEmbedUrl}
             title={`${content?.title} - ${platform}`}
             className="streaming-player-modal__iframe"
             allowFullScreen
             allow="encrypted-media; autoplay; fullscreen"
-            frameBorder="0"
+            style={{ border: 'none' }}
             loading="lazy"
           />
         </div>
