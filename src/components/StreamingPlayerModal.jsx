@@ -11,42 +11,77 @@ const StreamingPlayerModal = ({
   embedUrl,
   contentType = 'movie',
   season = null,
-  episode = null
+  episode = null,
 }) => {
   // State for season and episode selection
   const [selectedSeason, setSelectedSeason] = useState(season || 1);
   const [selectedEpisode, setSelectedEpisode] = useState(episode || 1);
   const [currentEmbedUrl, setCurrentEmbedUrl] = useState(embedUrl);
+  const [selectedPlatform, setSelectedPlatform] = useState(platform);
 
-  // Update embed URL when season/episode changes
+  // Handle season change - reset episode to 1
+  const handleSeasonChange = newSeason => {
+    setSelectedSeason(parseInt(newSeason));
+    setSelectedEpisode(1); // Reset to episode 1 when season changes
+  };
+
+  // Update embed URL when season/episode/platform changes
   useEffect(() => {
-    if (contentType === 'tv' && content?.id) {
+    if (content?.id) {
       const urls = streamingServices.getAllStreamingUrls(content, {
         season: selectedSeason,
-        episode: selectedEpisode
+        episode: selectedEpisode,
       });
 
-      if (platform === 'vidsrc') {
+      if (selectedPlatform === 'vidsrc') {
         setCurrentEmbedUrl(urls.vidsrc);
-      } else if (platform === 'videasy') {
+      } else if (selectedPlatform === 'videasy') {
         setCurrentEmbedUrl(urls.videasy);
       }
     } else {
       setCurrentEmbedUrl(embedUrl);
     }
-  }, [selectedSeason, selectedEpisode, contentType, content, platform, embedUrl]);
+  }, [selectedSeason, selectedEpisode, selectedPlatform, contentType, content, embedUrl]);
 
-  // Reset season/episode when modal opens with new content
+  // Reset season/episode/platform when modal opens with new content
   useEffect(() => {
     if (isOpen) {
       setSelectedSeason(season || 1);
       setSelectedEpisode(episode || 1);
+      setSelectedPlatform(platform);
     }
-  }, [isOpen, season, episode]);
+  }, [isOpen, season, episode, platform]);
+
+  // Listen for episode changes from YashEasy navigation
+  useEffect(() => {
+    if (!isOpen || selectedPlatform !== 'videasy' || contentType !== 'tv') return;
+
+    // Listen for postMessage from iframe about navigation
+    const handleMessage = event => {
+      if (event.data && event.data.type === 'episodeChange') {
+        const { season: newSeason, episode: newEpisode } = event.data;
+        if (newSeason && newEpisode) {
+          const seasonNum = parseInt(newSeason);
+          const episodeNum = parseInt(newEpisode);
+
+          if (seasonNum !== selectedSeason || episodeNum !== selectedEpisode) {
+            setSelectedSeason(seasonNum);
+            setSelectedEpisode(episodeNum);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [isOpen, selectedPlatform, contentType, selectedSeason, selectedEpisode]);
 
   // Handle escape key
   useEffect(() => {
-    const handleEscape = (e) => {
+    const handleEscape = e => {
       if (e.key === 'Escape') {
         onClose();
       }
@@ -64,7 +99,7 @@ const StreamingPlayerModal = ({
   }, [isOpen, onClose]);
 
   // Handle backdrop click
-  const handleBackdropClick = (e) => {
+  const handleBackdropClick = e => {
     if (e.target === e.currentTarget) {
       onClose();
     }
@@ -96,7 +131,7 @@ const StreamingPlayerModal = ({
         if (urlSeason && urlEpisode) {
           return {
             season: parseInt(urlSeason),
-            episode: parseInt(urlEpisode)
+            episode: parseInt(urlEpisode),
           };
         }
       } catch (e) {
@@ -148,17 +183,23 @@ const StreamingPlayerModal = ({
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="streaming-player-modal"
-      onClick={handleBackdropClick}
-    >
+    <div className="streaming-player-modal" onClick={handleBackdropClick}>
       <div className="streaming-player-modal__content">
         <div className="streaming-player-modal__header">
           <div className="streaming-player-modal__title">
             <h2>{content?.title}</h2>
-            <span className="streaming-player-modal__platform">
-              Playing on {platform === 'vidsrc' ? 'Server 1' : 'Server 2'}
-            </span>
+            <div className="streaming-player-modal__server-selector">
+              <label htmlFor="server-select">Server:</label>
+              <select
+                id="server-select"
+                value={selectedPlatform}
+                onChange={e => setSelectedPlatform(e.target.value)}
+                className="streaming-player-modal__server-select"
+              >
+                <option value="vidsrc">Server 1 - YashSrc</option>
+                <option value="videasy">Server 2 - YashEasy</option>
+              </select>
+            </div>
           </div>
 
           {/* Season and Episode Selectors for TV Series */}
@@ -169,7 +210,7 @@ const StreamingPlayerModal = ({
                 <select
                   id="season-select"
                   value={selectedSeason}
-                  onChange={(e) => setSelectedSeason(parseInt(e.target.value))}
+                  onChange={e => handleSeasonChange(e.target.value)}
                   className="streaming-player-modal__select"
                 >
                   {Array.from({ length: 20 }, (_, i) => i + 1).map(seasonNum => (
@@ -185,7 +226,7 @@ const StreamingPlayerModal = ({
                 <select
                   id="episode-select"
                   value={selectedEpisode}
-                  onChange={(e) => setSelectedEpisode(parseInt(e.target.value))}
+                  onChange={e => setSelectedEpisode(parseInt(e.target.value))}
                   className="streaming-player-modal__select"
                 >
                   {Array.from({ length: 50 }, (_, i) => i + 1).map(episodeNum => (

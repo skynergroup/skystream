@@ -7,17 +7,13 @@ const StreamingResultCard = ({ content, onPlay }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const posterUrl = content.poster_path 
+  const posterUrl = content.poster_path
     ? `https://image.tmdb.org/t/p/w500${content.poster_path}`
     : null;
 
-  const releaseYear = content.release_date 
-    ? new Date(content.release_date).getFullYear()
-    : null;
+  const releaseYear = content.release_date ? new Date(content.release_date).getFullYear() : null;
 
-  const rating = content.vote_average 
-    ? Math.round(content.vote_average * 10) / 10
-    : null;
+  const rating = content.vote_average ? Math.round(content.vote_average * 10) / 10 : null;
 
   const handlePlayVidsrc = () => {
     const urls = streamingServices.getAllStreamingUrls(content);
@@ -54,7 +50,7 @@ const StreamingResultCard = ({ content, onPlay }) => {
             <Info size={32} />
           </div>
         )}
-        
+
         <div className="streaming-result-card__overlay">
           <div className="streaming-result-card__play-buttons">
             <button
@@ -81,7 +77,7 @@ const StreamingResultCard = ({ content, onPlay }) => {
         <h3 className="streaming-result-card__title" title={content.title}>
           {content.title}
         </h3>
-        
+
         <div className="streaming-result-card__meta">
           {releaseYear && (
             <span className="streaming-result-card__year">
@@ -89,14 +85,14 @@ const StreamingResultCard = ({ content, onPlay }) => {
               {releaseYear}
             </span>
           )}
-          
+
           {rating && (
             <span className="streaming-result-card__rating">
               <Star size={12} />
               {rating}
             </span>
           )}
-          
+
           <span className="streaming-result-card__type">
             {content.type === 'movie' ? 'Movie' : 'TV Show'}
           </span>
@@ -104,8 +100,8 @@ const StreamingResultCard = ({ content, onPlay }) => {
 
         {content.overview && (
           <p className="streaming-result-card__overview">
-            {content.overview.length > 120 
-              ? `${content.overview.substring(0, 120)}...` 
+            {content.overview.length > 120
+              ? `${content.overview.substring(0, 120)}...`
               : content.overview}
           </p>
         )}

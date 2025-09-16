@@ -158,12 +158,8 @@ export const utils = {
       return url;
     }
 
-
-
     return '';
   },
-
-
 
   // Get IMDB ID from TMDB
   getIMDBId: async (tmdbId, type = 'movie') => {

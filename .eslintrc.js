@@ -24,11 +24,7 @@ module.exports = {
       version: 'detect',
     },
   },
-  plugins: [
-    'react',
-    'react-hooks',
-    'react-refresh',
-  ],
+  plugins: ['react', 'react-hooks', 'react-refresh'],
   rules: {
     // React specific rules
     'react/react-in-jsx-scope': 'off',
@@ -51,10 +47,7 @@ module.exports = {
     'react-hooks/exhaustive-deps': 'warn',
 
     // React Refresh
-    'react-refresh/only-export-components': [
-      'warn',
-      { allowConstantExport: true },
-    ],
+    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
 
     // Accessibility rules (basic ones)
     // Add jsx-a11y plugin later if needed
@@ -69,9 +62,9 @@ module.exports = {
     'prefer-arrow-callback': 'warn',
     'arrow-spacing': 'warn',
     'comma-dangle': ['warn', 'only-multiline'],
-    'semi': ['warn', 'always'],
-    'quotes': ['warn', 'single', { avoidEscape: true }],
-    'indent': ['warn', 2, { SwitchCase: 1 }],
+    semi: ['warn', 'always'],
+    quotes: ['warn', 'single', { avoidEscape: true }],
+    indent: ['warn', 2, { SwitchCase: 1 }],
     'object-curly-spacing': ['warn', 'always'],
     'array-bracket-spacing': ['warn', 'never'],
     'space-before-blocks': 'warn',

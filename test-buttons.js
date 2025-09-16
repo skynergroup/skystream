@@ -8,7 +8,9 @@ function testShare() {
   console.log('Testing Share button...');
   try {
     // Simulate share button click
-    const shareBtn = document.querySelector('button[aria-label*="Share"], button:has(svg):contains("Share")');
+    const shareBtn = document.querySelector(
+      'button[aria-label*="Share"], button:has(svg):contains("Share")'
+    );
     if (shareBtn) {
       shareBtn.click();
       console.log('✅ Share button clicked successfully');
@@ -27,13 +29,13 @@ function testSave() {
     // Check localStorage before
     const beforeFavorites = JSON.parse(localStorage.getItem('skystream_favorites') || '[]');
     console.log('Favorites before:', beforeFavorites.length);
-    
+
     // Simulate save button click
     const saveBtn = document.querySelector('button:has(svg):contains("Save")');
     if (saveBtn) {
       saveBtn.click();
       console.log('✅ Save button clicked successfully');
-      
+
       // Check localStorage after
       const afterFavorites = JSON.parse(localStorage.getItem('skystream_favorites') || '[]');
       console.log('Favorites after:', afterFavorites.length);
@@ -53,7 +55,10 @@ function testParty() {
     if (partyBtn) {
       console.log('✅ Party button found');
       // Note: Party button redirects to parties page, so we won't click it in test
-      console.log('Party button would redirect to:', `/parties?content=${window.location.pathname}`);
+      console.log(
+        'Party button would redirect to:',
+        `/parties?content=${window.location.pathname}`
+      );
     } else {
       console.log('❌ Party button not found');
     }
@@ -95,7 +100,7 @@ window.testButtons = {
   testSave,
   testParty,
   testDownload,
-  runAllTests
+  runAllTests,
 };
 
 console.log('Test functions loaded. Run window.testButtons.runAllTests() to test all buttons.');

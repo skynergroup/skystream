@@ -42,11 +42,11 @@
   .text-responsive-large {
     font-size: 1.25rem;
   }
-  
+
   .text-responsive-medium {
     font-size: 1.1rem;
   }
-  
+
   .text-responsive-small {
     font-size: 0.9rem;
   }
@@ -56,11 +56,11 @@
   .text-responsive-large {
     font-size: 1.1rem;
   }
-  
+
   .text-responsive-medium {
     font-size: 1rem;
   }
-  
+
   .text-responsive-small {
     font-size: 0.85rem;
   }
@@ -83,11 +83,11 @@
   .spacing-responsive-large {
     margin-bottom: 1.5rem;
   }
-  
+
   .spacing-responsive-medium {
     margin-bottom: 1rem;
   }
-  
+
   .spacing-responsive-small {
     margin-bottom: 0.75rem;
   }
@@ -97,11 +97,11 @@
   .spacing-responsive-large {
     margin-bottom: 1rem;
   }
-  
+
   .spacing-responsive-medium {
     margin-bottom: 0.75rem;
   }
-  
+
   .spacing-responsive-small {
     margin-bottom: 0.5rem;
   }
@@ -198,7 +198,7 @@
   .hide-tablet {
     display: none;
   }
-  
+
   .show-tablet {
     display: block;
   }
@@ -208,7 +208,7 @@
   .hide-mobile {
     display: none;
   }
-  
+
   .show-mobile {
     display: block;
   }
@@ -218,7 +218,7 @@
   .hide-desktop {
     display: block;
   }
-  
+
   .show-desktop {
     display: none;
   }
@@ -273,7 +273,7 @@
   .card-responsive {
     border-radius: 6px;
   }
-  
+
   .card-responsive:hover {
     transform: none;
   }

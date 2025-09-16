@@ -5,7 +5,7 @@ import App from './App.jsx';
 
 // Initialize LocatorJS in development mode
 if (import.meta.env.DEV) {
-  import('@locator/runtime').then((module) => {
+  import('@locator/runtime').then(module => {
     const setupLocatorUI = module.default || module.setupLocatorUI;
     if (setupLocatorUI) {
       setupLocatorUI();

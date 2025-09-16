@@ -45,12 +45,54 @@
   line-height: 1.3;
 }
 
-.streaming-player-modal__platform {
-  font-size: 0.8rem;
-  color: var(--netflix-text-gray);
-  font-weight: 400;
-  margin-top: 0.25rem;
-  display: block;
+/* Server Selector */
+.streaming-player-modal__server-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.streaming-player-modal__server-selector label {
+  font-size: 0.9rem;
+  color: var(--netflix-white);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.streaming-player-modal__server-select {
+  background: linear-gradient(135deg, rgba(229, 9, 20, 0.1), rgba(229, 9, 20, 0.05));
+  border: 1px solid rgba(229, 9, 20, 0.3);
+  border-radius: 8px;
+  color: var(--netflix-white);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  min-width: 160px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(229, 9, 20, 0.1);
+}
+
+.streaming-player-modal__server-select:hover {
+  background: linear-gradient(135deg, rgba(229, 9, 20, 0.15), rgba(229, 9, 20, 0.08));
+  border-color: rgba(229, 9, 20, 0.5);
+  box-shadow: 0 4px 12px rgba(229, 9, 20, 0.2);
+  transform: translateY(-1px);
+}
+
+.streaming-player-modal__server-select:focus {
+  outline: none;
+  background: linear-gradient(135deg, rgba(229, 9, 20, 0.2), rgba(229, 9, 20, 0.1));
+  border-color: var(--netflix-red);
+  box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.3);
+}
+
+.streaming-player-modal__server-select option {
+  background: var(--netflix-dark-gray);
+  color: var(--netflix-white);
+  padding: 0.5rem;
+  font-weight: 500;
 }
 
 /* Episode Controls */
@@ -179,21 +221,34 @@
   .streaming-player-modal {
     padding: 0.5rem;
   }
-  
+
   .streaming-player-modal__content {
     max-height: 95vh;
     border-radius: 8px;
   }
-  
+
   .streaming-player-modal__header {
     padding: 0.75rem 1rem;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
   }
-  
+
   .streaming-player-modal__title h2 {
     font-size: 1.1rem;
+  }
+
+  .streaming-player-modal__server-selector {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+  }
+
+  .streaming-player-modal__server-select {
+    min-width: 140px;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
   }
 
   .streaming-player-modal__episode-controls {
@@ -216,19 +271,19 @@
   .streaming-player-modal__controls {
     align-self: flex-end;
   }
-  
+
   .streaming-player-modal__player {
     min-height: 300px;
   }
-  
+
   .streaming-player-modal__iframe {
     min-height: 300px;
   }
-  
+
   .streaming-player-modal__footer {
     padding: 0.625rem 1rem;
   }
-  
+
   .streaming-player-modal__disclaimer {
     font-size: 0.75rem;
   }
@@ -238,27 +293,27 @@
   .streaming-player-modal {
     padding: 0.25rem;
   }
-  
+
   .streaming-player-modal__content {
     border-radius: 6px;
   }
-  
+
   .streaming-player-modal__header {
     padding: 0.625rem 0.75rem;
   }
-  
+
   .streaming-player-modal__title h2 {
     font-size: 1rem;
   }
-  
+
   .streaming-player-modal__player {
     min-height: 250px;
   }
-  
+
   .streaming-player-modal__iframe {
     min-height: 250px;
   }
-  
+
   .streaming-player-modal__footer {
     padding: 0.5rem 0.75rem;
   }
@@ -301,22 +356,11 @@
 
 /* Loading state for iframe */
 .streaming-player-modal__iframe {
-  background: linear-gradient(
-    45deg,
-    #000 25%,
-    transparent 25%,
-    transparent 75%,
-    #000 75%,
-    #000
-  ),
-  linear-gradient(
-    45deg,
-    #000 25%,
-    transparent 25%,
-    transparent 75%,
-    #000 75%,
-    #000
-  );
+  background:
+    linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000),
+    linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000);
   background-size: 20px 20px;
-  background-position: 0 0, 10px 10px;
+  background-position:
+    0 0,
+    10px 10px;
 }

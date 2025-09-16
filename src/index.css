@@ -1,5 +1,5 @@
 /* Netflix-inspired Global Styles */
-@import './styles/responsive.css';
+@import "./styles/responsive.css";
 :root {
   /* Netflix Color Palette */
   --netflix-red: #e50914;
