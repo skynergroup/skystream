@@ -17,32 +17,34 @@ const StreamingPlayerModal = ({
   const [selectedSeason, setSelectedSeason] = useState(season || 1);
   const [selectedEpisode, setSelectedEpisode] = useState(episode || 1);
   const [currentEmbedUrl, setCurrentEmbedUrl] = useState(embedUrl);
+  const [selectedPlatform, setSelectedPlatform] = useState(platform);
 
-  // Update embed URL when season/episode changes
+  // Update embed URL when season/episode/platform changes
   useEffect(() => {
-    if (contentType === 'tv' && content?.id) {
+    if (content?.id) {
       const urls = streamingServices.getAllStreamingUrls(content, {
         season: selectedSeason,
         episode: selectedEpisode
       });
 
-      if (platform === 'vidsrc') {
+      if (selectedPlatform === 'vidsrc') {
         setCurrentEmbedUrl(urls.vidsrc);
-      } else if (platform === 'videasy') {
+      } else if (selectedPlatform === 'videasy') {
         setCurrentEmbedUrl(urls.videasy);
       }
     } else {
       setCurrentEmbedUrl(embedUrl);
     }
-  }, [selectedSeason, selectedEpisode, contentType, content, platform, embedUrl]);
+  }, [selectedSeason, selectedEpisode, selectedPlatform, contentType, content, embedUrl]);
 
-  // Reset season/episode when modal opens with new content
+  // Reset season/episode/platform when modal opens with new content
   useEffect(() => {
     if (isOpen) {
       setSelectedSeason(season || 1);
       setSelectedEpisode(episode || 1);
+      setSelectedPlatform(platform);
     }
-  }, [isOpen, season, episode]);
+  }, [isOpen, season, episode, platform]);
 
   // Handle escape key
   useEffect(() => {
@@ -156,9 +158,18 @@ const StreamingPlayerModal = ({
         <div className="streaming-player-modal__header">
           <div className="streaming-player-modal__title">
             <h2>{content?.title}</h2>
-            <span className="streaming-player-modal__platform">
-              Playing on {platform === 'vidsrc' ? 'Server 1' : 'Server 2'}
-            </span>
+            <div className="streaming-player-modal__server-selector">
+              <label htmlFor="server-select">Server:</label>
+              <select
+                id="server-select"
+                value={selectedPlatform}
+                onChange={(e) => setSelectedPlatform(e.target.value)}
+                className="streaming-player-modal__server-select"
+              >
+                <option value="vidsrc">Server 1 - YashSrc</option>
+                <option value="videasy">Server 2 - YashEasy</option>
+              </select>
+            </div>
           </div>
 
           {/* Season and Episode Selectors for TV Series */}
