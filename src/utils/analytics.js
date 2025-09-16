@@ -20,7 +20,7 @@ class Analytics {
       window.dataLayer = window.dataLayer || [];
 
       // Define gtag function
-      window.gtag = function() {
+      window.gtag = function () {
         window.dataLayer.push(arguments);
       };
 
@@ -54,7 +54,7 @@ class Analytics {
         page_title: title || document.title,
         page_location: window.location.href,
       });
-      
+
       console.log('[Analytics] Page view tracked:', path);
     } catch (error) {
       console.error('[Analytics] Failed to track page view:', error);
@@ -72,7 +72,7 @@ class Analytics {
         value: parameters.value,
         ...parameters,
       });
-      
+
       console.log('[Analytics] Event tracked:', eventName, parameters);
     } catch (error) {
       console.error('[Analytics] Failed to track event:', error);
@@ -262,8 +262,6 @@ class Analytics {
     }
   }
 
-
-
   // Track detailed filter usage with comprehensive metadata
   trackFilterUsage(filterType, filterValue, contentType = null, allFilters = {}) {
     this.trackEvent('filter_usage', {
@@ -342,8 +340,6 @@ class Analytics {
       console.log('[Analytics] Analytics is disabled');
       return false;
     }
-
-
 
     if (!this.trackingId) {
       console.warn('[Analytics] No tracking ID configured');

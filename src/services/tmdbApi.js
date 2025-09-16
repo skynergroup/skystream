@@ -212,11 +212,13 @@ class TMDBApi {
       if (endpoint === '/search/multi' && type !== 'all') {
         results.results = results.results.filter(item => {
           if (type === 'anime') {
-            return item.media_type === 'tv' &&
-                   item.genre_ids &&
-                   item.genre_ids.includes(16) && // Animation genre ID
-                   item.origin_country &&
-                   item.origin_country.includes('JP');
+            return (
+              item.media_type === 'tv' &&
+              item.genre_ids &&
+              item.genre_ids.includes(16) && // Animation genre ID
+              item.origin_country &&
+              item.origin_country.includes('JP')
+            );
           }
           return item.media_type === type;
         });
@@ -279,9 +281,8 @@ class TMDBApi {
    * Get credits for movie or TV show
    */
   async getCredits(contentId, contentType) {
-    const endpoint = contentType === 'movie'
-      ? `/movie/${contentId}/credits`
-      : `/tv/${contentId}/credits`;
+    const endpoint =
+      contentType === 'movie' ? `/movie/${contentId}/credits` : `/tv/${contentId}/credits`;
     return this.makeRequest(endpoint);
   }
 
@@ -376,7 +377,7 @@ class TMDBApi {
         with_origin_country: 'JP',
         with_genres: '16', // Animation genre
         sort_by: 'popularity.desc',
-        page: 1
+        page: 1,
       });
       return response;
     } catch (error) {

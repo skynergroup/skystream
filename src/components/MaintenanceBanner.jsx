@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import './MaintenanceBanner.css';
 
-const MaintenanceBanner = ({ 
-  message = "We are currently under maintenance. Some features may be temporarily unavailable.",
+const MaintenanceBanner = ({
+  message = 'We are currently under maintenance. Some features may be temporarily unavailable.',
   dismissible = true,
-  type = "warning" // warning, info, error
+  type = 'warning', // warning, info, error
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -22,13 +22,11 @@ const MaintenanceBanner = ({
           <div className="maintenance-banner__icon">
             <AlertTriangle size={20} />
           </div>
-          <div className="maintenance-banner__message">
-            {message}
-          </div>
+          <div className="maintenance-banner__message">{message}</div>
         </div>
-        
+
         {dismissible && (
-          <button 
+          <button
             className="maintenance-banner__dismiss"
             onClick={handleDismiss}
             aria-label="Dismiss maintenance notice"

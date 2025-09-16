@@ -95,11 +95,11 @@
   .maintenance-banner__container {
     padding: 0 1rem;
   }
-  
+
   .maintenance-banner__message {
     font-size: 0.85rem;
   }
-  
+
   .maintenance-banner__icon {
     display: none;
   }
@@ -109,7 +109,7 @@
   .maintenance-banner__container {
     padding: 0 0.75rem;
   }
-  
+
   .maintenance-banner__content {
     gap: 0.5rem;
   }

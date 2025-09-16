@@ -7,7 +7,7 @@ class StreamingServices {
   constructor() {
     // Vidsrc domains (use vidsrc.xyz as primary)
     this.vidsrcDomain = 'https://vidsrc.xyz';
-    
+
     // Videasy domain
     this.videasyDomain = 'https://player.videasy.net';
   }
@@ -17,19 +17,19 @@ class StreamingServices {
    */
   getVidsrcMovieUrl(tmdbId, options = {}) {
     const { sub_url, ds_lang, autoplay = 1 } = options;
-    
+
     let url = `${this.vidsrcDomain}/embed/movie?tmdb=${tmdbId}`;
-    
+
     if (sub_url) {
       url += `&sub_url=${encodeURIComponent(sub_url)}`;
     }
-    
+
     if (ds_lang) {
       url += `&ds_lang=${ds_lang}`;
     }
-    
+
     url += `&autoplay=${autoplay}`;
-    
+
     return url;
   }
 
@@ -38,27 +38,27 @@ class StreamingServices {
    */
   getVidsrcTVUrl(tmdbId, season = null, episode = null, options = {}) {
     const { sub_url, ds_lang, autoplay = 1, autonext = 0 } = options;
-    
+
     let url = `${this.vidsrcDomain}/embed/tv?tmdb=${tmdbId}`;
-    
+
     if (season && episode) {
       url += `&season=${season}&episode=${episode}`;
     }
-    
+
     if (sub_url) {
       url += `&sub_url=${encodeURIComponent(sub_url)}`;
     }
-    
+
     if (ds_lang) {
       url += `&ds_lang=${ds_lang}`;
     }
-    
+
     url += `&autoplay=${autoplay}`;
-    
+
     if (season && episode) {
       url += `&autonext=${autonext}`;
     }
-    
+
     return url;
   }
 
@@ -66,27 +66,22 @@ class StreamingServices {
    * Generate Videasy embed URL for movies
    */
   getVideasyMovieUrl(tmdbId, options = {}) {
-    const { 
-      color = '8B5CF6', 
-      progress, 
-      overlay = true,
-      autoplay = 1 
-    } = options;
-    
+    const { color = '8B5CF6', progress, overlay = true, autoplay = 1 } = options;
+
     let url = `${this.videasyDomain}/movie/${tmdbId}`;
-    
+
     const params = new URLSearchParams();
-    
+
     if (color) params.append('color', color);
     if (progress) params.append('progress', progress);
     if (overlay) params.append('overlay', 'true');
     if (autoplay !== undefined) params.append('autoplay', autoplay);
-    
+
     const queryString = params.toString();
     if (queryString) {
       url += `?${queryString}`;
     }
-    
+
     return url;
   }
 
@@ -94,31 +89,31 @@ class StreamingServices {
    * Generate Videasy embed URL for TV shows
    */
   getVideasyTVUrl(tmdbId, season = 1, episode = 1, options = {}) {
-    const { 
-      color = '8B5CF6', 
-      progress, 
+    const {
+      color = '8B5CF6',
+      progress,
       nextEpisode = true,
       episodeSelector = true,
       autoplayNextEpisode = true,
-      overlay = true 
+      overlay = true,
     } = options;
-    
+
     let url = `${this.videasyDomain}/tv/${tmdbId}/${season}/${episode}`;
-    
+
     const params = new URLSearchParams();
-    
+
     if (color) params.append('color', color);
     if (progress) params.append('progress', progress);
     if (nextEpisode) params.append('nextEpisode', 'true');
     if (episodeSelector) params.append('episodeSelector', 'true');
     if (autoplayNextEpisode) params.append('autoplayNextEpisode', 'true');
     if (overlay) params.append('overlay', 'true');
-    
+
     const queryString = params.toString();
     if (queryString) {
       url += `?${queryString}`;
     }
-    
+
     return url;
   }
 
@@ -126,25 +121,25 @@ class StreamingServices {
    * Generate Videasy embed URL for anime
    */
   getVideasyAnimeUrl(anilistId, episode = 1, options = {}) {
-    const { 
-      dub = false, 
-      color = '8B5CF6', 
-      progress, 
+    const {
+      dub = false,
+      color = '8B5CF6',
+      progress,
       nextEpisode = true,
       episodeSelector = true,
       autoplayNextEpisode = true,
-      overlay = true 
+      overlay = true,
     } = options;
-    
+
     let url = `${this.videasyDomain}/anime/${anilistId}`;
-    
+
     // For anime shows, add episode number
     if (episode > 0) {
       url += `/${episode}`;
     }
-    
+
     const params = new URLSearchParams();
-    
+
     if (dub) params.append('dub', 'true');
     if (color) params.append('color', color);
     if (progress) params.append('progress', progress);
@@ -152,12 +147,12 @@ class StreamingServices {
     if (episodeSelector) params.append('episodeSelector', 'true');
     if (autoplayNextEpisode) params.append('autoplayNextEpisode', 'true');
     if (overlay) params.append('overlay', 'true');
-    
+
     const queryString = params.toString();
     if (queryString) {
       url += `?${queryString}`;
     }
-    
+
     return url;
   }
 

@@ -2,12 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
 import './StreamingSearchBar.css';
 
-const StreamingSearchBar = ({ 
-  onSearch, 
+const StreamingSearchBar = ({
+  onSearch,
   onClear,
-  placeholder = "Search for movies, TV shows, anime...",
+  placeholder = 'Search for movies, TV shows, anime...',
   autoFocus = true,
-  debounceMs = 300 
+  debounceMs = 300,
 }) => {
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +16,7 @@ const StreamingSearchBar = ({
   const debouncedSearch = useCallback(
     (() => {
       let timeoutId;
-      return (searchQuery) => {
+      return searchQuery => {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
           if (searchQuery.trim()) {
@@ -34,7 +34,7 @@ const StreamingSearchBar = ({
   );
 
   // Handle input change
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const value = e.target.value;
     setQuery(value);
     debouncedSearch(value);
@@ -48,7 +48,7 @@ const StreamingSearchBar = ({
   };
 
   // Handle form submit (for Enter key)
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     if (query.trim()) {
       setIsLoading(true);
@@ -65,7 +65,7 @@ const StreamingSearchBar = ({
           <div className="streaming-search-bar__icon">
             <Search size={20} />
           </div>
-          
+
           <input
             type="text"
             value={query}
@@ -76,7 +76,7 @@ const StreamingSearchBar = ({
             autoComplete="off"
             spellCheck="false"
           />
-          
+
           {query && (
             <button
               type="button"
@@ -87,7 +87,7 @@ const StreamingSearchBar = ({
               <X size={18} />
             </button>
           )}
-          
+
           {isLoading && (
             <div className="streaming-search-bar__loading">
               <div className="streaming-search-bar__spinner"></div>
