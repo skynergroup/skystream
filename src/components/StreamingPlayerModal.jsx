@@ -143,7 +143,7 @@ const StreamingPlayerModal = ({
 
   // Open in new tab
   const handleOpenInNewTab = () => {
-    window.open(embedUrl, '_blank', 'noopener,noreferrer');
+    window.open(currentEmbedUrl, '_blank', 'noopener,noreferrer');
   };
 
   // Extract season and episode from selected values or embed URL
