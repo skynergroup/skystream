@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { X, ExternalLink, Download } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
+import tmdbApi from '../services/tmdbApi';
 import './StreamingPlayerModal.css';
 
 const StreamingPlayerModal = ({
@@ -18,11 +19,23 @@ const StreamingPlayerModal = ({
   const [selectedEpisode, setSelectedEpisode] = useState(episode || 1);
   const [currentEmbedUrl, setCurrentEmbedUrl] = useState(embedUrl);
   const [selectedPlatform, setSelectedPlatform] = useState(platform);
+  const [seasonsData, setSeasonsData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // Handle season change - reset episode to 1
   const handleSeasonChange = newSeason => {
-    setSelectedSeason(parseInt(newSeason));
+    const seasonNum = parseInt(newSeason);
+    setSelectedSeason(seasonNum);
     setSelectedEpisode(1); // Reset to episode 1 when season changes
+
+    // Ensure episode 1 exists for the selected season
+    if (seasonsData) {
+      const currentSeason = seasonsData.seasons.find(s => s.season_number === seasonNum);
+      if (currentSeason && currentSeason.episode_count === 0) {
+        // If season has no episodes, don't change episode
+        return;
+      }
+    }
   };
 
   // Update embed URL when season/episode/platform changes
@@ -42,6 +55,29 @@ const StreamingPlayerModal = ({
       setCurrentEmbedUrl(embedUrl);
     }
   }, [selectedSeason, selectedEpisode, selectedPlatform, contentType, content, embedUrl]);
+
+  // Fetch seasons data from TMDB when modal opens for TV content
+  useEffect(() => {
+    const fetchSeasonsData = async () => {
+      if (isOpen && contentType === 'tv' && content?.id) {
+        setLoading(true);
+        try {
+          const data = await tmdbApi.getTVSeasonsData(content.id);
+          setSeasonsData(data);
+        } catch (error) {
+          console.error('Failed to fetch seasons data:', error);
+          // Fallback to generic data if API fails
+          setSeasonsData(null);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setSeasonsData(null);
+      }
+    };
+
+    fetchSeasonsData();
+  }, [isOpen, contentType, content?.id]);
 
   // Reset season/episode/platform when modal opens with new content
   useEffect(() => {
@@ -206,18 +242,31 @@ const StreamingPlayerModal = ({
           {contentType === 'tv' && (
             <div className="streaming-player-modal__episode-controls">
               <div className="streaming-player-modal__selector">
-                <label htmlFor="season-select">Season:</label>
+                <label htmlFor="season-select">
+                  Season: {loading && <span className="loading-text">(Loading...)</span>}
+                </label>
                 <select
                   id="season-select"
                   value={selectedSeason}
                   onChange={e => handleSeasonChange(e.target.value)}
                   className="streaming-player-modal__select"
+                  disabled={loading}
                 >
-                  {Array.from({ length: 20 }, (_, i) => i + 1).map(seasonNum => (
-                    <option key={seasonNum} value={seasonNum}>
-                      Season {seasonNum}
-                    </option>
-                  ))}
+                  {seasonsData
+                    ? seasonsData.seasons.map(season => (
+                        <option key={season.season_number} value={season.season_number}>
+                          Season {season.season_number}
+                          {season.name &&
+                            season.name !== `Season ${season.season_number}` &&
+                            ` - ${season.name}`}
+                        </option>
+                      ))
+                    : // Fallback to generic seasons if TMDB data not available
+                      Array.from({ length: 10 }, (_, i) => i + 1).map(seasonNum => (
+                        <option key={seasonNum} value={seasonNum}>
+                          Season {seasonNum}
+                        </option>
+                      ))}
                 </select>
               </div>
 
@@ -228,12 +277,27 @@ const StreamingPlayerModal = ({
                   value={selectedEpisode}
                   onChange={e => setSelectedEpisode(parseInt(e.target.value))}
                   className="streaming-player-modal__select"
+                  disabled={loading}
                 >
-                  {Array.from({ length: 50 }, (_, i) => i + 1).map(episodeNum => (
-                    <option key={episodeNum} value={episodeNum}>
-                      Episode {episodeNum}
-                    </option>
-                  ))}
+                  {(() => {
+                    // Get episode count for selected season
+                    let episodeCount = 24; // Default fallback
+
+                    if (seasonsData) {
+                      const currentSeason = seasonsData.seasons.find(
+                        s => s.season_number === selectedSeason
+                      );
+                      if (currentSeason) {
+                        episodeCount = currentSeason.episode_count;
+                      }
+                    }
+
+                    return Array.from({ length: episodeCount }, (_, i) => i + 1).map(episodeNum => (
+                      <option key={episodeNum} value={episodeNum}>
+                        Episode {episodeNum}
+                      </option>
+                    ));
+                  })()}
                 </select>
               </div>
             </div>

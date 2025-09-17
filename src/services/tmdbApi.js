@@ -278,6 +278,53 @@ class TMDBApi {
   }
 
   /**
+   * Get TV season details
+   */
+  async getTVSeasonDetails(tvId, seasonNumber) {
+    try {
+      return await this.makeRequest(`/tv/${tvId}/season/${seasonNumber}`);
+    } catch (error) {
+      console.error(`Failed to get season ${seasonNumber} details for TV ID ${tvId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get TV show seasons and episodes data
+   */
+  async getTVSeasonsData(tvId) {
+    try {
+      const tvDetails = await this.getTVDetails(tvId);
+      const seasonsData = [];
+
+      if (tvDetails.seasons) {
+        for (const season of tvDetails.seasons) {
+          // Skip season 0 (specials) unless it has episodes
+          if (season.season_number === 0 && season.episode_count === 0) {
+            continue;
+          }
+
+          seasonsData.push({
+            season_number: season.season_number,
+            episode_count: season.episode_count,
+            name: season.name,
+            air_date: season.air_date,
+          });
+        }
+      }
+
+      return {
+        total_seasons: tvDetails.number_of_seasons,
+        total_episodes: tvDetails.number_of_episodes,
+        seasons: seasonsData,
+      };
+    } catch (error) {
+      console.error(`Failed to get seasons data for TV ID ${tvId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Get credits for movie or TV show
    */
   async getCredits(contentId, contentType) {
