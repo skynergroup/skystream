@@ -1,5 +1,6 @@
 // Essential UI Components
 export { default as Loading } from './Loading';
+export { default as ThemeToggle } from './ThemeToggle';
 
 // Streaming Components
 export { default as MaintenanceBanner } from './MaintenanceBanner';

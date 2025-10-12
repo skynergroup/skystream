@@ -4,8 +4,9 @@
   z-index: 1000;
   width: 100%;
   padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border-color);
   backdrop-filter: blur(10px);
+  transition: border-color 0.3s ease;
 }
 
 .maintenance-banner--warning {
@@ -58,10 +59,11 @@
 }
 
 .maintenance-banner__message {
-  color: var(--netflix-white);
+  color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 500;
   line-height: 1.4;
+  transition: color 0.3s ease;
 }
 
 .maintenance-banner__dismiss {
@@ -69,7 +71,7 @@
   right: 0;
   background: none;
   border: none;
-  color: var(--netflix-text-gray);
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 4px;
@@ -81,8 +83,8 @@
 }
 
 .maintenance-banner__dismiss:hover {
-  color: var(--netflix-white);
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  background: var(--input-bg);
 }
 
 .maintenance-banner__dismiss:focus-visible {

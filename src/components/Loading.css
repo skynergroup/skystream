@@ -50,10 +50,11 @@
 }
 
 .loading__text {
-  color: var(--netflix-text-gray);
+  color: var(--text-secondary);
   font-size: 0.9rem;
   margin: 0;
   text-align: center;
+  transition: color 0.3s ease;
 }
 
 .loading--small .loading__text {

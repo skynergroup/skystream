@@ -12,8 +12,8 @@
   position: relative;
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.08);
-  border: 2px solid rgba(255, 255, 255, 0.15);
+  background: var(--input-bg);
+  border: 2px solid var(--input-border);
   border-radius: 12px;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
@@ -21,14 +21,14 @@
 
 .streaming-search-bar__input-container:focus-within {
   border-color: var(--netflix-red);
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--card-hover-bg);
   box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.1);
 }
 
 .streaming-search-bar__icon {
   position: absolute;
   left: 1rem;
-  color: var(--netflix-text-gray);
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,13 +48,14 @@
   background: transparent;
   border: none;
   outline: none;
-  color: var(--netflix-white);
+  color: var(--text-primary);
   font-family: inherit;
   line-height: 1.4;
+  transition: color 0.3s ease;
 }
 
 .streaming-search-bar__input::placeholder {
-  color: var(--netflix-text-gray);
+  color: var(--text-secondary);
   opacity: 0.8;
 }
 
@@ -63,7 +64,7 @@
   right: 3.5rem;
   background: none;
   border: none;
-  color: var(--netflix-text-gray);
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 6px;
@@ -75,8 +76,8 @@
 }
 
 .streaming-search-bar__clear:hover {
-  color: var(--netflix-white);
-  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  background: var(--input-bg);
 }
 
 .streaming-search-bar__clear:focus-visible {
@@ -96,7 +97,7 @@
 .streaming-search-bar__spinner {
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid var(--border-color);
   border-top: 2px solid var(--netflix-red);
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -175,16 +176,5 @@
 }
 
 .streaming-search-bar__input-container:hover {
-  border-color: rgba(255, 255, 255, 0.25);
-}
-
-/* Dark theme enhancements */
-@media (prefers-color-scheme: dark) {
-  .streaming-search-bar__input-container {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .streaming-search-bar__input-container:focus-within {
-    background: rgba(255, 255, 255, 0.08);
-  }
+  border-color: var(--netflix-red);
 }

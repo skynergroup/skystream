@@ -1,23 +1,25 @@
 .streaming-result-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--card-bg);
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
   backdrop-filter: blur(10px);
 }
 
 .streaming-result-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--netflix-red);
+  background: var(--card-hover-bg);
 }
 
 .streaming-result-card__poster {
   position: relative;
   aspect-ratio: 2/3;
   overflow: hidden;
-  background: var(--netflix-dark-gray);
+  background: var(--bg-secondary);
+  transition: background 0.3s ease;
 }
 
 .streaming-result-card__image {
@@ -38,8 +40,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--netflix-dark-gray), var(--netflix-gray));
-  color: var(--netflix-text-gray);
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  color: var(--text-secondary);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .streaming-result-card__overlay {
@@ -53,6 +56,7 @@
   align-items: flex-end;
   justify-content: center;
   padding: 1rem;
+  opacity: 0;
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -88,22 +92,22 @@
 }
 
 .streaming-result-card__play-btn--server1 {
-  background: var(--netflix-red);
+  background: rgba(0, 0, 0, 0.9);
   color: white;
 }
 
 .streaming-result-card__play-btn--server1:hover {
-  background: var(--netflix-red-dark);
+  background: rgba(0, 0, 0, 0.9);
   transform: translateY(-1px);
 }
 
 .streaming-result-card__play-btn--server2 {
-  background: rgba(139, 92, 246, 0.9);
+  background: rgba(0, 0, 0, 0.9);
   color: white;
 }
 
 .streaming-result-card__play-btn--server2:hover {
-  background: rgba(124, 58, 237, 0.9);
+  background: rgba(0, 0, 0, 0.9);
   transform: translateY(-1px);
 }
 
@@ -114,13 +118,14 @@
 .streaming-result-card__title {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--netflix-white);
+  color: var(--text-primary);
   margin: 0 0 0.5rem 0;
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  transition: color 0.3s ease;
 }
 
 .streaming-result-card__meta {
@@ -138,7 +143,8 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.8rem;
-  color: var(--netflix-text-gray);
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
 }
 
 .streaming-result-card__rating {
@@ -146,24 +152,26 @@
 }
 
 .streaming-result-card__type {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--input-bg);
   padding: 0.125rem 0.5rem;
   border-radius: 12px;
   font-size: 0.7rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  transition: background 0.3s ease;
 }
 
 .streaming-result-card__overview {
   font-size: 0.85rem;
   line-height: 1.4;
-  color: var(--netflix-text-gray);
+  color: var(--text-secondary);
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  transition: color 0.3s ease;
 }
 
 /* Responsive design */
@@ -235,9 +243,9 @@
 .streaming-result-card__image:not(.loaded) {
   background: linear-gradient(
     90deg,
-    var(--netflix-dark-gray) 0px,
-    rgba(255, 255, 255, 0.1) 40px,
-    var(--netflix-dark-gray) 80px
+    var(--bg-secondary) 0px,
+    var(--border-color) 40px,
+    var(--bg-secondary) 80px
   );
   background-size: 200px;
   animation: shimmer 1.5s infinite;
@@ -245,6 +253,6 @@
 
 /* Focus states for accessibility */
 .streaming-result-card__play-btn:focus-visible {
-  outline: 2px solid var(--netflix-white);
+  outline: 2px solid var(--netflix-red);
   outline-offset: 2px;
 }

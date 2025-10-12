@@ -88,7 +88,7 @@ const StreamingPlayerModal = ({
     }
   }, [isOpen, season, episode, platform]);
 
-  // Listen for episode changes from YashEasy navigation
+  // Listen for episode changes from Server 2 navigation
   useEffect(() => {
     if (!isOpen || selectedPlatform !== 'videasy' || contentType !== 'tv') return;
 
@@ -232,8 +232,8 @@ const StreamingPlayerModal = ({
                 onChange={e => setSelectedPlatform(e.target.value)}
                 className="streaming-player-modal__server-select"
               >
-                <option value="vidsrc">Server 1 - YashSrc</option>
-                <option value="videasy">Server 2 - YashEasy</option>
+                <option value="vidsrc">Server 1</option>
+                <option value="videasy">Server 2</option>
               </select>
             </div>
           </div>

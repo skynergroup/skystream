@@ -4,7 +4,7 @@ import MaintenanceBanner from '../components/MaintenanceBanner';
 import StreamingSearchBar from '../components/StreamingSearchBar';
 import StreamingResultCard from '../components/StreamingResultCard';
 import StreamingPlayerModal from '../components/StreamingPlayerModal';
-import { Loading } from '../components';
+import { Loading, ThemeToggle } from '../components';
 import tmdbApi from '../services/tmdbApi';
 import { analytics } from '../utils';
 
@@ -106,32 +106,34 @@ const Home = () => {
       {/* Simple Header */}
       <header
         style={{
-          background: 'var(--netflix-black)',
+          background: 'var(--bg-secondary)',
           padding: '1rem 2rem',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          borderBottom: '1px solid var(--border-color)',
           position: 'sticky',
           top: 0,
           zIndex: 100,
           backdropFilter: 'blur(10px)',
+          transition: 'background 0.3s ease, border-color 0.3s ease',
         }}
       >
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'space-between',
             maxWidth: '1200px',
             margin: '0 auto',
+            gap: '1rem',
           }}
         >
           <h1
             style={{
               fontSize: 'clamp(1.25rem, 4vw, 1.5rem)',
               fontWeight: '700',
-              color: 'var(--netflix-white)',
+              color: 'var(--text-primary)',
               margin: 0,
               background:
-                'linear-gradient(135deg, var(--netflix-white) 0%, var(--netflix-red) 100%)',
+                'linear-gradient(135deg, var(--text-primary) 0%, var(--netflix-red) 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -139,6 +141,9 @@ const Home = () => {
           >
             SkyStream
           </h1>
+
+          {/* Theme Toggle Button */}
+          <ThemeToggle />
         </div>
       </header>
 
@@ -156,7 +161,8 @@ const Home = () => {
             'clamp(2rem, 8vw, 4rem) clamp(1rem, 4vw, 2rem) clamp(1rem, 4vw, 2rem) clamp(1rem, 4vw, 2rem)',
           textAlign: 'center',
           background:
-            'linear-gradient(135deg, var(--netflix-black) 0%, var(--netflix-dark-gray) 100%)',
+            'linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%)',
+          transition: 'background 0.3s ease',
         }}
       >
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -164,10 +170,10 @@ const Home = () => {
             style={{
               fontSize: 'clamp(2rem, 8vw, 3rem)',
               fontWeight: '700',
-              color: 'var(--netflix-white)',
+              color: 'var(--text-primary)',
               margin: '0 0 1rem 0',
               background:
-                'linear-gradient(135deg, var(--netflix-white) 0%, var(--netflix-red) 100%)',
+                'linear-gradient(135deg, var(--text-primary) 0%, var(--netflix-red) 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -179,7 +185,7 @@ const Home = () => {
           <p
             style={{
               fontSize: 'clamp(1rem, 3vw, 1.25rem)',
-              color: 'var(--netflix-text-gray)',
+              color: 'var(--text-secondary)',
               margin: '0 0 clamp(2rem, 6vw, 3rem) 0',
               lineHeight: '1.6',
             }}
@@ -225,7 +231,7 @@ const Home = () => {
           }}
         >
           <h3 style={{ color: 'var(--netflix-red)', marginBottom: '1rem' }}>Search Failed</h3>
-          <p style={{ color: 'var(--netflix-text-gray)', marginBottom: '2rem' }}>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
             Unable to search content. Please try again.
           </p>
         </div>
@@ -235,7 +241,7 @@ const Home = () => {
         <div style={{ padding: '2rem' }}>
           <h2
             style={{
-              color: 'var(--netflix-white)',
+              color: 'var(--text-primary)',
               fontSize: '1.5rem',
               fontWeight: '600',
               margin: '0 0 2rem 0',
@@ -279,11 +285,11 @@ const Home = () => {
         >
           <SearchIcon
             size={64}
-            style={{ color: 'var(--netflix-text-gray)', marginBottom: '1rem' }}
+            style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}
           />
           <h3
             style={{
-              color: 'var(--netflix-white)',
+              color: 'var(--text-primary)',
               fontSize: '1.5rem',
               margin: '0 0 0.5rem 0',
             }}
@@ -292,7 +298,7 @@ const Home = () => {
           </h3>
           <p
             style={{
-              color: 'var(--netflix-text-gray)',
+              color: 'var(--text-secondary)',
               fontSize: '1rem',
               maxWidth: '400px',
               margin: 0,
@@ -318,11 +324,12 @@ const Home = () => {
       {/* Simple Footer */}
       <footer
         style={{
-          background: 'var(--netflix-dark-gray)',
+          background: 'var(--bg-secondary)',
           padding: '2rem',
           textAlign: 'center',
-          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+          borderTop: '1px solid var(--border-color)',
           marginTop: '4rem',
+          transition: 'background 0.3s ease, border-color 0.3s ease',
         }}
       >
         <div
@@ -333,7 +340,7 @@ const Home = () => {
         >
           <p
             style={{
-              color: 'var(--netflix-text-gray)',
+              color: 'var(--text-secondary)',
               fontSize: '0.9rem',
               margin: '0 0 1rem 0',
             }}
@@ -342,7 +349,7 @@ const Home = () => {
           </p>
           <p
             style={{
-              color: 'var(--netflix-text-gray)',
+              color: 'var(--text-secondary)',
               fontSize: '0.8rem',
               margin: 0,
               opacity: 0.7,
