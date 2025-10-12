@@ -279,7 +279,7 @@ class Analytics {
 
     // Track filter combination patterns
     const activeFilters = Object.entries(allFilters)
-      .filter(([key, value]) => value && value !== 'all')
+      .filter(([, value]) => value && value !== 'all')
       .map(([key, value]) => `${key}:${value}`)
       .join('|');
 
@@ -547,7 +547,7 @@ class Analytics {
 const analytics = new Analytics();
 
 // Make analytics available globally for testing in development
-if (process.env.NODE_ENV === 'development') {
+if (import.meta.env.DEV) {
   window.skyStreamAnalytics = analytics;
   console.log('🧪 Analytics available globally as window.skyStreamAnalytics for testing');
 }

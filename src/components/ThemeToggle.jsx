@@ -8,7 +8,7 @@ import './ThemeToggle.css';
  * Uses lucide-react icons (Sun for light mode, Moon for dark mode)
  */
 const ThemeToggle = () => {
-  const { theme, toggleTheme, isDark } = useTheme();
+  const { toggleTheme, isDark } = useTheme();
 
   return (
     <button
@@ -27,4 +27,3 @@ const ThemeToggle = () => {
 };
 
 export default ThemeToggle;
-

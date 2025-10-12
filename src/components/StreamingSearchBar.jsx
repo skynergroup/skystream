@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import './StreamingSearchBar.css';
 
@@ -11,34 +11,39 @@ const StreamingSearchBar = ({
 }) => {
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const debounceTimerRef = useRef(null);
 
-  // Debounced search function
-  const debouncedSearch = useCallback(
-    (() => {
-      let timeoutId;
-      return searchQuery => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-          if (searchQuery.trim()) {
-            setIsLoading(true);
-            onSearch(searchQuery.trim()).finally(() => {
-              setIsLoading(false);
-            });
-          } else {
-            onClear?.();
-          }
-        }, debounceMs);
-      };
-    })(),
-    [onSearch, onClear, debounceMs]
-  );
-
-  // Handle input change
+  // Handle input change with debounce
   const handleInputChange = e => {
     const value = e.target.value;
     setQuery(value);
-    debouncedSearch(value);
+
+    // Clear existing timeout
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    // Set new timeout
+    debounceTimerRef.current = setTimeout(() => {
+      if (value.trim()) {
+        setIsLoading(true);
+        onSearch(value.trim()).finally(() => {
+          setIsLoading(false);
+        });
+      } else {
+        onClear?.();
+      }
+    }, debounceMs);
   };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   // Handle clear
   const handleClear = () => {

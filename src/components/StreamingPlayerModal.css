@@ -25,7 +25,9 @@
   overflow: hidden;
   border: 1px solid var(--border-color);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .streaming-player-modal__header {
@@ -37,7 +39,9 @@
   background: var(--input-bg);
   flex-wrap: wrap;
   gap: 1rem;
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .streaming-player-modal__title h2 {
@@ -220,7 +224,9 @@
   padding: 0.75rem 1.5rem;
   border-top: 1px solid var(--border-color);
   background: var(--input-bg);
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .streaming-player-modal__disclaimer {

@@ -42,7 +42,9 @@
   justify-content: center;
   background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
   color: var(--text-secondary);
-  transition: background 0.3s ease, color 0.3s ease;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
 }
 
 .streaming-result-card__overlay {
@@ -241,12 +243,7 @@
 }
 
 .streaming-result-card__image:not(.loaded) {
-  background: linear-gradient(
-    90deg,
-    var(--bg-secondary) 0px,
-    var(--border-color) 40px,
-    var(--bg-secondary) 80px
-  );
+  background: linear-gradient(90deg, var(--bg-secondary) 0px, var(--border-color) 40px, var(--bg-secondary) 80px);
   background-size: 200px;
   animation: shimmer 1.5s infinite;
 }

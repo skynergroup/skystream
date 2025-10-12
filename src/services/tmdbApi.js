@@ -264,13 +264,6 @@ class TMDBApi {
   }
 
   /**
-   * Get TV show season details
-   */
-  async getTVSeasonDetails(tvId, seasonNumber) {
-    return this.makeRequest(`/tv/${tvId}/season/${seasonNumber}`);
-  }
-
-  /**
    * Get TV show details (alias for getTVShowDetails)
    */
   async getTVDetails(tvId) {

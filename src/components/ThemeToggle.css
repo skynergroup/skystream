@@ -30,7 +30,9 @@
 }
 
 .theme-toggle__icon {
-  transition: transform 0.3s ease, color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
   color: var(--text-primary);
 }
 
@@ -52,10 +54,9 @@
     width: 34px;
     height: 34px;
   }
-  
+
   .theme-toggle__icon {
     width: 18px;
     height: 18px;
   }
 }
-

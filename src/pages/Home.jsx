@@ -160,8 +160,7 @@ const Home = () => {
           padding:
             'clamp(2rem, 8vw, 4rem) clamp(1rem, 4vw, 2rem) clamp(1rem, 4vw, 2rem) clamp(1rem, 4vw, 2rem)',
           textAlign: 'center',
-          background:
-            'linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%)',
+          background: 'linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%)',
           transition: 'background 0.3s ease',
         }}
       >
@@ -283,10 +282,7 @@ const Home = () => {
             padding: '2rem',
           }}
         >
-          <SearchIcon
-            size={64}
-            style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}
-          />
+          <SearchIcon size={64} style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }} />
           <h3
             style={{
               color: 'var(--text-primary)',
