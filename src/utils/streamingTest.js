@@ -11,16 +11,16 @@ class StreamingTest {
    * Test search functionality
    */
   async testSearch(query = 'avengers') {
-    console.log(`🔍 Testing search for: "${query}"`);
+    console.log(`[SEARCH] Testing search for: "${query}"`);
 
     try {
       const results = await tmdbApi.search(query);
-      console.log(`✅ Search successful: ${results.results.length} results found`);
+      console.log(`[SUCCESS] Search successful: ${results.results.length} results found`);
 
       if (results.results.length > 0) {
         const firstResult = results.results[0];
         const transformed = tmdbApi.transformContent(firstResult);
-        console.log(`📄 First result:`, {
+        console.log(`[RESULT] First result:`, {
           title: transformed.title,
           type: transformed.type,
           id: transformed.id,
@@ -30,7 +30,7 @@ class StreamingTest {
         return transformed;
       }
     } catch (error) {
-      console.error('❌ Search failed:', error);
+      console.error('[ERROR] Search failed:', error);
       throw error;
     }
   }
@@ -39,17 +39,17 @@ class StreamingTest {
    * Test streaming URL generation
    */
   testStreamingUrls(content) {
-    console.log(`🎬 Testing streaming URLs for: "${content.title}"`);
+    console.log(`[STREAMING] Testing streaming URLs for: "${content.title}"`);
 
     try {
       const urls = streamingServices.getAllStreamingUrls(content);
-      console.log('✅ Streaming URLs generated:');
+      console.log('[SUCCESS] Streaming URLs generated:');
       console.log(`  Vidsrc: ${urls.vidsrc}`);
       console.log(`  Videasy: ${urls.videasy}`);
 
       return urls;
     } catch (error) {
-      console.error('❌ URL generation failed:', error);
+      console.error('[ERROR] URL generation failed:', error);
       throw error;
     }
   }
@@ -58,7 +58,7 @@ class StreamingTest {
    * Test specific movie URLs
    */
   testMovieUrls() {
-    console.log('🎭 Testing movie URL generation...');
+    console.log('[MOVIE] Testing movie URL generation...');
 
     const testMovie = {
       id: 299534, // Avengers: Endgame
@@ -69,7 +69,7 @@ class StreamingTest {
     const vidsrcUrl = streamingServices.getVidsrcMovieUrl(testMovie.id);
     const videasyUrl = streamingServices.getVideasyMovieUrl(testMovie.id);
 
-    console.log('✅ Movie URLs:');
+    console.log('[SUCCESS] Movie URLs:');
     console.log(`  Vidsrc: ${vidsrcUrl}`);
     console.log(`  Videasy: ${videasyUrl}`);
 
@@ -80,7 +80,7 @@ class StreamingTest {
    * Test TV show URLs
    */
   testTVUrls() {
-    console.log('📺 Testing TV show URL generation...');
+    console.log('[TV] Testing TV show URL generation...');
 
     const testShow = {
       id: 1399, // Game of Thrones
@@ -91,7 +91,7 @@ class StreamingTest {
     const vidsrcUrl = streamingServices.getVidsrcTVUrl(testShow.id, 1, 1);
     const videasyUrl = streamingServices.getVideasyTVUrl(testShow.id, 1, 1);
 
-    console.log('✅ TV Show URLs (S01E01):');
+    console.log('[SUCCESS] TV Show URLs (S01E01):');
     console.log(`  Vidsrc: ${vidsrcUrl}`);
     console.log(`  Videasy: ${videasyUrl}`);
 
@@ -102,7 +102,7 @@ class StreamingTest {
    * Run comprehensive test suite
    */
   async runFullTest() {
-    console.log('🚀 Starting SkyStream streaming test suite...\n');
+    console.log('[TEST SUITE] Starting SkyStream streaming test suite...\n');
 
     try {
       // Test search
@@ -123,10 +123,10 @@ class StreamingTest {
       this.testTVUrls();
       console.log('');
 
-      console.log('✅ All tests completed successfully!');
+      console.log('[SUCCESS] All tests completed successfully!');
       return true;
     } catch (error) {
-      console.error('❌ Test suite failed:', error);
+      console.error('[ERROR] Test suite failed:', error);
       return false;
     }
   }
@@ -135,21 +135,21 @@ class StreamingTest {
    * Test Vidsrc latest content API
    */
   async testVidsrcLatest() {
-    console.log('📡 Testing Vidsrc latest content API...');
+    console.log('[API] Testing Vidsrc latest content API...');
 
     try {
       const movies = await streamingServices.getVidsrcLatestMovies(1);
-      console.log(`✅ Latest movies: ${movies?.length || 0} items`);
+      console.log(`[SUCCESS] Latest movies: ${movies?.length || 0} items`);
 
       const tvShows = await streamingServices.getVidsrcLatestTVShows(1);
-      console.log(`✅ Latest TV shows: ${tvShows?.length || 0} items`);
+      console.log(`[SUCCESS] Latest TV shows: ${tvShows?.length || 0} items`);
 
       const episodes = await streamingServices.getVidsrcLatestEpisodes(1);
-      console.log(`✅ Latest episodes: ${episodes?.length || 0} items`);
+      console.log(`[SUCCESS] Latest episodes: ${episodes?.length || 0} items`);
 
       return { movies, tvShows, episodes };
     } catch (error) {
-      console.error('❌ Vidsrc API test failed:', error);
+      console.error('[ERROR] Vidsrc API test failed:', error);
       throw error;
     }
   }
@@ -161,8 +161,8 @@ const streamingTest = new StreamingTest();
 // Add to window for browser console testing
 if (typeof window !== 'undefined') {
   window.streamingTest = streamingTest;
-  console.log('🧪 Streaming test utility available as window.streamingTest');
-  console.log('Run window.streamingTest.runFullTest() to test all features');
+  console.log('[TEST UTILITY] Streaming test utility available as window.streamingTest');
+  console.log('[INFO] Run window.streamingTest.runFullTest() to test all features');
 }
 
 export default streamingTest;

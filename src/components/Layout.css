@@ -13,7 +13,9 @@
   top: 0;
   z-index: 100;
   backdrop-filter: blur(10px);
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .layout__header-container {
@@ -80,7 +82,7 @@
 }
 
 .layout__nav-link--active::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -1rem;
   left: 0;
@@ -106,7 +108,9 @@
   text-align: center;
   border-top: 1px solid var(--border-color);
   margin-top: auto;
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .layout__footer-container {
@@ -184,4 +188,3 @@
     font-size: 0.75rem;
   }
 }
-

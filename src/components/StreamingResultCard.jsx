@@ -94,7 +94,7 @@ const StreamingResultCard = ({ content, onPlay }) => {
           )}
 
           <span className="streaming-result-card__type">
-            {content.type === 'movie' ? 'Movie' : 'TV Show'}
+            {content.type === 'movie' ? 'Movie' : 'TV'}
           </span>
         </div>
 

@@ -107,7 +107,6 @@ const Search = () => {
 
   return (
     <div className="streaming-app">
-
       {/* Hero Section */}
       <div
         style={{

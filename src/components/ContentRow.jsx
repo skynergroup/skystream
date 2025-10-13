@@ -50,11 +50,7 @@ const ContentRow = ({ title, content, onPlay }) => {
           </button>
         )}
 
-        <div
-          className="content-row__scroll"
-          ref={scrollContainerRef}
-          onScroll={handleScroll}
-        >
+        <div className="content-row__scroll" ref={scrollContainerRef} onScroll={handleScroll}>
           {content.map(item => (
             <div key={`${item.type}-${item.id}`} className="content-row__item">
               <StreamingResultCard content={item} onPlay={onPlay} />
@@ -77,4 +73,3 @@ const ContentRow = ({ title, content, onPlay }) => {
 };
 
 export default ContentRow;
-

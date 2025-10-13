@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Play, Info } from 'lucide-react';
+import { Play, Info, Star, Calendar } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
 import './FeaturedHero.css';
 
@@ -63,10 +63,16 @@ const FeaturedHero = ({ content, onPlay, onInfo }) => {
         <h1 className="featured-hero__title">{currentContent.title}</h1>
 
         <div className="featured-hero__meta">
-          {releaseYear && <span className="featured-hero__year">{releaseYear}</span>}
+          {releaseYear && (
+            <span className="featured-hero__year">
+              <Calendar size={16} />
+              {releaseYear}
+            </span>
+          )}
           {rating && (
             <span className="featured-hero__rating">
-              ⭐ {rating}
+              <Star size={16} />
+              {rating}
             </span>
           )}
           <span className="featured-hero__type">
@@ -83,16 +89,25 @@ const FeaturedHero = ({ content, onPlay, onInfo }) => {
         )}
 
         <div className="featured-hero__actions">
-          <button className="featured-hero__btn featured-hero__btn--primary" onClick={handlePlayVidsrc}>
+          <button
+            className="featured-hero__btn featured-hero__btn--primary"
+            onClick={handlePlayVidsrc}
+          >
             <Play size={20} fill="currentColor" />
             Play on Server 1
           </button>
-          <button className="featured-hero__btn featured-hero__btn--secondary" onClick={handlePlayVideasy}>
+          <button
+            className="featured-hero__btn featured-hero__btn--secondary"
+            onClick={handlePlayVideasy}
+          >
             <Play size={20} fill="currentColor" />
             Play on Server 2
           </button>
           {onInfo && (
-            <button className="featured-hero__btn featured-hero__btn--info" onClick={() => onInfo(currentContent)}>
+            <button
+              className="featured-hero__btn featured-hero__btn--info"
+              onClick={() => onInfo(currentContent)}
+            >
               <Info size={20} />
               More Info
             </button>
@@ -123,4 +138,3 @@ const FeaturedHero = ({ content, onPlay, onInfo }) => {
 };
 
 export default FeaturedHero;
-
