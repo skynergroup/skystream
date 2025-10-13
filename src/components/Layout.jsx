@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { Home, Search, Tv } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import './Layout.css';
@@ -56,6 +57,10 @@ const Layout = ({ children }) => {
       </footer>
     </div>
   );
+};
+
+Layout.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export default Layout;

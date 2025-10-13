@@ -63,22 +63,22 @@ describe('Discover', () => {
 
   test('shows loading state initially', () => {
     tmdbApi.getHomePageContent = jest.fn(() => new Promise(() => {}));
-    
+
     render(<Discover />);
-    
+
     expect(screen.getByTestId('loading')).toBeInTheDocument();
     expect(screen.getByText('Loading content...')).toBeInTheDocument();
   });
 
   test('fetches and displays content successfully', async () => {
     tmdbApi.getHomePageContent = jest.fn().mockResolvedValue(mockContent);
-    
+
     render(<Discover />);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('featured-hero')).toBeInTheDocument();
     });
-    
+
     expect(screen.getByTestId('content-row-Trending Now')).toBeInTheDocument();
     expect(screen.getByTestId('content-row-Popular Movies')).toBeInTheDocument();
     expect(screen.getByTestId('content-row-Popular TV Shows')).toBeInTheDocument();
@@ -88,9 +88,9 @@ describe('Discover', () => {
 
   test('tracks page view on mount', async () => {
     tmdbApi.getHomePageContent = jest.fn().mockResolvedValue(mockContent);
-    
+
     render(<Discover />);
-    
+
     await waitFor(() => {
       expect(analytics.trackPageView).toHaveBeenCalledWith('/home', 'SkyStream - Discover');
     });
@@ -99,13 +99,13 @@ describe('Discover', () => {
   test('displays error state when fetch fails', async () => {
     const error = new Error('Failed to fetch');
     tmdbApi.getHomePageContent = jest.fn().mockRejectedValue(error);
-    
+
     render(<Discover />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Failed to Load Content')).toBeInTheDocument();
     });
-    
+
     expect(screen.getByText(/Unable to fetch content/)).toBeInTheDocument();
     expect(screen.getByText('Retry')).toBeInTheDocument();
   });
@@ -113,9 +113,9 @@ describe('Discover', () => {
   test('tracks error when fetch fails', async () => {
     const error = new Error('Failed to fetch');
     tmdbApi.getHomePageContent = jest.fn().mockRejectedValue(error);
-    
+
     render(<Discover />);
-    
+
     await waitFor(() => {
       expect(analytics.trackError).toHaveBeenCalledWith(
         'Homepage content fetch failed: Failed to fetch',
@@ -139,57 +139,60 @@ describe('Discover', () => {
 
   test('opens player modal when play is clicked', async () => {
     tmdbApi.getHomePageContent = jest.fn().mockResolvedValue(mockContent);
-    
+
     render(<Discover />);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('featured-hero')).toBeInTheDocument();
     });
-    
+
     const playButton = screen.getAllByText('Play')[0];
     fireEvent.click(playButton);
-    
+
     expect(screen.getByTestId('player-modal')).toBeInTheDocument();
   });
 
   test('closes player modal when close is clicked', async () => {
     tmdbApi.getHomePageContent = jest.fn().mockResolvedValue(mockContent);
-    
+
     render(<Discover />);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('featured-hero')).toBeInTheDocument();
     });
-    
+
     const playButton = screen.getAllByText('Play')[0];
     fireEvent.click(playButton);
-    
+
     expect(screen.getByTestId('player-modal')).toBeInTheDocument();
-    
+
     fireEvent.click(screen.getByText('Close'));
-    
+
     expect(screen.queryByTestId('player-modal')).not.toBeInTheDocument();
   });
 
   test('tracks play event when content is played', async () => {
     tmdbApi.getHomePageContent = jest.fn().mockResolvedValue(mockContent);
-    
+
     render(<Discover />);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('featured-hero')).toBeInTheDocument();
     });
-    
+
     const playButton = screen.getAllByText('Play')[0];
     fireEvent.click(playButton);
-    
-    expect(analytics.trackEvent).toHaveBeenCalledWith('content_play', expect.objectContaining({
-      category: 'streaming',
-      label: 'server1',
-      content_id: 1,
-      content_type: 'movie',
-      content_title: 'Featured Movie',
-    }));
+
+    expect(analytics.trackEvent).toHaveBeenCalledWith(
+      'content_play',
+      expect.objectContaining({
+        category: 'streaming',
+        label: 'server1',
+        content_id: 1,
+        content_type: 'movie',
+        content_title: 'Featured Movie',
+      })
+    );
   });
 
   test('does not render sections with empty content', async () => {
@@ -201,18 +204,15 @@ describe('Discover', () => {
       topRated: [],
       popularAnime: [],
     };
-    
+
     tmdbApi.getHomePageContent = jest.fn().mockResolvedValue(emptyContent);
-    
+
     render(<Discover />);
-    
+
     await waitFor(() => {
       expect(screen.queryByTestId('featured-hero')).not.toBeInTheDocument();
     });
-    
+
     expect(screen.queryByTestId('content-row-Trending Now')).not.toBeInTheDocument();
   });
-
-
 });
-

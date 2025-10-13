@@ -16,7 +16,8 @@ describe('FeaturedHero', () => {
       backdrop_path: '/test-backdrop.jpg',
       release_date: '2024-01-15',
       vote_average: 8.5,
-      overview: 'This is a test movie overview that is long enough to be truncated when displayed in the hero section. It needs to be over 200 characters to trigger the truncation logic in the FeaturedHero component, so we add more text here to make it longer and longer until it exceeds the limit.',
+      overview:
+        'This is a test movie overview that is long enough to be truncated when displayed in the hero section. It needs to be over 200 characters to trigger the truncation logic in the FeaturedHero component, so we add more text here to make it longer and longer until it exceeds the limit.',
     },
     {
       id: 2,
@@ -54,7 +55,7 @@ describe('FeaturedHero', () => {
 
   test('renders hero with single content item', () => {
     render(<FeaturedHero content={[mockContent[0]]} onPlay={mockOnPlay} />);
-    
+
     expect(screen.getByText('Test Movie')).toBeInTheDocument();
     expect(screen.getByText('2024')).toBeInTheDocument();
     expect(screen.getByText('8.5')).toBeInTheDocument();
@@ -63,13 +64,13 @@ describe('FeaturedHero', () => {
 
   test('renders TV show type correctly', () => {
     render(<FeaturedHero content={[mockContent[1]]} onPlay={mockOnPlay} />);
-    
+
     expect(screen.getByText('TV Show')).toBeInTheDocument();
   });
 
   test('truncates long overview text', () => {
     render(<FeaturedHero content={[mockContent[0]]} onPlay={mockOnPlay} />);
-    
+
     const overview = screen.getByText(/This is a test movie overview/);
     expect(overview.textContent).toContain('...');
     expect(overview.textContent.length).toBeLessThanOrEqual(203); // 200 chars + "..."
@@ -77,147 +78,147 @@ describe('FeaturedHero', () => {
 
   test('displays short overview without truncation', () => {
     render(<FeaturedHero content={[mockContent[1]]} onPlay={mockOnPlay} />);
-    
+
     const overview = screen.getByText('Short overview');
     expect(overview.textContent).not.toContain('...');
   });
 
   test('renders play buttons', () => {
     render(<FeaturedHero content={[mockContent[0]]} onPlay={mockOnPlay} />);
-    
+
     expect(screen.getByText('Play on Server 1')).toBeInTheDocument();
     expect(screen.getByText('Play on Server 2')).toBeInTheDocument();
   });
 
   test('calls onPlay when Server 1 button is clicked', () => {
     render(<FeaturedHero content={[mockContent[0]]} onPlay={mockOnPlay} />);
-    
+
     const server1Button = screen.getByText('Play on Server 1');
     fireEvent.click(server1Button);
-    
-    expect(mockOnPlay).toHaveBeenCalledWith(
-      mockContent[0],
-      'vidsrc',
-      expect.any(String)
-    );
+
+    expect(mockOnPlay).toHaveBeenCalledWith(mockContent[0], 'vidsrc', expect.any(String));
   });
 
   test('calls onPlay when Server 2 button is clicked', () => {
     render(<FeaturedHero content={[mockContent[0]]} onPlay={mockOnPlay} />);
-    
+
     const server2Button = screen.getByText('Play on Server 2');
     fireEvent.click(server2Button);
-    
-    expect(mockOnPlay).toHaveBeenCalledWith(
-      mockContent[0],
-      'videasy',
-      expect.any(String)
-    );
+
+    expect(mockOnPlay).toHaveBeenCalledWith(mockContent[0], 'videasy', expect.any(String));
   });
 
   test('renders More Info button when onInfo is provided', () => {
     render(<FeaturedHero content={[mockContent[0]]} onPlay={mockOnPlay} onInfo={mockOnInfo} />);
-    
+
     expect(screen.getByText('More Info')).toBeInTheDocument();
   });
 
   test('does not render More Info button when onInfo is not provided', () => {
     render(<FeaturedHero content={[mockContent[0]]} onPlay={mockOnPlay} />);
-    
+
     expect(screen.queryByText('More Info')).not.toBeInTheDocument();
   });
 
   test('calls onInfo when More Info button is clicked', () => {
     render(<FeaturedHero content={[mockContent[0]]} onPlay={mockOnPlay} onInfo={mockOnInfo} />);
-    
+
     const infoButton = screen.getByText('More Info');
     fireEvent.click(infoButton);
-    
+
     expect(mockOnInfo).toHaveBeenCalledWith(mockContent[0]);
   });
 
   test('renders indicators when multiple content items exist', () => {
     render(<FeaturedHero content={mockContent} onPlay={mockOnPlay} />);
-    
+
     const indicators = screen.getAllByRole('button', { name: /Go to slide/ });
     expect(indicators).toHaveLength(2);
   });
 
   test('does not render indicators for single content item', () => {
     render(<FeaturedHero content={[mockContent[0]]} onPlay={mockOnPlay} />);
-    
+
     const indicators = screen.queryAllByRole('button', { name: /Go to slide/ });
     expect(indicators).toHaveLength(0);
   });
 
   test('changes content when indicator is clicked', async () => {
     render(<FeaturedHero content={mockContent} onPlay={mockOnPlay} />);
-    
+
     expect(screen.getByText('Test Movie')).toBeInTheDocument();
-    
+
     const secondIndicator = screen.getByRole('button', { name: 'Go to slide 2' });
     fireEvent.click(secondIndicator);
-    
+
     // Fast-forward the transition timeout
     jest.advanceTimersByTime(300);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Test TV Show')).toBeInTheDocument();
     });
   });
 
   test('handles content without release date', () => {
-    const contentWithoutDate = [{
-      ...mockContent[0],
-      release_date: null,
-    }];
-    
+    const contentWithoutDate = [
+      {
+        ...mockContent[0],
+        release_date: null,
+      },
+    ];
+
     render(<FeaturedHero content={contentWithoutDate} onPlay={mockOnPlay} />);
-    
+
     expect(screen.queryByText('2024')).not.toBeInTheDocument();
   });
 
   test('handles content without rating', () => {
-    const contentWithoutRating = [{
-      ...mockContent[0],
-      vote_average: null,
-    }];
-    
+    const contentWithoutRating = [
+      {
+        ...mockContent[0],
+        vote_average: null,
+      },
+    ];
+
     render(<FeaturedHero content={contentWithoutRating} onPlay={mockOnPlay} />);
-    
+
     expect(screen.queryByText('8.5')).not.toBeInTheDocument();
   });
 
   test('handles content without overview', () => {
-    const contentWithoutOverview = [{
-      ...mockContent[0],
-      overview: null,
-    }];
-    
+    const contentWithoutOverview = [
+      {
+        ...mockContent[0],
+        overview: null,
+      },
+    ];
+
     render(<FeaturedHero content={contentWithoutOverview} onPlay={mockOnPlay} />);
-    
+
     expect(screen.queryByText(/This is a test/)).not.toBeInTheDocument();
   });
 
   test('handles content without backdrop path', () => {
-    const contentWithoutBackdrop = [{
-      ...mockContent[0],
-      backdrop_path: null,
-    }];
-    
+    const contentWithoutBackdrop = [
+      {
+        ...mockContent[0],
+        backdrop_path: null,
+      },
+    ];
+
     render(<FeaturedHero content={contentWithoutBackdrop} onPlay={mockOnPlay} />);
-    
+
     expect(screen.getByText('Test Movie')).toBeInTheDocument();
   });
 
   test('auto-rotates content after 8 seconds', async () => {
     render(<FeaturedHero content={mockContent} onPlay={mockOnPlay} />);
-    
+
     expect(screen.getByText('Test Movie')).toBeInTheDocument();
-    
+
     // Fast-forward 8 seconds + transition time
     jest.advanceTimersByTime(8300);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Test TV Show')).toBeInTheDocument();
     });
@@ -225,14 +226,13 @@ describe('FeaturedHero', () => {
 
   test('does not auto-rotate with single content item', () => {
     render(<FeaturedHero content={[mockContent[0]]} onPlay={mockOnPlay} />);
-    
+
     expect(screen.getByText('Test Movie')).toBeInTheDocument();
-    
+
     // Fast-forward 10 seconds
     jest.advanceTimersByTime(10000);
-    
+
     // Should still show the same content
     expect(screen.getByText('Test Movie')).toBeInTheDocument();
   });
 });
-

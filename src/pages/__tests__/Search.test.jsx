@@ -58,7 +58,7 @@ describe('Search', () => {
     analytics.trackSearch = jest.fn();
     analytics.trackEvent = jest.fn();
     analytics.trackError = jest.fn();
-    tmdbApi.transformContent = jest.fn((item) => ({
+    tmdbApi.transformContent = jest.fn(item => ({
       id: item.id,
       title: item.title,
       type: item.media_type,
@@ -74,7 +74,7 @@ describe('Search', () => {
 
   test('renders search page with title and search bar', () => {
     render(<Search />);
-    
+
     expect(screen.getByText('SkyStream')).toBeInTheDocument();
     expect(screen.getByText(/Search and stream your favorite/)).toBeInTheDocument();
     expect(screen.getByTestId('search-bar')).toBeInTheDocument();
@@ -82,21 +82,21 @@ describe('Search', () => {
 
   test('tracks page view on mount', () => {
     render(<Search />);
-    
+
     expect(analytics.trackPageView).toHaveBeenCalledWith('/', 'SkyStream - Search');
   });
 
   test('performs search and displays results', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue(mockSearchResults);
-    
+
     render(<Search />);
-    
+
     fireEvent.click(screen.getByText('Search'));
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('result-card-1')).toBeInTheDocument();
     });
-    
+
     expect(screen.getByText('Avengers')).toBeInTheDocument();
     expect(screen.getByText('Avengers 2')).toBeInTheDocument();
     expect(screen.getByText('Search Results (2)')).toBeInTheDocument();
@@ -104,39 +104,39 @@ describe('Search', () => {
 
   test('filters out person results', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue(mockSearchResults);
-    
+
     render(<Search />);
-    
+
     fireEvent.click(screen.getByText('Search'));
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('result-card-1')).toBeInTheDocument();
     });
-    
+
     expect(screen.queryByText('Actor Name')).not.toBeInTheDocument();
   });
 
   test('shows loading state during search', async () => {
     tmdbApi.search = jest.fn(() => new Promise(() => {}));
-    
+
     render(<Search />);
-    
+
     fireEvent.click(screen.getByText('Search'));
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toBeInTheDocument();
     });
-    
+
     expect(screen.getByText('Searching...')).toBeInTheDocument();
   });
 
   test('tracks search analytics', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue(mockSearchResults);
-    
+
     render(<Search />);
-    
+
     fireEvent.click(screen.getByText('Search'));
-    
+
     await waitFor(() => {
       expect(analytics.trackSearch).toHaveBeenCalledWith('avengers', 2);
     });
@@ -145,26 +145,26 @@ describe('Search', () => {
   test('displays error state when search fails', async () => {
     const error = new Error('Search failed');
     tmdbApi.search = jest.fn().mockRejectedValue(error);
-    
+
     render(<Search />);
-    
+
     fireEvent.click(screen.getByText('Search'));
-    
+
     await waitFor(() => {
       expect(screen.getByText('Search Failed')).toBeInTheDocument();
     });
-    
+
     expect(screen.getByText(/Unable to search content/)).toBeInTheDocument();
   });
 
   test('tracks error when search fails', async () => {
     const error = new Error('Search failed');
     tmdbApi.search = jest.fn().mockRejectedValue(error);
-    
+
     render(<Search />);
-    
+
     fireEvent.click(screen.getByText('Search'));
-    
+
     await waitFor(() => {
       expect(analytics.trackError).toHaveBeenCalledWith(
         'Search failed: Search failed',
@@ -175,94 +175,97 @@ describe('Search', () => {
 
   test('displays no results message when search returns empty', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue({ results: [] });
-    
+
     render(<Search />);
-    
+
     fireEvent.click(screen.getByText('Search'));
-    
+
     await waitFor(() => {
       expect(screen.getByText('No Results Found')).toBeInTheDocument();
     });
-    
+
     expect(screen.getByText(/Try searching with different keywords/)).toBeInTheDocument();
   });
 
   test('clears search results when clear is clicked', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue(mockSearchResults);
-    
+
     render(<Search />);
-    
+
     fireEvent.click(screen.getByText('Search'));
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('result-card-1')).toBeInTheDocument();
     });
-    
+
     fireEvent.click(screen.getByText('Clear'));
-    
+
     expect(screen.queryByTestId('result-card-1')).not.toBeInTheDocument();
     expect(screen.queryByText('Search Results')).not.toBeInTheDocument();
   });
 
   test('opens player modal when play is clicked', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue(mockSearchResults);
-    
+
     render(<Search />);
-    
+
     fireEvent.click(screen.getByText('Search'));
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('result-card-1')).toBeInTheDocument();
     });
-    
+
     const playButtons = screen.getAllByText('Play');
     fireEvent.click(playButtons[0]);
-    
+
     expect(screen.getByTestId('player-modal')).toBeInTheDocument();
   });
 
   test('closes player modal when close is clicked', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue(mockSearchResults);
-    
+
     render(<Search />);
-    
+
     fireEvent.click(screen.getByText('Search'));
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('result-card-1')).toBeInTheDocument();
     });
-    
+
     const playButtons = screen.getAllByText('Play');
     fireEvent.click(playButtons[0]);
-    
+
     expect(screen.getByTestId('player-modal')).toBeInTheDocument();
-    
+
     fireEvent.click(screen.getByText('Close'));
-    
+
     expect(screen.queryByTestId('player-modal')).not.toBeInTheDocument();
   });
 
   test('tracks play event when content is played', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue(mockSearchResults);
-    
+
     render(<Search />);
-    
+
     fireEvent.click(screen.getByText('Search'));
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('result-card-1')).toBeInTheDocument();
     });
-    
+
     const playButtons = screen.getAllByText('Play');
     fireEvent.click(playButtons[0]);
-    
-    expect(analytics.trackEvent).toHaveBeenCalledWith('content_play', expect.objectContaining({
-      category: 'streaming',
-      label: 'server1',
-      content_id: 1,
-      content_type: 'movie',
-      content_title: 'Avengers',
-    }));
+
+    expect(analytics.trackEvent).toHaveBeenCalledWith(
+      'content_play',
+      expect.objectContaining({
+        category: 'streaming',
+        label: 'server1',
+        content_id: 1,
+        content_type: 'movie',
+        content_title: 'Avengers',
+      })
+    );
   });
 
   test('limits results to 20 items', async () => {
@@ -273,16 +276,15 @@ describe('Search', () => {
         media_type: 'movie',
       })),
     };
-    
+
     tmdbApi.search = jest.fn().mockResolvedValue(manyResults);
-    
+
     render(<Search />);
-    
+
     fireEvent.click(screen.getByText('Search'));
-    
+
     await waitFor(() => {
       expect(screen.getByText('Search Results (20)')).toBeInTheDocument();
     });
   });
 });
-

@@ -180,10 +180,10 @@ class TMDBApi {
     // Add rating filter
     if (rating) {
       const [minRating, maxRating] = rating.split('-').map(Number);
-      if (!isNaN(minRating)) {
+      if (!Number.isNaN(minRating)) {
         params['vote_average.gte'] = minRating;
       }
-      if (!isNaN(maxRating)) {
+      if (!Number.isNaN(maxRating)) {
         params['vote_average.lte'] = maxRating;
       }
     }
@@ -199,7 +199,7 @@ class TMDBApi {
       // Post-process results for search endpoints with genre filtering
       if (endpoint.includes('/search/') && genre) {
         results.results = results.results.filter(item => {
-          return item.genre_ids && item.genre_ids.includes(parseInt(genre));
+          return item.genre_ids && item.genre_ids.includes(Number.parseInt(genre, 10));
         });
       }
 

@@ -92,7 +92,9 @@ describe('StreamingTest', () => {
 
       expect(streamingServices.getAllStreamingUrls).toHaveBeenCalledWith(mockContent);
       expect(result).toEqual(mockUrls);
-      expect(console.log).toHaveBeenCalledWith('[STREAMING] Testing streaming URLs for: "Test Movie"');
+      expect(console.log).toHaveBeenCalledWith(
+        '[STREAMING] Testing streaming URLs for: "Test Movie"'
+      );
       expect(console.log).toHaveBeenCalledWith('[SUCCESS] Streaming URLs generated:');
     });
 
@@ -175,7 +177,9 @@ describe('StreamingTest', () => {
       const result = await streamingTest.runFullTest();
 
       expect(result).toBe(true);
-      expect(console.log).toHaveBeenCalledWith('[TEST SUITE] Starting SkyStream streaming test suite...\n');
+      expect(console.log).toHaveBeenCalledWith(
+        '[TEST SUITE] Starting SkyStream streaming test suite...\n'
+      );
       expect(console.log).toHaveBeenCalledWith('[SUCCESS] All tests completed successfully!');
     });
 
@@ -239,4 +243,3 @@ describe('StreamingTest', () => {
     });
   });
 });
-

@@ -19,7 +19,7 @@ describe('ThemeToggle', () => {
     });
 
     const { container } = render(<ThemeToggle />);
-    
+
     expect(container.querySelector('.theme-toggle__icon')).toBeInTheDocument();
   });
 
@@ -30,7 +30,7 @@ describe('ThemeToggle', () => {
     });
 
     const { container } = render(<ThemeToggle />);
-    
+
     expect(container.querySelector('.theme-toggle__icon')).toBeInTheDocument();
   });
 
@@ -41,10 +41,10 @@ describe('ThemeToggle', () => {
     });
 
     render(<ThemeToggle />);
-    
+
     const button = screen.getByRole('button');
     fireEvent.click(button);
-    
+
     expect(mockToggleTheme).toHaveBeenCalledTimes(1);
   });
 
@@ -55,7 +55,7 @@ describe('ThemeToggle', () => {
     });
 
     render(<ThemeToggle />);
-    
+
     const button = screen.getByRole('button');
     expect(button).toHaveAttribute('aria-label', 'Switch to light mode');
   });
@@ -67,9 +67,8 @@ describe('ThemeToggle', () => {
     });
 
     render(<ThemeToggle />);
-    
+
     const button = screen.getByRole('button');
     expect(button).toHaveAttribute('aria-label', 'Switch to dark mode');
   });
 });
-

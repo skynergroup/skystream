@@ -33,7 +33,7 @@ describe('StreamingPlayerModal', () => {
         { season_number: 2, episode_count: 10 },
       ],
     });
-    
+
     // Suppress console.error for expected errors
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
@@ -302,4 +302,3 @@ describe('StreamingPlayerModal', () => {
     expect(iframes.length).toBeGreaterThan(0);
   });
 });
-

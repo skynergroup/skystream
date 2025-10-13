@@ -28,22 +28,21 @@ jest.mock('../utils', () => ({
 describe('App', () => {
   test('renders without crashing', () => {
     render(<App />);
-    
+
     expect(screen.getByTestId('layout')).toBeInTheDocument();
   });
 
   test('renders Search page on root path', () => {
     window.history.pushState({}, 'Test page', '/');
     render(<App />);
-    
+
     expect(screen.getByText('Search Page')).toBeInTheDocument();
   });
 
   test('renders Discover page on /home path', () => {
     window.history.pushState({}, 'Test page', '/home');
     render(<App />);
-    
+
     expect(screen.getByText('Discover Page')).toBeInTheDocument();
   });
 });
-

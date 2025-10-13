@@ -134,7 +134,10 @@ describe('useTheme', () => {
       result.current.toggleTheme();
     });
 
-    expect(document.documentElement.setAttribute).toHaveBeenCalledWith('data-theme', expect.any(String));
+    expect(document.documentElement.setAttribute).toHaveBeenCalledWith(
+      'data-theme',
+      expect.any(String)
+    );
   });
 
   test('listens for system theme changes with addEventListener', () => {
@@ -195,4 +198,3 @@ describe('useTheme', () => {
     expect(['light', 'dark']).toContain(result.current.theme);
   });
 });
-

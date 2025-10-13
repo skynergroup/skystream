@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Play, Info, Star, Calendar } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
 import './FeaturedHero.css';
@@ -63,13 +64,13 @@ const FeaturedHero = ({ content, onPlay, onInfo }) => {
         <h1 className="featured-hero__title">{currentContent.title}</h1>
 
         <div className="featured-hero__meta">
-          {releaseYear && (
+          {Boolean(releaseYear) && (
             <span className="featured-hero__year">
               <Calendar size={16} />
               {releaseYear}
             </span>
           )}
-          {rating && (
+          {Boolean(rating) && (
             <span className="featured-hero__rating">
               <Star size={16} />
               {rating}
@@ -135,6 +136,22 @@ const FeaturedHero = ({ content, onPlay, onInfo }) => {
       </div>
     </div>
   );
+};
+
+FeaturedHero.propTypes = {
+  content: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      type: PropTypes.string.isRequired,
+      title: PropTypes.string,
+      backdrop_path: PropTypes.string,
+      release_date: PropTypes.string,
+      vote_average: PropTypes.number,
+      overview: PropTypes.string,
+    })
+  ).isRequired,
+  onPlay: PropTypes.func.isRequired,
+  onInfo: PropTypes.func,
 };
 
 export default FeaturedHero;

@@ -370,7 +370,9 @@ describe('TMDBApi', () => {
 
       const callUrl = fetch.mock.calls[0][0];
       expect(callUrl.toString()).toContain('/movie/1');
-      expect(callUrl.toString()).toContain('append_to_response=videos%2Ccredits%2Csimilar%2Crecommendations');
+      expect(callUrl.toString()).toContain(
+        'append_to_response=videos%2Ccredits%2Csimilar%2Crecommendations'
+      );
     });
   });
 
@@ -385,7 +387,9 @@ describe('TMDBApi', () => {
 
       const callUrl = fetch.mock.calls[0][0];
       expect(callUrl.toString()).toContain('/tv/1');
-      expect(callUrl.toString()).toContain('append_to_response=videos%2Ccredits%2Csimilar%2Crecommendations');
+      expect(callUrl.toString()).toContain(
+        'append_to_response=videos%2Ccredits%2Csimilar%2Crecommendations'
+      );
     });
   });
 
@@ -611,4 +615,3 @@ describe('TMDBApi', () => {
     });
   });
 });
-

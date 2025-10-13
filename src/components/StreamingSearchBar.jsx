@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { Search, X } from 'lucide-react';
 import './StreamingSearchBar.css';
 
@@ -102,6 +103,14 @@ const StreamingSearchBar = ({
       </form>
     </div>
   );
+};
+
+StreamingSearchBar.propTypes = {
+  onSearch: PropTypes.func.isRequired,
+  onClear: PropTypes.func,
+  placeholder: PropTypes.string,
+  autoFocus: PropTypes.bool,
+  debounceMs: PropTypes.number,
 };
 
 export default StreamingSearchBar;

@@ -8,4 +8,3 @@ const tmdbApi = {
 };
 
 export default tmdbApi;
-

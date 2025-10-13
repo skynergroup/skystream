@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import StreamingResultCard from './StreamingResultCard';
 import './ContentRow.css';
@@ -70,6 +71,17 @@ const ContentRow = ({ title, content, onPlay }) => {
       </div>
     </div>
   );
+};
+
+ContentRow.propTypes = {
+  title: PropTypes.string.isRequired,
+  content: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      type: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  onPlay: PropTypes.func.isRequired,
 };
 
 export default ContentRow;

@@ -4,7 +4,7 @@ describe('StreamingServices', () => {
   describe('getVidsrcMovieUrl', () => {
     test('generates basic movie URL', () => {
       const url = streamingServices.getVidsrcMovieUrl(299534);
-      
+
       expect(url).toBe('https://vidsrc.xyz/embed/movie?tmdb=299534&autoplay=1');
     });
 
@@ -12,7 +12,7 @@ describe('StreamingServices', () => {
       const url = streamingServices.getVidsrcMovieUrl(299534, {
         sub_url: 'https://example.com/subs.vtt',
       });
-      
+
       expect(url).toContain('sub_url=https%3A%2F%2Fexample.com%2Fsubs.vtt');
     });
 
@@ -20,7 +20,7 @@ describe('StreamingServices', () => {
       const url = streamingServices.getVidsrcMovieUrl(299534, {
         ds_lang: 'en',
       });
-      
+
       expect(url).toContain('ds_lang=en');
     });
 
@@ -28,7 +28,7 @@ describe('StreamingServices', () => {
       const url = streamingServices.getVidsrcMovieUrl(299534, {
         autoplay: 0,
       });
-      
+
       expect(url).toContain('autoplay=0');
     });
 
@@ -38,7 +38,7 @@ describe('StreamingServices', () => {
         ds_lang: 'en',
         autoplay: 0,
       });
-      
+
       expect(url).toContain('sub_url=');
       expect(url).toContain('ds_lang=en');
       expect(url).toContain('autoplay=0');
@@ -48,13 +48,13 @@ describe('StreamingServices', () => {
   describe('getVidsrcTVUrl', () => {
     test('generates basic TV URL without season/episode', () => {
       const url = streamingServices.getVidsrcTVUrl(1399);
-      
+
       expect(url).toBe('https://vidsrc.xyz/embed/tv?tmdb=1399&autoplay=1');
     });
 
     test('includes season and episode when provided', () => {
       const url = streamingServices.getVidsrcTVUrl(1399, 1, 1);
-      
+
       expect(url).toContain('season=1');
       expect(url).toContain('episode=1');
       expect(url).toContain('autonext=0');
@@ -64,7 +64,7 @@ describe('StreamingServices', () => {
       const url = streamingServices.getVidsrcTVUrl(1399, 1, 1, {
         sub_url: 'https://example.com/subs.vtt',
       });
-      
+
       expect(url).toContain('sub_url=https%3A%2F%2Fexample.com%2Fsubs.vtt');
     });
 
@@ -72,7 +72,7 @@ describe('StreamingServices', () => {
       const url = streamingServices.getVidsrcTVUrl(1399, 1, 1, {
         ds_lang: 'en',
       });
-      
+
       expect(url).toContain('ds_lang=en');
     });
 
@@ -80,7 +80,7 @@ describe('StreamingServices', () => {
       const url = streamingServices.getVidsrcTVUrl(1399, 1, 1, {
         autoplay: 0,
       });
-      
+
       expect(url).toContain('autoplay=0');
     });
 
@@ -88,13 +88,13 @@ describe('StreamingServices', () => {
       const url = streamingServices.getVidsrcTVUrl(1399, 1, 1, {
         autonext: 1,
       });
-      
+
       expect(url).toContain('autonext=1');
     });
 
     test('does not include autonext without season/episode', () => {
       const url = streamingServices.getVidsrcTVUrl(1399);
-      
+
       expect(url).not.toContain('autonext');
     });
   });
@@ -102,7 +102,7 @@ describe('StreamingServices', () => {
   describe('getVideasyMovieUrl', () => {
     test('generates basic movie URL', () => {
       const url = streamingServices.getVideasyMovieUrl(299534);
-      
+
       expect(url).toContain('https://player.videasy.net/movie/299534');
       expect(url).toContain('color=8B5CF6');
       expect(url).toContain('overlay=true');
@@ -113,7 +113,7 @@ describe('StreamingServices', () => {
       const url = streamingServices.getVideasyMovieUrl(299534, {
         color: 'FF0000',
       });
-      
+
       expect(url).toContain('color=FF0000');
     });
 
@@ -121,7 +121,7 @@ describe('StreamingServices', () => {
       const url = streamingServices.getVideasyMovieUrl(299534, {
         progress: 50,
       });
-      
+
       expect(url).toContain('progress=50');
     });
 
@@ -129,7 +129,7 @@ describe('StreamingServices', () => {
       const url = streamingServices.getVideasyMovieUrl(299534, {
         overlay: false,
       });
-      
+
       expect(url).not.toContain('overlay=true');
     });
 
@@ -137,7 +137,7 @@ describe('StreamingServices', () => {
       const url = streamingServices.getVideasyMovieUrl(299534, {
         autoplay: 0,
       });
-      
+
       expect(url).toContain('autoplay=0');
     });
   });
@@ -145,7 +145,7 @@ describe('StreamingServices', () => {
   describe('getVideasyTVUrl', () => {
     test('generates basic TV URL', () => {
       const url = streamingServices.getVideasyTVUrl(1399, 1, 1);
-      
+
       expect(url).toContain('https://player.videasy.net/tv/1399/1/1');
       expect(url).toContain('color=8B5CF6');
       expect(url).toContain('nextEpisode=true');
@@ -158,7 +158,7 @@ describe('StreamingServices', () => {
       const url = streamingServices.getVideasyTVUrl(1399, 1, 1, {
         color: 'FF0000',
       });
-      
+
       expect(url).toContain('color=FF0000');
     });
 
@@ -166,7 +166,7 @@ describe('StreamingServices', () => {
       const url = streamingServices.getVideasyTVUrl(1399, 1, 1, {
         progress: 50,
       });
-      
+
       expect(url).toContain('progress=50');
     });
 
@@ -201,9 +201,9 @@ describe('StreamingServices', () => {
         id: 299534,
         type: 'movie',
       };
-      
+
       const urls = streamingServices.getAllStreamingUrls(content);
-      
+
       expect(urls.vidsrc).toContain('vidsrc.xyz/embed/movie');
       expect(urls.vidsrc).toContain('tmdb=299534');
       expect(urls.videasy).toContain('videasy.net/movie/299534');
@@ -214,9 +214,9 @@ describe('StreamingServices', () => {
         id: 1399,
         type: 'tv',
       };
-      
+
       const urls = streamingServices.getAllStreamingUrls(content);
-      
+
       expect(urls.vidsrc).toContain('vidsrc.xyz/embed/tv');
       expect(urls.vidsrc).toContain('tmdb=1399');
       expect(urls.videasy).toContain('videasy.net/tv/1399');
@@ -358,7 +358,9 @@ describe('StreamingServices', () => {
         statusText: 'Not Found',
       });
 
-      await expect(streamingServices.getVidsrcLatestMovies()).rejects.toThrow('Failed to fetch latest movies');
+      await expect(streamingServices.getVidsrcLatestMovies()).rejects.toThrow(
+        'Failed to fetch latest movies'
+      );
     });
   });
 
@@ -399,7 +401,9 @@ describe('StreamingServices', () => {
         statusText: 'Not Found',
       });
 
-      await expect(streamingServices.getVidsrcLatestTVShows()).rejects.toThrow('Failed to fetch latest TV shows');
+      await expect(streamingServices.getVidsrcLatestTVShows()).rejects.toThrow(
+        'Failed to fetch latest TV shows'
+      );
     });
   });
 
@@ -440,8 +444,9 @@ describe('StreamingServices', () => {
         statusText: 'Not Found',
       });
 
-      await expect(streamingServices.getVidsrcLatestEpisodes()).rejects.toThrow('Failed to fetch latest episodes');
+      await expect(streamingServices.getVidsrcLatestEpisodes()).rejects.toThrow(
+        'Failed to fetch latest episodes'
+      );
     });
   });
 });
-

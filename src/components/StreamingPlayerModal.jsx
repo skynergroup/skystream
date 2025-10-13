@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { X, ExternalLink, Download } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
 import tmdbApi from '../services/tmdbApi';
@@ -24,7 +25,7 @@ const StreamingPlayerModal = ({
 
   // Handle season change - reset episode to 1
   const handleSeasonChange = newSeason => {
-    const seasonNum = parseInt(newSeason);
+    const seasonNum = Number.parseInt(newSeason, 10);
     setSelectedSeason(seasonNum);
     setSelectedEpisode(1); // Reset to episode 1 when season changes
 
@@ -97,8 +98,8 @@ const StreamingPlayerModal = ({
       if (event.data && event.data.type === 'episodeChange') {
         const { season: newSeason, episode: newEpisode } = event.data;
         if (newSeason && newEpisode) {
-          const seasonNum = parseInt(newSeason);
-          const episodeNum = parseInt(newEpisode);
+          const seasonNum = Number.parseInt(newSeason, 10);
+          const episodeNum = Number.parseInt(newEpisode, 10);
 
           if (seasonNum !== selectedSeason || episodeNum !== selectedEpisode) {
             setSelectedSeason(seasonNum);
@@ -166,8 +167,8 @@ const StreamingPlayerModal = ({
 
         if (urlSeason && urlEpisode) {
           return {
-            season: parseInt(urlSeason),
-            episode: parseInt(urlEpisode),
+            season: Number.parseInt(urlSeason, 10),
+            episode: Number.parseInt(urlEpisode, 10),
           };
         }
       } catch (e) {
@@ -219,7 +220,18 @@ const StreamingPlayerModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="streaming-player-modal" onClick={handleBackdropClick}>
+    <div
+      className="streaming-player-modal"
+      onClick={handleBackdropClick}
+      onKeyDown={e => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+      }}
+      role="dialog"
+      aria-modal="true"
+      tabIndex={-1}
+    >
       <div className="streaming-player-modal__content">
         <div className="streaming-player-modal__header">
           <div className="streaming-player-modal__title">
@@ -275,7 +287,7 @@ const StreamingPlayerModal = ({
                 <select
                   id="episode-select"
                   value={selectedEpisode}
-                  onChange={e => setSelectedEpisode(parseInt(e.target.value))}
+                  onChange={e => setSelectedEpisode(Number.parseInt(e.target.value, 10))}
                   className="streaming-player-modal__select"
                   disabled={loading}
                 >
@@ -350,6 +362,20 @@ const StreamingPlayerModal = ({
       </div>
     </div>
   );
+};
+
+StreamingPlayerModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  content: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    title: PropTypes.string,
+  }),
+  platform: PropTypes.oneOf(['vidsrc', 'videasy']).isRequired,
+  embedUrl: PropTypes.string,
+  contentType: PropTypes.oneOf(['movie', 'tv']),
+  season: PropTypes.number,
+  episode: PropTypes.number,
 };
 
 export default StreamingPlayerModal;

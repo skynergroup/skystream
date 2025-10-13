@@ -19,26 +19,26 @@ describe('StreamingSearchBar', () => {
 
   test('renders with default placeholder', () => {
     render(<StreamingSearchBar onSearch={mockOnSearch} />);
-    
+
     expect(screen.getByPlaceholderText(/Search for movies, TV shows, anime/)).toBeInTheDocument();
   });
 
   test('renders with custom placeholder', () => {
     render(<StreamingSearchBar onSearch={mockOnSearch} placeholder="Custom placeholder" />);
-    
+
     expect(screen.getByPlaceholderText('Custom placeholder')).toBeInTheDocument();
   });
 
   test('calls onSearch after debounce delay', async () => {
     render(<StreamingSearchBar onSearch={mockOnSearch} debounceMs={300} />);
-    
+
     const input = screen.getByPlaceholderText(/Search for movies/);
     fireEvent.change(input, { target: { value: 'avengers' } });
-    
+
     expect(mockOnSearch).not.toHaveBeenCalled();
-    
+
     jest.advanceTimersByTime(300);
-    
+
     await waitFor(() => {
       expect(mockOnSearch).toHaveBeenCalledWith('avengers');
     });
@@ -46,18 +46,18 @@ describe('StreamingSearchBar', () => {
 
   test('debounces multiple rapid inputs', async () => {
     render(<StreamingSearchBar onSearch={mockOnSearch} debounceMs={300} />);
-    
+
     const input = screen.getByPlaceholderText(/Search for movies/);
-    
+
     fireEvent.change(input, { target: { value: 'a' } });
     jest.advanceTimersByTime(100);
-    
+
     fireEvent.change(input, { target: { value: 'av' } });
     jest.advanceTimersByTime(100);
-    
+
     fireEvent.change(input, { target: { value: 'ave' } });
     jest.advanceTimersByTime(300);
-    
+
     await waitFor(() => {
       expect(mockOnSearch).toHaveBeenCalledTimes(1);
       expect(mockOnSearch).toHaveBeenCalledWith('ave');
@@ -66,15 +66,15 @@ describe('StreamingSearchBar', () => {
 
   test('calls onClear when input is cleared', async () => {
     render(<StreamingSearchBar onSearch={mockOnSearch} onClear={mockOnClear} debounceMs={300} />);
-    
+
     const input = screen.getByPlaceholderText(/Search for movies/);
-    
+
     fireEvent.change(input, { target: { value: 'test' } });
     jest.advanceTimersByTime(300);
-    
+
     fireEvent.change(input, { target: { value: '' } });
     jest.advanceTimersByTime(300);
-    
+
     await waitFor(() => {
       expect(mockOnClear).toHaveBeenCalled();
     });
@@ -82,43 +82,43 @@ describe('StreamingSearchBar', () => {
 
   test('shows clear button when input has value', () => {
     render(<StreamingSearchBar onSearch={mockOnSearch} />);
-    
+
     const input = screen.getByPlaceholderText(/Search for movies/);
     fireEvent.change(input, { target: { value: 'test' } });
-    
+
     const clearButton = screen.getByRole('button', { name: 'Clear search' });
     expect(clearButton).toBeInTheDocument();
   });
 
   test('does not show clear button when input is empty', () => {
     render(<StreamingSearchBar onSearch={mockOnSearch} />);
-    
+
     const clearButton = screen.queryByRole('button', { name: 'Clear search' });
     expect(clearButton).not.toBeInTheDocument();
   });
 
   test('clears input when clear button is clicked', () => {
     render(<StreamingSearchBar onSearch={mockOnSearch} onClear={mockOnClear} />);
-    
+
     const input = screen.getByPlaceholderText(/Search for movies/);
     fireEvent.change(input, { target: { value: 'test' } });
-    
+
     const clearButton = screen.getByRole('button', { name: 'Clear search' });
     fireEvent.click(clearButton);
-    
+
     expect(input.value).toBe('');
     expect(mockOnClear).toHaveBeenCalled();
   });
 
   test('submits search on form submit', async () => {
     render(<StreamingSearchBar onSearch={mockOnSearch} />);
-    
+
     const input = screen.getByPlaceholderText(/Search for movies/);
     fireEvent.change(input, { target: { value: 'test query' } });
-    
+
     const form = input.closest('form');
     fireEvent.submit(form);
-    
+
     await waitFor(() => {
       expect(mockOnSearch).toHaveBeenCalledWith('test query');
     });
@@ -126,23 +126,23 @@ describe('StreamingSearchBar', () => {
 
   test('does not submit empty search', () => {
     render(<StreamingSearchBar onSearch={mockOnSearch} />);
-    
+
     const input = screen.getByPlaceholderText(/Search for movies/);
     const form = input.closest('form');
-    
+
     fireEvent.submit(form);
-    
+
     expect(mockOnSearch).not.toHaveBeenCalled();
   });
 
   test('trims whitespace from search query', async () => {
     render(<StreamingSearchBar onSearch={mockOnSearch} debounceMs={300} />);
-    
+
     const input = screen.getByPlaceholderText(/Search for movies/);
     fireEvent.change(input, { target: { value: '  test query  ' } });
-    
+
     jest.advanceTimersByTime(300);
-    
+
     await waitFor(() => {
       expect(mockOnSearch).toHaveBeenCalledWith('test query');
     });
@@ -151,12 +151,12 @@ describe('StreamingSearchBar', () => {
   test('shows loading spinner when searching', async () => {
     const slowSearch = jest.fn(() => new Promise(resolve => setTimeout(resolve, 1000)));
     render(<StreamingSearchBar onSearch={slowSearch} debounceMs={100} />);
-    
+
     const input = screen.getByPlaceholderText(/Search for movies/);
     fireEvent.change(input, { target: { value: 'test' } });
-    
+
     jest.advanceTimersByTime(100);
-    
+
     await waitFor(() => {
       expect(document.querySelector('.streaming-search-bar__loading')).toBeInTheDocument();
     });
@@ -178,15 +178,14 @@ describe('StreamingSearchBar', () => {
 
   test('cleans up debounce timer on unmount', () => {
     const { unmount } = render(<StreamingSearchBar onSearch={mockOnSearch} debounceMs={300} />);
-    
+
     const input = screen.getByPlaceholderText(/Search for movies/);
     fireEvent.change(input, { target: { value: 'test' } });
-    
+
     unmount();
-    
+
     jest.advanceTimersByTime(300);
-    
+
     expect(mockOnSearch).not.toHaveBeenCalled();
   });
 });
-

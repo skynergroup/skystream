@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Play, Star, Calendar, Info } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
 import './StreamingResultCard.css';
@@ -79,14 +80,14 @@ const StreamingResultCard = ({ content, onPlay }) => {
         </h3>
 
         <div className="streaming-result-card__meta">
-          {releaseYear && (
+          {Boolean(releaseYear) && (
             <span className="streaming-result-card__year">
               <Calendar size={12} />
               {releaseYear}
             </span>
           )}
 
-          {rating && (
+          {Boolean(rating) && (
             <span className="streaming-result-card__rating">
               <Star size={12} />
               {rating}
@@ -108,6 +109,19 @@ const StreamingResultCard = ({ content, onPlay }) => {
       </div>
     </div>
   );
+};
+
+StreamingResultCard.propTypes = {
+  content: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    type: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    poster_path: PropTypes.string,
+    release_date: PropTypes.string,
+    vote_average: PropTypes.number,
+    overview: PropTypes.string,
+  }).isRequired,
+  onPlay: PropTypes.func.isRequired,
 };
 
 export default StreamingResultCard;

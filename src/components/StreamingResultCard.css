@@ -63,7 +63,6 @@
   justify-content: center;
   padding: 1rem;
   opacity: 0;
-  opacity: 0;
   transition: opacity 0.3s ease;
 }
 

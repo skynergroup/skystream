@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { AlertTriangle, X } from 'lucide-react';
 import './MaintenanceBanner.css';
 
@@ -37,6 +38,12 @@ const MaintenanceBanner = ({
       </div>
     </div>
   );
+};
+
+MaintenanceBanner.propTypes = {
+  message: PropTypes.string,
+  dismissible: PropTypes.bool,
+  type: PropTypes.oneOf(['warning', 'info', 'error']),
 };
 
 export default MaintenanceBanner;
