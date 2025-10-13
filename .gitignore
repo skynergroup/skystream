@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Test coverage
+coverage
+*.lcov
+
 # Environment files
 .env
 .env.local
