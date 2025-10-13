@@ -34,15 +34,16 @@
 .content-row__item {
   flex: 0 0 auto;
   width: 200px;
+  height: 100%;
+  display: flex;
 }
 
 .content-row__arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.8);
   border: none;
-  color: var(--text-primary);
+  color: #ffffff;
   width: 50px;
   height: 100%;
   display: flex;
@@ -51,7 +52,8 @@
   cursor: pointer;
   z-index: 10;
   opacity: 0;
-  transition: opacity 0.3s ease, background 0.3s ease;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(5px);
 }
 
 .content-row__container:hover .content-row__arrow {
@@ -59,17 +61,17 @@
 }
 
 .content-row__arrow:hover {
-  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(8px);
 }
 
 .content-row__arrow--left {
   left: 0;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.9), transparent);
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);
 }
 
 .content-row__arrow--right {
   right: 0;
-  background: linear-gradient(to left, rgba(0, 0, 0, 0.9), transparent);
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3), transparent);
 }
 
 /* Responsive adjustments */
