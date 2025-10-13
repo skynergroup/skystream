@@ -237,6 +237,211 @@ describe('StreamingServices', () => {
       expect(urls.vidsrc).toContain('episode=5');
       expect(urls.videasy).toContain('/tv/1399/2/5');
     });
+
+    test('returns empty object for unknown content type', () => {
+      const content = { id: 1, type: 'unknown' };
+      const urls = streamingServices.getAllStreamingUrls(content);
+
+      expect(urls).toEqual({});
+    });
+  });
+
+  describe('getVideasyAnimeUrl', () => {
+    test('generates anime URL with episode', () => {
+      const url = streamingServices.getVideasyAnimeUrl(12345, 5);
+
+      expect(url).toContain('/anime/12345/5');
+    });
+
+    test('generates anime URL without episode', () => {
+      const url = streamingServices.getVideasyAnimeUrl(12345, 0);
+
+      expect(url).toContain('/anime/12345');
+      expect(url).not.toContain('/0');
+    });
+
+    test('includes dub parameter when specified', () => {
+      const url = streamingServices.getVideasyAnimeUrl(12345, 1, { dub: true });
+
+      expect(url).toContain('dub=true');
+    });
+
+    test('includes color parameter when specified', () => {
+      const url = streamingServices.getVideasyAnimeUrl(12345, 1, { color: 'red' });
+
+      expect(url).toContain('color=red');
+    });
+
+    test('includes progress parameter when specified', () => {
+      const url = streamingServices.getVideasyAnimeUrl(12345, 1, { progress: 50 });
+
+      expect(url).toContain('progress=50');
+    });
+
+    test('includes nextEpisode parameter by default', () => {
+      const url = streamingServices.getVideasyAnimeUrl(12345, 1);
+
+      expect(url).toContain('nextEpisode=true');
+    });
+
+    test('includes episodeSelector parameter by default', () => {
+      const url = streamingServices.getVideasyAnimeUrl(12345, 1);
+
+      expect(url).toContain('episodeSelector=true');
+    });
+
+    test('includes autoplayNextEpisode parameter by default', () => {
+      const url = streamingServices.getVideasyAnimeUrl(12345, 1);
+
+      expect(url).toContain('autoplayNextEpisode=true');
+    });
+
+    test('includes overlay parameter by default', () => {
+      const url = streamingServices.getVideasyAnimeUrl(12345, 1);
+
+      expect(url).toContain('overlay=true');
+    });
+
+    test('excludes autoplayNextEpisode when set to false', () => {
+      const url = streamingServices.getVideasyAnimeUrl(12345, 1, { autoplayNextEpisode: false });
+
+      expect(url).not.toContain('autoplayNextEpisode');
+    });
+
+    test('excludes overlay when set to false', () => {
+      const url = streamingServices.getVideasyAnimeUrl(12345, 1, { overlay: false });
+
+      expect(url).not.toContain('overlay');
+    });
+  });
+
+  describe('getVidsrcLatestMovies', () => {
+    beforeEach(() => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      console.error.mockRestore();
+    });
+
+    test('fetches latest movies from Vidsrc API', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ results: [] }),
+      });
+
+      await streamingServices.getVidsrcLatestMovies();
+
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/movies/latest/page-1.json'));
+    });
+
+    test('includes page parameter', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ results: [] }),
+      });
+
+      await streamingServices.getVidsrcLatestMovies(2);
+
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/movies/latest/page-2.json'));
+    });
+
+    test('handles fetch errors', async () => {
+      global.fetch = jest.fn().mockRejectedValue(new Error('Network error'));
+
+      await expect(streamingServices.getVidsrcLatestMovies()).rejects.toThrow('Network error');
+    });
+
+    test('handles non-ok response', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: false,
+        statusText: 'Not Found',
+      });
+
+      await expect(streamingServices.getVidsrcLatestMovies()).rejects.toThrow('Failed to fetch latest movies');
+    });
+  });
+
+  describe('getVidsrcLatestTVShows', () => {
+    beforeEach(() => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      console.error.mockRestore();
+    });
+
+    test('fetches latest TV shows from Vidsrc API', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ results: [] }),
+      });
+
+      await streamingServices.getVidsrcLatestTVShows();
+
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/tvshows/latest/page-1.json'));
+    });
+
+    test('includes page parameter', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ results: [] }),
+      });
+
+      await streamingServices.getVidsrcLatestTVShows(3);
+
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/tvshows/latest/page-3.json'));
+    });
+
+    test('handles non-ok response', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: false,
+        statusText: 'Not Found',
+      });
+
+      await expect(streamingServices.getVidsrcLatestTVShows()).rejects.toThrow('Failed to fetch latest TV shows');
+    });
+  });
+
+  describe('getVidsrcLatestEpisodes', () => {
+    beforeEach(() => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      console.error.mockRestore();
+    });
+
+    test('fetches latest episodes from Vidsrc API', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ results: [] }),
+      });
+
+      await streamingServices.getVidsrcLatestEpisodes();
+
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/episodes/latest/page-1.json'));
+    });
+
+    test('includes page parameter', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ results: [] }),
+      });
+
+      await streamingServices.getVidsrcLatestEpisodes(4);
+
+      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/episodes/latest/page-4.json'));
+    });
+
+    test('handles non-ok response', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: false,
+        statusText: 'Not Found',
+      });
+
+      await expect(streamingServices.getVidsrcLatestEpisodes()).rejects.toThrow('Failed to fetch latest episodes');
+    });
   });
 });
 
