@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { Home } from './pages';
+import { Search, Discover } from './pages';
+import { Layout } from './components';
 import { analytics } from './utils';
 
 // Analytics tracking component
@@ -9,8 +11,6 @@ function AnalyticsTracker() {
   useEffect(() => {
     // Initialize analytics on first load
     analytics.init();
-    // Track initial page view
-    analytics.trackPageView('/', 'SkyStream - Search & Stream');
   }, []);
 
   return null;
@@ -18,12 +18,18 @@ function AnalyticsTracker() {
 
 function App() {
   return (
-    <>
+    <Router>
       <AnalyticsTracker />
-      <Home />
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Search />} />
+          <Route path="/home" element={<Discover />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Layout>
       <Analytics />
       <SpeedInsights />
-    </>
+    </Router>
   );
 }
 

@@ -21,16 +21,24 @@ SkyStream is a viewing platform interface only. The application does not host, s
 ## Key Features
 
 ### Content Discovery
-- Real-time search across movies, TV shows, and anime
-- Advanced filtering by genre, year, rating, and content type
-- Trending, popular, and top-rated content sections
-- Comprehensive content metadata including ratings, release dates, and descriptions
+- **Discover Page** (`/home`) - Curated content sections with featured hero carousel
+  - Featured content with auto-rotating carousel
+  - Trending movies and TV shows
+  - Popular movies and TV shows sections
+  - Top-rated content
+  - Popular anime section
+  - Horizontal scrolling content rows
+- **Search Page** (`/`) - Real-time search across movies, TV shows, and anime
+  - Instant search results
+  - Grid-based result display
+  - Comprehensive content metadata including ratings, release dates, and descriptions
 
 ### User Interface
 - Netflix-inspired dark theme with light mode support
 - Fully responsive design optimized for desktop, tablet, and mobile devices
 - Smooth animations and transitions
-- Intuitive navigation and content browsing
+- Intuitive navigation between Discover and Search pages
+- Persistent header with navigation links
 
 ### Streaming Integration
 - Multiple streaming service integrations (Vidsrc, Videasy)
@@ -80,6 +88,9 @@ skystream/
 │   └── favicon.ico     # Application favicon
 ├── src/
 │   ├── components/     # Reusable UI components
+│   │   ├── ContentRow.jsx          # Horizontal scrolling content row
+│   │   ├── FeaturedHero.jsx        # Hero banner with carousel
+│   │   ├── Layout.jsx              # Shared layout wrapper
 │   │   ├── Loading.jsx
 │   │   ├── MaintenanceBanner.jsx
 │   │   ├── StreamingPlayerModal.jsx
@@ -87,7 +98,8 @@ skystream/
 │   │   ├── StreamingSearchBar.jsx
 │   │   └── ThemeToggle.jsx
 │   ├── pages/          # Page-level components
-│   │   └── Home.jsx
+│   │   ├── Discover.jsx            # Content discovery page (/home)
+│   │   └── Search.jsx              # Search page (/)
 │   ├── services/       # API service layers
 │   │   ├── tmdbApi.js
 │   │   └── streamingServices.js
@@ -97,7 +109,7 @@ skystream/
 │   │   └── useTheme.js
 │   ├── styles/         # Global styles
 │   │   └── responsive.css
-│   ├── App.jsx         # Root application component
+│   ├── App.jsx         # Root application component with routing
 │   ├── main.jsx        # Application entry point
 │   └── index.css       # Global styles and theme variables
 ├── package.json        # Project dependencies and scripts
@@ -109,7 +121,16 @@ skystream/
 - **Component-based architecture** with React functional components
 - **Service layer pattern** for API interactions and business logic
 - **Utility-first approach** with centralized configuration management
-- **Single Page Application (SPA)** with client-side rendering
+- **Single Page Application (SPA)** with client-side routing via React Router
+- **Layout pattern** with shared header/footer wrapper component
+
+### Routing Structure
+
+| Route | Page | Description |
+|-------|------|-------------|
+| `/` | Search | Search-focused interface for finding specific content |
+| `/home` | Discover | Content discovery with featured carousel and curated sections |
+| `*` | Redirect | Catch-all route redirects to search page |
 
 ## Getting Started
 

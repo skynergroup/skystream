@@ -1,14 +1,13 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Search as SearchIcon } from 'lucide-react';
-import MaintenanceBanner from '../components/MaintenanceBanner';
 import StreamingSearchBar from '../components/StreamingSearchBar';
 import StreamingResultCard from '../components/StreamingResultCard';
 import StreamingPlayerModal from '../components/StreamingPlayerModal';
-import { Loading, ThemeToggle } from '../components';
+import { Loading } from '../components';
 import tmdbApi from '../services/tmdbApi';
 import { analytics } from '../utils';
 
-const Home = () => {
+const Search = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -22,6 +21,11 @@ const Home = () => {
     season: null,
     episode: null,
   });
+
+  // Track page view on mount
+  useEffect(() => {
+    analytics.trackPageView('/', 'SkyStream - Search');
+  }, []);
 
   // Handle search
   const handleSearch = useCallback(async query => {
@@ -103,56 +107,6 @@ const Home = () => {
 
   return (
     <div className="streaming-app">
-      {/* Simple Header */}
-      <header
-        style={{
-          background: 'var(--bg-secondary)',
-          padding: '1rem 2rem',
-          borderBottom: '1px solid var(--border-color)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          backdropFilter: 'blur(10px)',
-          transition: 'background 0.3s ease, border-color 0.3s ease',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            maxWidth: '1200px',
-            margin: '0 auto',
-            gap: '1rem',
-          }}
-        >
-          <h1
-            style={{
-              fontSize: 'clamp(1.25rem, 4vw, 1.5rem)',
-              fontWeight: '700',
-              color: 'var(--text-primary)',
-              margin: 0,
-              background:
-                'linear-gradient(135deg, var(--text-primary) 0%, var(--netflix-red) 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            SkyStream
-          </h1>
-
-          {/* Theme Toggle Button */}
-          <ThemeToggle />
-        </div>
-      </header>
-
-      {/* Maintenance Banner */}
-      <MaintenanceBanner
-        message="We are currently under maintenance. Some features may be temporarily unavailable."
-        type="warning"
-        dismissible={true}
-      />
 
       {/* Hero Section */}
       <div
@@ -316,47 +270,8 @@ const Home = () => {
         season={playerModal.season}
         episode={playerModal.episode}
       />
-
-      {/* Simple Footer */}
-      <footer
-        style={{
-          background: 'var(--bg-secondary)',
-          padding: '2rem',
-          textAlign: 'center',
-          borderTop: '1px solid var(--border-color)',
-          marginTop: '4rem',
-          transition: 'background 0.3s ease, border-color 0.3s ease',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-          }}
-        >
-          <p
-            style={{
-              color: 'var(--text-secondary)',
-              fontSize: '0.9rem',
-              margin: '0 0 1rem 0',
-            }}
-          >
-            SkyStream - Search and stream your favorite content instantly
-          </p>
-          <p
-            style={{
-              color: 'var(--text-secondary)',
-              fontSize: '0.8rem',
-              margin: 0,
-              opacity: 0.7,
-            }}
-          >
-            Content provided by third-party services. We do not host any content.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 };
 
-export default Home;
+export default Search;
