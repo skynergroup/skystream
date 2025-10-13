@@ -1,10 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search } from 'lucide-react';
-import MaintenanceBanner from './MaintenanceBanner';
+import { Home, Search, Tv } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import './Layout.css';
 
-const Layout = ({ children, showBanner = true }) => {
+const Layout = ({ children }) => {
   const location = useLocation();
 
   return (
@@ -31,20 +30,15 @@ const Layout = ({ children, showBanner = true }) => {
               <Search size={20} />
               <span>Search</span>
             </Link>
+            <span className="layout__nav-link layout__nav-link--disabled" title="Coming Soon">
+              <Tv size={20} />
+              <span>Live TV</span>
+            </span>
           </nav>
 
           <ThemeToggle />
         </div>
       </header>
-
-      {/* Maintenance Banner */}
-      {showBanner && (
-        <MaintenanceBanner
-          message="We are currently under maintenance. Some features may be temporarily unavailable."
-          type="warning"
-          dismissible={true}
-        />
-      )}
 
       {/* Main Content */}
       <main className="layout__main">{children}</main>

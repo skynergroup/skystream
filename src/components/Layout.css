@@ -89,6 +89,12 @@
   background: var(--netflix-red);
 }
 
+.layout__nav-link--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .layout__main {
   flex: 1;
   width: 100%;
