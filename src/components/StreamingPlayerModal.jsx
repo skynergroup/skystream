@@ -19,7 +19,7 @@ const StreamingPlayerModal = ({
   const [selectedSeason, setSelectedSeason] = useState(season || 1);
   const [selectedEpisode, setSelectedEpisode] = useState(episode || 1);
   const [currentEmbedUrl, setCurrentEmbedUrl] = useState(embedUrl);
-  const [selectedPlatform, setSelectedPlatform] = useState(platform);
+  const [selectedPlatform, setSelectedPlatform] = useState(platform || 'server1');
   const [seasonsData, setSeasonsData] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -41,16 +41,19 @@ const StreamingPlayerModal = ({
 
   // Update embed URL when season/episode/platform changes
   useEffect(() => {
-    if (content?.id) {
+    if (content?.id && selectedPlatform) {
       const urls = streamingServices.getAllStreamingUrls(content, {
         season: selectedSeason,
         episode: selectedEpisode,
       });
 
-      if (selectedPlatform === 'vidsrc') {
-        setCurrentEmbedUrl(urls.vidsrc);
+      // Support both old format (vidsrc/videasy) and new format (server1-5)
+      if (selectedPlatform && selectedPlatform.startsWith('server')) {
+        setCurrentEmbedUrl(urls[selectedPlatform]);
+      } else if (selectedPlatform === 'vidsrc') {
+        setCurrentEmbedUrl(urls.server1);
       } else if (selectedPlatform === 'videasy') {
-        setCurrentEmbedUrl(urls.videasy);
+        setCurrentEmbedUrl(urls.server5);
       }
     } else {
       setCurrentEmbedUrl(embedUrl);
@@ -244,8 +247,11 @@ const StreamingPlayerModal = ({
                 onChange={e => setSelectedPlatform(e.target.value)}
                 className="streaming-player-modal__server-select"
               >
-                <option value="vidsrc">Server 1</option>
-                <option value="videasy">Server 2</option>
+                <option value="server1">Server 1 (Vidsrc)</option>
+                <option value="server2">Server 2 (Vidsrc)</option>
+                <option value="server3">Server 3 (Vidsrc)</option>
+                <option value="server4">Server 4 (Vidsrc)</option>
+                <option value="server5">Server 5 (Videasy)</option>
               </select>
             </div>
           </div>
@@ -349,6 +355,7 @@ const StreamingPlayerModal = ({
             className="streaming-player-modal__iframe"
             allowFullScreen
             allow="encrypted-media; autoplay; fullscreen"
+            referrerPolicy="origin"
             style={{ border: 'none' }}
             loading="lazy"
           />
@@ -371,7 +378,15 @@ StreamingPlayerModal.propTypes = {
     id: PropTypes.number.isRequired,
     title: PropTypes.string,
   }),
-  platform: PropTypes.oneOf(['vidsrc', 'videasy']).isRequired,
+  platform: PropTypes.oneOf([
+    'server1',
+    'server2',
+    'server3',
+    'server4',
+    'server5',
+    'vidsrc',
+    'videasy',
+  ]).isRequired,
   embedUrl: PropTypes.string,
   contentType: PropTypes.oneOf(['movie', 'tv']),
   season: PropTypes.number,

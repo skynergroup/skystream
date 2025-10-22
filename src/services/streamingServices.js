@@ -5,8 +5,16 @@
 
 class StreamingServices {
   constructor() {
-    // Vidsrc domains (use vidsrc.xyz as primary)
-    this.vidsrcDomain = 'https://vidsrc.xyz';
+    // Vidsrc mirror domains (updated 2025-10-19)
+    // Use vidsrc-embed.ru as primary, with fallback mirrors
+    this.vidsrcDomain = 'https://vidsrc-embed.ru';
+    this.vidsrcMirrors = [
+      'https://vidsrc-embed.ru',
+      'https://vidsrc-embed.su',
+      'https://vidsrcme.su',
+      'https://vsrc.su',
+    ];
+    this.currentVidsrcMirrorIndex = 0;
 
     // Videasy domain
     this.videasyDomain = 'https://player.videasy.net';
@@ -157,18 +165,84 @@ class StreamingServices {
   }
 
   /**
-   * Get all available streaming URLs for a content item
+   * Get Vidsrc URL for a specific mirror (0-3)
+   * Server 1 = vidsrc-embed.ru (index 0)
+   * Server 2 = vidsrc-embed.su (index 1)
+   * Server 3 = vidsrcme.su (index 2)
+   * Server 4 = vsrc.su (index 3)
+   */
+  getVidsrcMirrorUrl(
+    mirrorIndex,
+    tmdbId,
+    contentType = 'movie',
+    season = null,
+    episode = null,
+    options = {}
+  ) {
+    if (mirrorIndex < 0 || mirrorIndex >= this.vidsrcMirrors.length) {
+      console.warn(`Invalid mirror index: ${mirrorIndex}, using default`);
+      mirrorIndex = 0;
+    }
+
+    const domain = this.vidsrcMirrors[mirrorIndex];
+    const { sub_url, ds_lang, autoplay = 1, autonext = 0 } = options;
+
+    let url = `${domain}/embed/${contentType}?tmdb=${tmdbId}`;
+
+    if (contentType === 'tv' && season && episode) {
+      url += `&season=${season}&episode=${episode}`;
+    }
+
+    if (sub_url) {
+      url += `&sub_url=${encodeURIComponent(sub_url)}`;
+    }
+
+    if (ds_lang) {
+      url += `&ds_lang=${ds_lang}`;
+    }
+
+    url += `&autoplay=${autoplay}`;
+
+    if (contentType === 'tv' && season && episode) {
+      url += `&autonext=${autonext}`;
+    }
+
+    return url;
+  }
+
+  /**
+   * Get all available streaming URLs for a content item (5 servers)
+   * Servers 1-4: Vidsrc mirrors
+   * Server 5: Videasy
    */
   getAllStreamingUrls(content, options = {}) {
     const { season, episode } = options;
     const urls = {};
 
     if (content.type === 'movie') {
-      urls.vidsrc = this.getVidsrcMovieUrl(content.id, options);
-      urls.videasy = this.getVideasyMovieUrl(content.id, options);
+      // Servers 1-4: Vidsrc mirrors
+      urls.server1 = this.getVidsrcMirrorUrl(0, content.id, 'movie', null, null, options);
+      urls.server2 = this.getVidsrcMirrorUrl(1, content.id, 'movie', null, null, options);
+      urls.server3 = this.getVidsrcMirrorUrl(2, content.id, 'movie', null, null, options);
+      urls.server4 = this.getVidsrcMirrorUrl(3, content.id, 'movie', null, null, options);
+      // Server 5: Videasy
+      urls.server5 = this.getVideasyMovieUrl(content.id, options);
+
+      // Keep backward compatibility
+      urls.vidsrc = urls.server1;
+      urls.videasy = urls.server5;
     } else if (content.type === 'tv') {
-      urls.vidsrc = this.getVidsrcTVUrl(content.id, season, episode, options);
-      urls.videasy = this.getVideasyTVUrl(content.id, season, episode, options);
+      // Servers 1-4: Vidsrc mirrors
+      urls.server1 = this.getVidsrcMirrorUrl(0, content.id, 'tv', season, episode, options);
+      urls.server2 = this.getVidsrcMirrorUrl(1, content.id, 'tv', season, episode, options);
+      urls.server3 = this.getVidsrcMirrorUrl(2, content.id, 'tv', season, episode, options);
+      urls.server4 = this.getVidsrcMirrorUrl(3, content.id, 'tv', season, episode, options);
+      // Server 5: Videasy
+      urls.server5 = this.getVideasyTVUrl(content.id, season, episode, options);
+
+      // Keep backward compatibility
+      urls.vidsrc = urls.server1;
+      urls.videasy = urls.server5;
     }
 
     return urls;

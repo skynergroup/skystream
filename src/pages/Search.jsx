@@ -83,7 +83,7 @@ const Search = () => {
     // Track play event
     analytics.trackEvent('content_play', {
       category: 'streaming',
-      label: platform === 'vidsrc' ? 'server1' : 'server2',
+      label: platform,
       content_id: content.id,
       content_type: content.type,
       content_title: content.title,

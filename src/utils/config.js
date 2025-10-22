@@ -44,7 +44,13 @@ export const PLAYER_CONFIG = {
     baseUrl: getEnvVar('VITE_VIDEASY_BASE_URL', 'https://player.videasy.net'),
   },
   vidsrc: {
-    baseUrl: getEnvVar('VITE_VIDSRC_BASE_URL', 'https://vidsrc.xyz/embed'),
+    baseUrl: getEnvVar('VITE_VIDSRC_BASE_URL', 'https://vidsrc-embed.ru/embed'),
+    mirrors: [
+      getEnvVar('VITE_VIDSRC_MIRROR_1', 'https://vidsrc-embed.ru/embed'),
+      getEnvVar('VITE_VIDSRC_MIRROR_2', 'https://vidsrc-embed.su/embed'),
+      getEnvVar('VITE_VIDSRC_MIRROR_3', 'https://vidsrcme.su/embed'),
+      getEnvVar('VITE_VIDSRC_MIRROR_4', 'https://vsrc.su/embed'),
+    ],
     downloadUrl: getEnvVar('VITE_VIDSRC_DOWNLOAD_URL', 'https://dl.vidsrc.vip'),
   },
 
