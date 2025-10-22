@@ -429,4 +429,115 @@ describe('StreamingPlayerModal', () => {
       expect(window.open).toHaveBeenCalled();
     });
   });
+
+  describe('PostMessage Handling', () => {
+    test('should render modal for TV content with postMessage support', async () => {
+      render(
+        <StreamingPlayerModal
+          isOpen={true}
+          onClose={jest.fn()}
+          content={mockTVContent}
+          contentType="tv"
+          platform="server5"
+          season={1}
+          episode={1}
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Test TV Show')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Season with No Episodes', () => {
+    test('should handle season change', async () => {
+      tmdbApi.getTVSeasonsData = jest.fn().mockResolvedValue({
+        total_seasons: 2,
+        total_episodes: 20,
+        seasons: [
+          { season_number: 1, episode_count: 10 },
+          { season_number: 2, episode_count: 10 },
+        ],
+      });
+
+      render(
+        <StreamingPlayerModal
+          isOpen={true}
+          onClose={jest.fn()}
+          content={mockTVContent}
+          contentType="tv"
+          season={1}
+          episode={1}
+        />
+      );
+
+      await waitFor(() => {
+        const seasonSelect = document.querySelector('#season-select');
+        expect(seasonSelect).toBeInTheDocument();
+      });
+
+      // Change season
+      const seasonSelect = document.querySelector('#season-select');
+      fireEvent.change(seasonSelect, { target: { value: '2' } });
+
+      // Episode should be reset to 1
+      await waitFor(() => {
+        const episodeSelect = document.querySelector('#episode-select');
+        expect(episodeSelect.value).toBe('1');
+      });
+    });
+  });
+
+  describe('Escape Key Handling', () => {
+    test('should close modal when Escape key is pressed', async () => {
+      const mockOnClose = jest.fn();
+      render(
+        <StreamingPlayerModal
+          isOpen={true}
+          onClose={mockOnClose}
+          content={mockContent}
+        />
+      );
+
+      const dialog = document.querySelector('dialog');
+      fireEvent.keyDown(dialog, { key: 'Escape' });
+
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+  });
+
+  describe('Backdrop Click Handling', () => {
+    test('should close modal when backdrop is clicked', async () => {
+      const mockOnClose = jest.fn();
+      render(
+        <StreamingPlayerModal
+          isOpen={true}
+          onClose={mockOnClose}
+          content={mockContent}
+        />
+      );
+
+      const backdrop = document.querySelector('.streaming-player-modal__content');
+      fireEvent.click(backdrop);
+
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    test('should not close modal when content is clicked', async () => {
+      const mockOnClose = jest.fn();
+      render(
+        <StreamingPlayerModal
+          isOpen={true}
+          onClose={mockOnClose}
+          content={mockContent}
+        />
+      );
+
+      const innerContent = document.querySelector('.streaming-player-modal__header');
+      fireEvent.click(innerContent);
+
+      expect(mockOnClose).not.toHaveBeenCalled();
+    });
+  });
 });

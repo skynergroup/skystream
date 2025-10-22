@@ -215,4 +215,19 @@ describe('Discover', () => {
 
     expect(screen.queryByTestId('content-row-Trending Now')).not.toBeInTheDocument();
   });
+
+  test('retry button is clickable on error', async () => {
+    const error = new Error('Failed to fetch');
+    tmdbApi.getHomePageContent = jest.fn().mockRejectedValue(error);
+
+    render(<Discover />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Retry')).toBeInTheDocument();
+    });
+
+    const retryButton = screen.getByText('Retry');
+    expect(retryButton).toBeInTheDocument();
+    expect(retryButton).toBeEnabled();
+  });
 });

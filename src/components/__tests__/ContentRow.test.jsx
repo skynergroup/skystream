@@ -112,4 +112,27 @@ describe('ContentRow', () => {
     const leftArrow = screen.getByRole('button', { name: 'Scroll left' });
     expect(leftArrow).toBeInTheDocument();
   });
+
+  test('scroll left button calls scroll function', () => {
+    render(<ContentRow title="Test" content={mockContent} onPlay={mockOnPlay} />);
+
+    const scrollContainer = document.querySelector('.content-row__scroll');
+
+    // Simulate scroll to show left arrow
+    Object.defineProperty(scrollContainer, 'scrollLeft', { value: 100, writable: true });
+    Object.defineProperty(scrollContainer, 'scrollWidth', { value: 1000, writable: true });
+    Object.defineProperty(scrollContainer, 'clientWidth', { value: 500, writable: true });
+
+    fireEvent.scroll(scrollContainer);
+
+    const leftArrow = screen.getByRole('button', { name: 'Scroll left' });
+
+    // Mock scrollTo
+    const mockScrollTo = jest.fn();
+    scrollContainer.scrollTo = mockScrollTo;
+
+    fireEvent.click(leftArrow);
+
+    expect(mockScrollTo).toHaveBeenCalled();
+  });
 });

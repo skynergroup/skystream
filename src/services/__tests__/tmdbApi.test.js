@@ -613,5 +613,54 @@ describe('TMDBApi', () => {
 
       await expect(tmdbApi.advancedSearch('test', { type: 'movie' })).rejects.toThrow();
     });
+
+    test('discovers all content without query', async () => {
+      fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ results: [] }),
+      });
+
+      await tmdbApi.advancedSearch('', { type: 'all', year: 2024 });
+
+      const callUrl = fetch.mock.calls[0][0];
+      expect(callUrl.toString()).toContain('/discover/movie');
+    });
+
+    test('searches with multi type (no type specified)', async () => {
+      fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ results: [] }),
+      });
+
+      await tmdbApi.advancedSearch('test');
+
+      const callUrl = fetch.mock.calls[0][0];
+      expect(callUrl.toString()).toContain('/search/multi');
+    });
+
+    test('adds genre filter to discover endpoint', async () => {
+      fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ results: [] }),
+      });
+
+      await tmdbApi.advancedSearch('', { type: 'movie', genre: 28 });
+
+      const callUrl = fetch.mock.calls[0][0];
+      expect(callUrl.toString()).toContain('/discover/movie');
+      expect(callUrl.toString()).toContain('with_genres=28');
+    });
+
+    test('adds year filter to discover endpoint', async () => {
+      fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ results: [] }),
+      });
+
+      await tmdbApi.advancedSearch('', { type: 'movie', year: 2024 });
+
+      const callUrl = fetch.mock.calls[0][0];
+      expect(callUrl.toString()).toContain('year=2024');
+    });
   });
 });
