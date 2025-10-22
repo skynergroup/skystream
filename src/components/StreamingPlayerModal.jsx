@@ -48,7 +48,7 @@ const StreamingPlayerModal = ({
       });
 
       // Support both old format (vidsrc/videasy) and new format (server1-5)
-      if (selectedPlatform && selectedPlatform.startsWith('server')) {
+      if (selectedPlatform?.startsWith('server')) {
         setCurrentEmbedUrl(urls[selectedPlatform]);
       } else if (selectedPlatform === 'vidsrc') {
         setCurrentEmbedUrl(urls.server1);
@@ -233,11 +233,7 @@ const StreamingPlayerModal = ({
         }
       }}
     >
-      <div
-        className="streaming-player-modal__content"
-        onClick={handleBackdropClick}
-        role="presentation"
-      >
+      <div className="streaming-player-modal__content" onClick={handleBackdropClick}>
         <div className="streaming-player-modal__header">
           <div className="streaming-player-modal__title">
             <h2>{content?.title}</h2>

@@ -4,20 +4,24 @@
  */
 
 class StreamingServices {
-  constructor() {
-    // Vidsrc mirror domains (updated 2025-10-19)
-    // Use vidsrc-embed.ru as primary, with fallback mirrors
-    this.vidsrcDomain = 'https://vidsrc-embed.ru';
-    this.vidsrcMirrors = [
-      'https://vidsrc-embed.ru',
-      'https://vidsrc-embed.su',
-      'https://vidsrcme.su',
-      'https://vsrc.su',
-    ];
-    this.currentVidsrcMirrorIndex = 0;
+  // Vidsrc mirror domains (updated 2025-10-19)
+  // Use vidsrc-embed.ru as primary, with fallback mirrors
+  vidsrcDomain = 'https://vidsrc-embed.ru';
 
-    // Videasy domain
-    this.videasyDomain = 'https://player.videasy.net';
+  vidsrcMirrors = [
+    'https://vidsrc-embed.ru',
+    'https://vidsrc-embed.su',
+    'https://vidsrcme.su',
+    'https://vsrc.su',
+  ];
+
+  currentVidsrcMirrorIndex = 0;
+
+  // Videasy domain
+  videasyDomain = 'https://player.videasy.net';
+
+  constructor() {
+    // Constructor is now empty but kept for future initialization if needed
   }
 
   /**
