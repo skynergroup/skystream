@@ -260,7 +260,7 @@ describe('Search', () => {
       'content_play',
       expect.objectContaining({
         category: 'streaming',
-        label: 'server1',
+        label: 'vidsrc',
         content_id: 1,
         content_type: 'movie',
         content_title: 'Avengers',

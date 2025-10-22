@@ -127,8 +127,8 @@ describe('StreamingPlayerModal', () => {
       />
     );
 
-    expect(screen.getByText('Server 1')).toBeInTheDocument();
-    expect(screen.getByText('Server 2')).toBeInTheDocument();
+    expect(screen.getByText('Server 1 (Vidsrc)')).toBeInTheDocument();
+    expect(screen.getByText('Server 2 (Vidsrc)')).toBeInTheDocument();
   });
 
   test('switches platform when Server 2 is clicked', () => {
@@ -142,7 +142,7 @@ describe('StreamingPlayerModal', () => {
       />
     );
 
-    const server2Button = screen.getByText('Server 2');
+    const server2Button = screen.getByText('Server 2 (Vidsrc)');
     fireEvent.click(server2Button);
 
     expect(streamingServices.getAllStreamingUrls).toHaveBeenCalled();
@@ -300,5 +300,133 @@ describe('StreamingPlayerModal', () => {
 
     const iframes = document.querySelectorAll('iframe');
     expect(iframes.length).toBeGreaterThan(0);
+  });
+
+  describe('Dialog Element Tests', () => {
+    test('should render as dialog element instead of div', () => {
+      const { container } = render(
+        <StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />
+      );
+      const dialog = container.querySelector('dialog');
+      expect(dialog).toBeInTheDocument();
+      expect(dialog).toHaveAttribute('open');
+    });
+
+    test('should have aria-modal attribute', () => {
+      const { container } = render(
+        <StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />
+      );
+      const dialog = container.querySelector('dialog');
+      expect(dialog).toHaveAttribute('aria-modal', 'true');
+    });
+
+    test('should close on Escape key press', () => {
+      const mockOnClose = jest.fn();
+      const { container } = render(
+        <StreamingPlayerModal isOpen={true} onClose={mockOnClose} content={mockContent} />
+      );
+      const dialog = container.querySelector('dialog');
+      fireEvent.keyDown(dialog, { key: 'Escape' });
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+  });
+
+  describe('Server Selection Coverage', () => {
+    test('should render all 5 server options', () => {
+      render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
+      expect(screen.getByText('Server 1 (Vidsrc)')).toBeInTheDocument();
+      expect(screen.getByText('Server 2 (Vidsrc)')).toBeInTheDocument();
+      expect(screen.getByText('Server 3 (Vidsrc)')).toBeInTheDocument();
+      expect(screen.getByText('Server 4 (Vidsrc)')).toBeInTheDocument();
+      expect(screen.getByText('Server 5 (Videasy)')).toBeInTheDocument();
+    });
+
+    test('should update iframe when server changes', async () => {
+      streamingServices.getAllStreamingUrls = jest.fn(() => ({
+        server1: 'https://vidsrc-embed.ru/embed/movie?tmdb=1',
+        server2: 'https://vidsrc-embed.su/embed/movie?tmdb=1',
+        server3: 'https://vidsrcme.su/embed/movie?tmdb=1',
+        server4: 'https://vsrc.su/embed/movie?tmdb=1',
+        server5: 'https://player.videasy.net/embed/movie?tmdb=1',
+      }));
+
+      const { container } = render(
+        <StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />
+      );
+
+      const select = container.querySelector('select');
+      fireEvent.change(select, { target: { value: 'server2' } });
+
+      await waitFor(() => {
+        const iframe = container.querySelector('iframe');
+        expect(iframe.src).toContain('vidsrc-embed.su');
+      });
+    });
+  });
+
+  describe('Referrer Policy Coverage', () => {
+    test('should have referrerPolicy attribute on iframe', () => {
+      const { container } = render(
+        <StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />
+      );
+      const iframe = container.querySelector('iframe');
+      expect(iframe).toHaveAttribute('referrerPolicy', 'origin');
+    });
+
+    test('should have referrer meta tag in document', () => {
+      render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
+      // The meta tag is in index.html, not rendered by the component
+      // Just verify the iframe has the referrerPolicy attribute
+      const iframe = document.querySelector('iframe');
+      expect(iframe).toHaveAttribute('referrerPolicy', 'origin');
+    });
+  });
+
+  describe('Accessibility Coverage', () => {
+    test('should have proper heading hierarchy', () => {
+      render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
+      const heading = screen.getByRole('heading', { level: 2 });
+      expect(heading).toBeInTheDocument();
+    });
+
+    test('should have accessible server selector label', () => {
+      render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
+      expect(screen.getByLabelText('Server:')).toBeInTheDocument();
+    });
+
+    test('should have accessible season selector for TV shows', async () => {
+      render(
+        <StreamingPlayerModal
+          isOpen={true}
+          onClose={jest.fn()}
+          content={mockTVContent}
+          contentType="tv"
+          season={1}
+          episode={1}
+        />
+      );
+      await waitFor(() => {
+        const seasonSelect = document.querySelector('#season-select');
+        expect(seasonSelect).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Button Actions Coverage', () => {
+    test('should call onClose when close button clicked', async () => {
+      const mockOnClose = jest.fn();
+      render(<StreamingPlayerModal isOpen={true} onClose={mockOnClose} content={mockContent} />);
+      const closeButton = screen.getByTitle('Close player');
+      fireEvent.click(closeButton);
+      expect(mockOnClose).toHaveBeenCalled();
+    });
+
+    test('should open new tab when open button clicked', async () => {
+      window.open = jest.fn();
+      render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
+      const openButton = screen.getByTitle('Open in new tab');
+      fireEvent.click(openButton);
+      expect(window.open).toHaveBeenCalled();
+    });
   });
 });

@@ -223,19 +223,21 @@ const StreamingPlayerModal = ({
   if (!isOpen) return null;
 
   return (
-    <div
+    <dialog
       className="streaming-player-modal"
-      onClick={handleBackdropClick}
+      aria-modal="true"
+      open
       onKeyDown={e => {
         if (e.key === 'Escape') {
           onClose();
         }
       }}
-      role="dialog"
-      aria-modal="true"
-      tabIndex={-1}
     >
-      <div className="streaming-player-modal__content">
+      <div
+        className="streaming-player-modal__content"
+        onClick={handleBackdropClick}
+        role="presentation"
+      >
         <div className="streaming-player-modal__header">
           <div className="streaming-player-modal__title">
             <h2>{content?.title}</h2>
@@ -367,7 +369,7 @@ const StreamingPlayerModal = ({
           </p>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };
 

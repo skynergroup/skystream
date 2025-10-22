@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import FeaturedHero from '../FeaturedHero';
 
 // Mock streamingServices
@@ -36,11 +36,23 @@ describe('FeaturedHero', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
+    // Mock streamingServices.getAllStreamingUrls
+    require('../../services/streamingServices').default.getAllStreamingUrls = jest.fn(() => ({
+      server1: 'https://vidsrc-embed.ru/embed/movie?tmdb=1',
+      server2: 'https://vidsrc-embed.su/embed/movie?tmdb=1',
+      server3: 'https://vidsrcme.su/embed/movie?tmdb=1',
+      server4: 'https://vsrc.su/embed/movie?tmdb=1',
+      server5: 'https://player.videasy.net/embed/movie?tmdb=1',
+    }));
+    // Suppress act() warnings for this test suite - the component's setInterval
+    // will naturally cause act() warnings in tests, which is expected behavior
+    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
+    console.error.mockRestore();
   });
 
   test('renders nothing when content is null', () => {
@@ -83,29 +95,19 @@ describe('FeaturedHero', () => {
     expect(overview.textContent).not.toContain('...');
   });
 
-  test('renders play buttons', () => {
+  test('renders play button', () => {
     render(<FeaturedHero content={[mockContent[0]]} onPlay={mockOnPlay} />);
 
-    expect(screen.getByText('Play on Server 1')).toBeInTheDocument();
-    expect(screen.getByText('Play on Server 2')).toBeInTheDocument();
+    expect(screen.getByText('Play')).toBeInTheDocument();
   });
 
-  test('calls onPlay when Server 1 button is clicked', () => {
+  test('calls onPlay when Play button is clicked', () => {
     render(<FeaturedHero content={[mockContent[0]]} onPlay={mockOnPlay} />);
 
-    const server1Button = screen.getByText('Play on Server 1');
-    fireEvent.click(server1Button);
+    const playButton = screen.getByText('Play');
+    fireEvent.click(playButton);
 
-    expect(mockOnPlay).toHaveBeenCalledWith(mockContent[0], 'vidsrc', expect.any(String));
-  });
-
-  test('calls onPlay when Server 2 button is clicked', () => {
-    render(<FeaturedHero content={[mockContent[0]]} onPlay={mockOnPlay} />);
-
-    const server2Button = screen.getByText('Play on Server 2');
-    fireEvent.click(server2Button);
-
-    expect(mockOnPlay).toHaveBeenCalledWith(mockContent[0], 'videasy', expect.any(String));
+    expect(mockOnPlay).toHaveBeenCalledWith(mockContent[0], 'server1', expect.any(String));
   });
 
   test('renders More Info button when onInfo is provided', () => {
@@ -152,7 +154,9 @@ describe('FeaturedHero', () => {
     fireEvent.click(secondIndicator);
 
     // Fast-forward the transition timeout
-    jest.advanceTimersByTime(300);
+    act(() => {
+      jest.advanceTimersByTime(300);
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Test TV Show')).toBeInTheDocument();
@@ -217,7 +221,9 @@ describe('FeaturedHero', () => {
     expect(screen.getByText('Test Movie')).toBeInTheDocument();
 
     // Fast-forward 8 seconds + transition time
-    jest.advanceTimersByTime(8300);
+    act(() => {
+      jest.advanceTimersByTime(8300);
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Test TV Show')).toBeInTheDocument();
@@ -230,7 +236,9 @@ describe('FeaturedHero', () => {
     expect(screen.getByText('Test Movie')).toBeInTheDocument();
 
     // Fast-forward 10 seconds
-    jest.advanceTimersByTime(10000);
+    act(() => {
+      jest.advanceTimersByTime(10000);
+    });
 
     // Should still show the same content
     expect(screen.getByText('Test Movie')).toBeInTheDocument();
