@@ -31,10 +31,10 @@ const FeaturedHero = ({ content, onPlay, onInfo }) => {
     ? `https://image.tmdb.org/t/p/original${currentContent.backdrop_path}`
     : null;
 
-  const handlePlayServer = serverNum => {
+  const handlePlay = () => {
+    // Open player with default server (Server 1)
     const urls = streamingServices.getAllStreamingUrls(currentContent);
-    const serverKey = `server${serverNum}`;
-    onPlay?.(currentContent, serverKey, urls[serverKey]);
+    onPlay?.(currentContent, 'server1', urls.server1);
   };
 
   const releaseYear = currentContent.release_date
@@ -86,23 +86,13 @@ const FeaturedHero = ({ content, onPlay, onInfo }) => {
         )}
 
         <div className="featured-hero__actions">
-          <button
-            className="featured-hero__btn featured-hero__btn--primary"
-            onClick={() => handlePlayServer(1)}
-          >
+          <button className="featured-hero__btn featured-hero__btn--primary" onClick={handlePlay}>
             <Play size={20} fill="currentColor" />
-            Play on Server 1
-          </button>
-          <button
-            className="featured-hero__btn featured-hero__btn--secondary"
-            onClick={() => handlePlayServer(5)}
-          >
-            <Play size={20} fill="currentColor" />
-            Play on Server 5
+            Play
           </button>
           {onInfo && (
             <button
-              className="featured-hero__btn featured-hero__btn--info"
+              className="featured-hero__btn featured-hero__btn--secondary"
               onClick={() => onInfo(currentContent)}
             >
               <Info size={20} />

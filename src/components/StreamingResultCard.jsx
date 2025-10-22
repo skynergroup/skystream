@@ -16,10 +16,10 @@ const StreamingResultCard = ({ content, onPlay }) => {
 
   const rating = content.vote_average ? Math.round(content.vote_average * 10) / 10 : null;
 
-  const handlePlayServer = serverNum => {
+  const handlePlay = () => {
+    // Open player with default server (Server 1)
     const urls = streamingServices.getAllStreamingUrls(content);
-    const serverKey = `server${serverNum}`;
-    onPlay?.(content, serverKey, urls[serverKey]);
+    onPlay?.(content, 'server1', urls.server1);
   };
 
   const handleImageLoad = () => {
@@ -50,45 +50,9 @@ const StreamingResultCard = ({ content, onPlay }) => {
 
         <div className="streaming-result-card__overlay">
           <div className="streaming-result-card__play-buttons">
-            <button
-              className="streaming-result-card__play-btn streaming-result-card__play-btn--server1"
-              onClick={() => handlePlayServer(1)}
-              title="Play on Server 1 (Vidsrc)"
-            >
-              <Play size={16} />
-              S1
-            </button>
-            <button
-              className="streaming-result-card__play-btn streaming-result-card__play-btn--server2"
-              onClick={() => handlePlayServer(2)}
-              title="Play on Server 2 (Vidsrc)"
-            >
-              <Play size={16} />
-              S2
-            </button>
-            <button
-              className="streaming-result-card__play-btn streaming-result-card__play-btn--server3"
-              onClick={() => handlePlayServer(3)}
-              title="Play on Server 3 (Vidsrc)"
-            >
-              <Play size={16} />
-              S3
-            </button>
-            <button
-              className="streaming-result-card__play-btn streaming-result-card__play-btn--server4"
-              onClick={() => handlePlayServer(4)}
-              title="Play on Server 4 (Vidsrc)"
-            >
-              <Play size={16} />
-              S4
-            </button>
-            <button
-              className="streaming-result-card__play-btn streaming-result-card__play-btn--server5"
-              onClick={() => handlePlayServer(5)}
-              title="Play on Server 5 (Videasy)"
-            >
-              <Play size={16} />
-              S5
+            <button className="streaming-result-card__play-btn" onClick={handlePlay} title="Play">
+              <Play size={20} />
+              Play
             </button>
           </div>
         </div>
