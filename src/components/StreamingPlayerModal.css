@@ -10,12 +10,19 @@
   transition: background 0.3s ease;
   border: none;
   max-width: 1200px;
-  width: 100%;
+  width: 90%;
+  height: 90vh;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  /* iPad Safari fix: ensure dialog renders properly */
+  appearance: none;
+  -webkit-appearance: none;
+  user-select: text;
+  -webkit-user-select: text;
+  box-sizing: border-box;
 }
 
 /* Dialog backdrop styling */
@@ -28,6 +35,7 @@
   background: var(--bg-secondary);
   width: 100%;
   height: 100%;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -35,6 +43,9 @@
   transition:
     background 0.3s ease,
     border-color 0.3s ease;
+  /* iPad Safari fix: ensure content fills dialog */
+  box-sizing: border-box;
+  flex: 1;
 }
 
 .streaming-player-modal__header {
@@ -249,12 +260,15 @@
 @media (max-width: 768px) {
   .streaming-player-modal {
     padding: 0.5rem;
+    height: 95vh;
     max-height: 95vh;
+    width: 95%;
     border-radius: 8px;
   }
 
   .streaming-player-modal__content {
     border-radius: 8px;
+    min-height: 100%;
   }
 
   .streaming-player-modal__header {
@@ -322,10 +336,14 @@
 @media (max-width: 480px) {
   .streaming-player-modal {
     padding: 0.25rem;
+    height: 95vh;
+    max-height: 95vh;
+    width: 98%;
   }
 
   .streaming-player-modal__content {
     border-radius: 6px;
+    min-height: 100%;
   }
 
   .streaming-player-modal__header {
@@ -346,6 +364,31 @@
 
   .streaming-player-modal__footer {
     padding: 0.5rem 0.75rem;
+  }
+}
+
+/* iPad-specific fixes */
+@supports (padding: max(0px)) {
+  .streaming-player-modal {
+    /* Use safe area insets for notched iPads */
+    padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+      max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  }
+}
+
+/* iPad landscape orientation fix */
+@media (max-height: 500px) and (orientation: landscape) {
+  .streaming-player-modal {
+    height: 98vh;
+    max-height: 98vh;
+  }
+
+  .streaming-player-modal__player {
+    min-height: 200px;
+  }
+
+  .streaming-player-modal__iframe {
+    min-height: 200px;
   }
 }
 
