@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Search as SearchIcon } from 'lucide-react';
 import StreamingSearchBar from '../components/StreamingSearchBar';
 import StreamingResultCard from '../components/StreamingResultCard';
@@ -6,8 +7,10 @@ import StreamingPlayerModal from '../components/StreamingPlayerModal';
 import { Loading } from '../components';
 import tmdbApi from '../services/tmdbApi';
 import { analytics } from '../utils';
+import { parseStreamingUrl } from '../utils/urlRouting';
 
 const Search = () => {
+  const location = useLocation();
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -26,6 +29,49 @@ const Search = () => {
   useEffect(() => {
     analytics.trackPageView('/', 'SkyStream - Search');
   }, []);
+
+  // Handle deep linking - when user navigates directly to a streaming URL
+  useEffect(() => {
+    const parsedUrl = parseStreamingUrl(location.pathname);
+    if (parsedUrl) {
+      // Fetch content from TMDB using the ID from the URL
+      const fetchContentForDeepLink = async () => {
+        try {
+          let content;
+          if (parsedUrl.type === 'movie') {
+            const movieData = await tmdbApi.getMovieDetails(parsedUrl.id);
+            content = tmdbApi.transformContent(movieData);
+          } else {
+            const tvData = await tmdbApi.getTVDetails(parsedUrl.id);
+            content = tmdbApi.transformContent(tvData);
+          }
+
+          // Open modal with fetched content
+          const urls = require('../services/streamingServices').default.getAllStreamingUrls(
+            content,
+            {
+              season: parsedUrl.season || 1,
+              episode: parsedUrl.episode || 1,
+            }
+          );
+
+          setPlayerModal({
+            isOpen: true,
+            content,
+            platform: 'server1',
+            embedUrl: urls.server1,
+            contentType: parsedUrl.type,
+            season: parsedUrl.season || 1,
+            episode: parsedUrl.episode || 1,
+          });
+        } catch (err) {
+          console.error('Failed to fetch content for deep link:', err);
+        }
+      };
+
+      fetchContentForDeepLink();
+    }
+  }, [location.pathname]);
 
   // Handle search
   const handleSearch = useCallback(async query => {

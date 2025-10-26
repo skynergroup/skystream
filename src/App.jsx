@@ -24,6 +24,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Search />} />
           <Route path="/home" element={<Discover />} />
+          {/* Streaming URLs - render on Search page with modal handling */}
+          <Route path="/movie/:slug" element={<Search />} />
+          <Route path="/tv/:slug" element={<Search />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>

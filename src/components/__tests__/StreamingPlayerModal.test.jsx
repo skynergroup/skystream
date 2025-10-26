@@ -5,6 +5,13 @@ import tmdbApi from '../../services/tmdbApi';
 
 jest.mock('../../services/streamingServices');
 jest.mock('../../services/tmdbApi');
+jest.mock('../../utils/urlRouting', () => ({
+  generateMovieUrl: jest.fn(content => `/movie/${content.title}-${content.id}`),
+  generateTVUrl: jest.fn(
+    (content, season, episode) => `/tv/${content.title}-${content.id}/s${season}/e${episode}`
+  ),
+  updateBrowserUrl: jest.fn(),
+}));
 
 describe('StreamingPlayerModal', () => {
   const mockContent = {
@@ -492,13 +499,7 @@ describe('StreamingPlayerModal', () => {
   describe('Escape Key Handling', () => {
     test('should close modal when Escape key is pressed', async () => {
       const mockOnClose = jest.fn();
-      render(
-        <StreamingPlayerModal
-          isOpen={true}
-          onClose={mockOnClose}
-          content={mockContent}
-        />
-      );
+      render(<StreamingPlayerModal isOpen={true} onClose={mockOnClose} content={mockContent} />);
 
       const dialog = document.querySelector('dialog');
       fireEvent.keyDown(dialog, { key: 'Escape' });
@@ -510,13 +511,7 @@ describe('StreamingPlayerModal', () => {
   describe('Backdrop Click Handling', () => {
     test('should close modal when backdrop is clicked', async () => {
       const mockOnClose = jest.fn();
-      render(
-        <StreamingPlayerModal
-          isOpen={true}
-          onClose={mockOnClose}
-          content={mockContent}
-        />
-      );
+      render(<StreamingPlayerModal isOpen={true} onClose={mockOnClose} content={mockContent} />);
 
       const backdrop = document.querySelector('.streaming-player-modal__content');
       fireEvent.click(backdrop);
@@ -526,13 +521,7 @@ describe('StreamingPlayerModal', () => {
 
     test('should not close modal when content is clicked', async () => {
       const mockOnClose = jest.fn();
-      render(
-        <StreamingPlayerModal
-          isOpen={true}
-          onClose={mockOnClose}
-          content={mockContent}
-        />
-      );
+      render(<StreamingPlayerModal isOpen={true} onClose={mockOnClose} content={mockContent} />);
 
       const innerContent = document.querySelector('.streaming-player-modal__header');
       fireEvent.click(innerContent);

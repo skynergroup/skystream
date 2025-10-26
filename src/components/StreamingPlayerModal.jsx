@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { X, ExternalLink, Download } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
 import tmdbApi from '../services/tmdbApi';
+import { generateMovieUrl, generateTVUrl, updateBrowserUrl } from '../utils/urlRouting';
 import './StreamingPlayerModal.css';
 
 const StreamingPlayerModal = ({
@@ -91,6 +92,22 @@ const StreamingPlayerModal = ({
       setSelectedPlatform(platform);
     }
   }, [isOpen, season, episode, platform]);
+
+  // Update browser URL when modal opens with content
+  useEffect(() => {
+    if (isOpen && content?.id) {
+      let url;
+      if (contentType === 'tv') {
+        url = generateTVUrl(content, selectedSeason, selectedEpisode);
+      } else {
+        url = generateMovieUrl(content);
+      }
+
+      if (url) {
+        updateBrowserUrl(url, `${content.title} - SkyStream`);
+      }
+    }
+  }, [isOpen, content, contentType, selectedSeason, selectedEpisode]);
 
   // Listen for episode changes from Server 2 navigation
   useEffect(() => {

@@ -1,10 +1,14 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import Search from '../Search';
 import tmdbApi from '../../services/tmdbApi';
 import { analytics } from '../../utils';
 
 jest.mock('../../services/tmdbApi');
 jest.mock('../../utils');
+jest.mock('../../utils/urlRouting', () => ({
+  parseStreamingUrl: jest.fn(() => null),
+}));
 jest.mock('../../components/StreamingSearchBar', () => {
   return function MockStreamingSearchBar({ onSearch, onClear }) {
     return (
@@ -52,6 +56,15 @@ describe('Search', () => {
     { id: 2, title: 'Avengers 2', type: 'movie' },
   ];
 
+  // Helper function to render Search with BrowserRouter
+  const renderSearch = () => {
+    return render(
+      <BrowserRouter>
+        <Search />
+      </BrowserRouter>
+    );
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
     analytics.trackPageView = jest.fn();
@@ -73,7 +86,7 @@ describe('Search', () => {
   });
 
   test('renders search page with title and search bar', () => {
-    render(<Search />);
+    renderSearch();
 
     expect(screen.getByText('SkyStream')).toBeInTheDocument();
     expect(screen.getByText(/Search and stream your favorite/)).toBeInTheDocument();
@@ -81,7 +94,7 @@ describe('Search', () => {
   });
 
   test('tracks page view on mount', () => {
-    render(<Search />);
+    renderSearch();
 
     expect(analytics.trackPageView).toHaveBeenCalledWith('/', 'SkyStream - Search');
   });
@@ -89,7 +102,7 @@ describe('Search', () => {
   test('performs search and displays results', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue(mockSearchResults);
 
-    render(<Search />);
+    renderSearch();
 
     fireEvent.click(screen.getByText('Search'));
 
@@ -105,7 +118,7 @@ describe('Search', () => {
   test('filters out person results', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue(mockSearchResults);
 
-    render(<Search />);
+    renderSearch();
 
     fireEvent.click(screen.getByText('Search'));
 
@@ -119,7 +132,7 @@ describe('Search', () => {
   test('shows loading state during search', async () => {
     tmdbApi.search = jest.fn(() => new Promise(() => {}));
 
-    render(<Search />);
+    renderSearch();
 
     fireEvent.click(screen.getByText('Search'));
 
@@ -133,7 +146,7 @@ describe('Search', () => {
   test('tracks search analytics', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue(mockSearchResults);
 
-    render(<Search />);
+    renderSearch();
 
     fireEvent.click(screen.getByText('Search'));
 
@@ -146,7 +159,7 @@ describe('Search', () => {
     const error = new Error('Search failed');
     tmdbApi.search = jest.fn().mockRejectedValue(error);
 
-    render(<Search />);
+    renderSearch();
 
     fireEvent.click(screen.getByText('Search'));
 
@@ -161,7 +174,7 @@ describe('Search', () => {
     const error = new Error('Search failed');
     tmdbApi.search = jest.fn().mockRejectedValue(error);
 
-    render(<Search />);
+    renderSearch();
 
     fireEvent.click(screen.getByText('Search'));
 
@@ -176,7 +189,7 @@ describe('Search', () => {
   test('displays no results message when search returns empty', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue({ results: [] });
 
-    render(<Search />);
+    renderSearch();
 
     fireEvent.click(screen.getByText('Search'));
 
@@ -190,7 +203,7 @@ describe('Search', () => {
   test('clears search results when clear is clicked', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue(mockSearchResults);
 
-    render(<Search />);
+    renderSearch();
 
     fireEvent.click(screen.getByText('Search'));
 
@@ -207,7 +220,7 @@ describe('Search', () => {
   test('opens player modal when play is clicked', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue(mockSearchResults);
 
-    render(<Search />);
+    renderSearch();
 
     fireEvent.click(screen.getByText('Search'));
 
@@ -224,7 +237,7 @@ describe('Search', () => {
   test('closes player modal when close is clicked', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue(mockSearchResults);
 
-    render(<Search />);
+    renderSearch();
 
     fireEvent.click(screen.getByText('Search'));
 
@@ -245,7 +258,7 @@ describe('Search', () => {
   test('tracks play event when content is played', async () => {
     tmdbApi.search = jest.fn().mockResolvedValue(mockSearchResults);
 
-    render(<Search />);
+    renderSearch();
 
     fireEvent.click(screen.getByText('Search'));
 
@@ -279,7 +292,7 @@ describe('Search', () => {
 
     tmdbApi.search = jest.fn().mockResolvedValue(manyResults);
 
-    render(<Search />);
+    renderSearch();
 
     fireEvent.click(screen.getByText('Search'));
 
