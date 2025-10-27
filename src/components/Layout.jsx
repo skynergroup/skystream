@@ -31,10 +31,13 @@ const Layout = ({ children }) => {
               <Search size={20} />
               <span>Search</span>
             </Link>
-            <span className="layout__nav-link layout__nav-link--disabled" title="Coming Soon">
+            <Link
+              to="/live-tv"
+              className={`layout__nav-link ${location.pathname === '/live-tv' ? 'layout__nav-link--active' : ''}`}
+            >
               <Tv size={20} />
               <span>Live TV</span>
-            </span>
+            </Link>
           </nav>
 
           <ThemeToggle />
