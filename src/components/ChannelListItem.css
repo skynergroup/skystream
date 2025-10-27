@@ -13,8 +13,8 @@
 }
 
 .channel-list-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--card-hover-bg);
+  border-color: var(--border-color);
 }
 
 .channel-list-item:active {
@@ -22,13 +22,13 @@
 }
 
 .channel-list-item.selected {
-  background: linear-gradient(135deg, rgba(0, 188, 212, 0.2), rgba(79, 195, 247, 0.15));
-  border-color: #00bcd4;
-  box-shadow: 0 0 0 1px rgba(0, 188, 212, 0.3);
+  background: var(--card-hover-bg);
+  border-color: var(--netflix-red);
+  box-shadow: 0 0 0 1px var(--netflix-red);
 }
 
 .channel-list-item.selected .channel-name {
-  color: #00bcd4;
+  color: var(--netflix-red);
   font-weight: 600;
 }
 
@@ -37,7 +37,7 @@
 }
 
 .channel-list-item.incompatible:not(.selected) .channel-name {
-  color: #999;
+  color: var(--text-tertiary);
 }
 
 .channel-item-content {
@@ -62,7 +62,7 @@
 .channel-name {
   font-size: 14px;
   font-weight: 500;
-  color: #fff;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -78,7 +78,7 @@
 .playing-dot {
   width: 8px;
   height: 8px;
-  background: #ff0000;
+  background: var(--netflix-red);
   border-radius: 50%;
   animation: pulse-playing 1.5s ease-in-out infinite;
 }
@@ -105,13 +105,14 @@
 .channel-language {
   font-size: 11px;
   font-weight: 600;
-  color: #666;
+  color: var(--text-tertiary);
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  transition: color 0.3s ease;
 }
 
 .channel-list-item.selected .channel-language {
-  color: #4fc3f7;
+  color: var(--netflix-red);
 }
 
 .channel-status {
@@ -143,12 +144,12 @@
 }
 
 .channel-list-item:hover .status-badge {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--input-bg);
 }
 
 /* Focus styles for accessibility */
 .channel-list-item:focus {
-  outline: 2px solid #00bcd4;
+  outline: 2px solid var(--netflix-red);
   outline-offset: 2px;
 }
 
