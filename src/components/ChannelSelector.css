@@ -1,0 +1,253 @@
+.channel-selector {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #1a1a1a;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+/* Header */
+.channel-selector-header {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1a1a1a;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.back-button {
+  background: transparent;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+}
+
+.header-title svg {
+  color: #00bcd4;
+}
+
+.header-title h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.channel-count {
+  font-size: 13px;
+  color: #666;
+  padding-left: 32px;
+}
+
+/* Filters */
+.channel-filters {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1a1a1a;
+}
+
+.filter-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #999;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.filter-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.filter-toggle.active {
+  background: rgba(0, 188, 212, 0.15);
+  border-color: #00bcd4;
+  color: #00bcd4;
+}
+
+.filter-toggle svg {
+  flex-shrink: 0;
+}
+
+.filter-count {
+  margin-left: auto;
+  font-weight: 600;
+}
+
+/* Channel List */
+.channel-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.channel-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.channel-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.channel-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.channel-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.channel-list-items {
+  padding: 8px 0;
+}
+
+/* Loading State */
+.channel-list-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #999;
+}
+
+.loading-spinner {
+  margin-bottom: 16px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid #00bcd4;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.channel-list-loading p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Error State */
+.channel-list-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #f44336;
+  text-align: center;
+}
+
+.channel-list-error p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Empty State */
+.channel-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #666;
+  text-align: center;
+}
+
+.channel-list-empty svg {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.channel-list-empty p {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+}
+
+.clear-filters-button {
+  padding: 8px 16px;
+  background: rgba(0, 188, 212, 0.15);
+  border: 1px solid #00bcd4;
+  border-radius: 6px;
+  color: #00bcd4;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-filters-button:hover {
+  background: rgba(0, 188, 212, 0.25);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .channel-selector {
+    border-right: none;
+  }
+
+  .channel-selector-header {
+    padding: 12px;
+  }
+
+  .header-title h2 {
+    font-size: 16px;
+  }
+
+  .channel-count {
+    font-size: 12px;
+    padding-left: 28px;
+  }
+
+  .channel-filters {
+    padding: 10px 12px;
+  }
+
+  .filter-toggle {
+    font-size: 12px;
+    padding: 10px;
+  }
+}
+
