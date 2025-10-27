@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { X, ExternalLink, Download } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
@@ -93,19 +93,30 @@ const StreamingPlayerModal = ({
     }
   }, [isOpen, season, episode, platform]);
 
-  // Update browser URL when modal opens with content
+  // Store original title on mount
+  const originalTitleRef = useRef(document.title);
+
+  // Update browser URL and document title when modal opens with content
   useEffect(() => {
     if (isOpen && content?.id) {
       let url;
+      let title;
+
       if (contentType === 'tv') {
         url = generateTVUrl(content, selectedSeason, selectedEpisode);
+        title = `${content.title} S${selectedSeason}E${selectedEpisode} - SkyStream`;
       } else {
         url = generateMovieUrl(content);
+        title = `${content.title} - SkyStream`;
       }
 
       if (url) {
-        updateBrowserUrl(url, `${content.title} - SkyStream`);
+        updateBrowserUrl(url, title);
+        document.title = title;
       }
+    } else if (!isOpen) {
+      // Restore original title when modal closes
+      document.title = originalTitleRef.current;
     }
   }, [isOpen, content, contentType, selectedSeason, selectedEpisode]);
 
