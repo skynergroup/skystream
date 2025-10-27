@@ -30,7 +30,7 @@ const LiveTV = () => {
     }
   }, []);
 
-  const handleChannelSelect = useCallback((channel) => {
+  const handleChannelSelect = useCallback(channel => {
     setSelectedChannel(channel);
     setCurrentlyPlayingId(channel.nanoid);
 
@@ -46,7 +46,7 @@ const LiveTV = () => {
     }
   }, []);
 
-  const handleStreamError = useCallback((error) => {
+  const handleStreamError = useCallback(error => {
     console.error('Stream error:', error);
     // Could implement auto-switching to next compatible channel here
   }, []);
@@ -65,7 +65,7 @@ const LiveTV = () => {
     if (selectedChannel.iptv_urls && selectedChannel.iptv_urls.length > 0) {
       return {
         url: selectedChannel.iptv_urls[0],
-        type: 'hls'
+        type: 'hls',
       };
     }
 
@@ -73,7 +73,7 @@ const LiveTV = () => {
     if (selectedChannel.youtube_urls && selectedChannel.youtube_urls.length > 0) {
       return {
         url: selectedChannel.youtube_urls[0],
-        type: 'youtube'
+        type: 'youtube',
       };
     }
 
@@ -130,4 +130,3 @@ const LiveTV = () => {
 };
 
 export default LiveTV;
-

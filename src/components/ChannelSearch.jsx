@@ -12,15 +12,11 @@ const ChannelSearch = ({ searchQuery, onSearchChange, onClear }) => {
           className="search-input"
           placeholder="Search channels..."
           value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={e => onSearchChange(e.target.value)}
           aria-label="Search channels"
         />
         {searchQuery && (
-          <button
-            className="clear-button"
-            onClick={onClear}
-            aria-label="Clear search"
-          >
+          <button className="clear-button" onClick={onClear} aria-label="Clear search">
             <X size={18} />
           </button>
         )}
@@ -36,4 +32,3 @@ ChannelSearch.propTypes = {
 };
 
 export default ChannelSearch;
-
