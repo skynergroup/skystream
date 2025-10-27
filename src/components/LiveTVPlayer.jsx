@@ -3,11 +3,7 @@ import { DateTime } from 'luxon';
 import PropTypes from 'prop-types';
 import './LiveTVPlayer.css';
 
-const LiveTVPlayer = ({
-  streamData = null,
-  channelName = 'Live Stream',
-  onStreamError
-}) => {
+const LiveTVPlayer = ({ streamData = null, channelName = 'Live Stream', onStreamError }) => {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
   const [currentTime, setCurrentTime] = useState(DateTime.now());
@@ -23,7 +19,7 @@ const LiveTVPlayer = ({
   const isYouTube = streamType === 'youtube';
 
   // Convert YouTube URL to embed URL
-  const getYouTubeEmbedUrl = (url) => {
+  const getYouTubeEmbedUrl = url => {
     if (!url) return null;
 
     // If URL is already an embed URL (youtube.com or youtube-nocookie.com), use it directly
@@ -91,18 +87,18 @@ const LiveTVPlayer = ({
         } else {
           // Use HLS.js for other browsers
           const HLS = (await import('hls.js')).default;
-          
+
           if (HLS.isSupported()) {
             const hls = new HLS({
               enableWorker: true,
               lowLatencyMode: true,
             });
-            
+
             hlsRef.current = hls;
-            
+
             hls.loadSource(streamUrl);
             hls.attachMedia(video);
-            
+
             hls.on(HLS.Events.MANIFEST_PARSED, () => {
               setIsLoading(false);
               setError(null);
@@ -111,7 +107,7 @@ const LiveTVPlayer = ({
                 setIsLoading(false);
               });
             });
-            
+
             hls.on(HLS.Events.ERROR, (_event, data) => {
               console.error('HLS error:', data);
               if (data.fatal) {
@@ -120,9 +116,11 @@ const LiveTVPlayer = ({
                   case HLS.ErrorTypes.NETWORK_ERROR:
                     console.error('Network error details:', data.details, data.response);
                     if (data.response?.code === 0) {
-                      errorMessage = 'CORS Error - Stream blocked by browser security. This stream may only work in VLC or similar players.';
+                      errorMessage =
+                        'CORS Error - Stream blocked by browser security. This stream may only work in VLC or similar players.';
                     } else {
-                      errorMessage = 'Network error - Failed to load stream. Please check your connection.';
+                      errorMessage =
+                        'Network error - Failed to load stream. Please check your connection.';
                     }
                     setError(errorMessage);
                     // Notify parent component
@@ -142,7 +140,8 @@ const LiveTVPlayer = ({
                     hls.recoverMediaError();
                     break;
                   default:
-                    errorMessage = 'Fatal error - Cannot play stream. Try using VLC or another media player.';
+                    errorMessage =
+                      'Fatal error - Cannot play stream. Try using VLC or another media player.';
                     setError(errorMessage);
                     if (onStreamError) {
                       onStreamError(errorMessage);
@@ -193,7 +192,7 @@ const LiveTVPlayer = ({
       video.removeEventListener('canplay', handleCanPlay);
       video.removeEventListener('playing', handlePlaying);
       video.removeEventListener('error', handleError);
-      
+
       if (hlsRef.current) {
         hlsRef.current.destroy();
         hlsRef.current = null;
@@ -221,7 +220,10 @@ const LiveTVPlayer = ({
         <div className="video-container">
           {/* No Stream Available */}
           {!hasStreamData && (
-            <div className="error-message" style={{ background: 'rgba(255, 165, 0, 0.1)', borderColor: '#ffa500' }}>
+            <div
+              className="error-message"
+              style={{ background: 'rgba(255, 165, 0, 0.1)', borderColor: '#ffa500' }}
+            >
               <p style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1rem' }}>
                 {streamData === null && !channelName.includes('Live Stream')
                   ? 'No Stream Available'
@@ -238,20 +240,25 @@ const LiveTVPlayer = ({
           {/* Stream Errors */}
           {hasStreamData && error && (
             <div className="error-message">
-              <p style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1rem' }}>{error}</p>
+              <p style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+                {error}
+              </p>
               {error.includes('CORS') ? (
                 <div>
                   <p>This stream has CORS restrictions that prevent playback in browsers.</p>
                   <p style={{ marginTop: '1rem' }}>Alternative options:</p>
                   <ul style={{ textAlign: 'left', marginTop: '0.5rem', paddingLeft: '2rem' }}>
-                    <li>Use VLC Media Player with this URL: <br/>
-                      <code style={{
-                        background: 'rgba(0,0,0,0.5)',
-                        padding: '0.25rem 0.5rem',
-                        borderRadius: '4px',
-                        fontSize: '0.85rem',
-                        wordBreak: 'break-all'
-                      }}>
+                    <li>
+                      Use VLC Media Player with this URL: <br />
+                      <code
+                        style={{
+                          background: 'rgba(0,0,0,0.5)',
+                          padding: '0.25rem 0.5rem',
+                          borderRadius: '4px',
+                          fontSize: '0.85rem',
+                          wordBreak: 'break-all',
+                        }}
+                      >
                         {streamUrl}
                       </code>
                     </li>

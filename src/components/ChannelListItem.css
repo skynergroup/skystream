@@ -84,7 +84,8 @@
 }
 
 @keyframes pulse-playing {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -174,4 +175,3 @@
     padding: 6px;
   }
 }
-

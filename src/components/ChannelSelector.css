@@ -62,6 +62,13 @@
   padding-left: 32px;
 }
 
+/* Country Selector Wrapper */
+.country-selector-wrapper {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1a1a1a;
+}
+
 /* Filters */
 .channel-filters {
   padding: 12px 16px;
@@ -250,4 +257,3 @@
     padding: 10px;
   }
 }
-

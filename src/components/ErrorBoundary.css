@@ -37,7 +37,7 @@
   background: rgba(229, 9, 20, 0.1);
   border-left: 3px solid #e50914;
   text-align: left;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 0.85rem;
   color: #ff6b6b;
   max-height: 150px;
@@ -86,4 +86,3 @@
     font-size: 0.75rem;
   }
 }
-
