@@ -1,28 +1,129 @@
 .live-tv-page {
   width: 100%;
   height: 100vh;
-  background: #000;
+  background: #0a0a0a;
   display: flex;
-  flex-direction: column;
+  position: relative;
+  overflow: hidden;
 }
 
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  background: rgba(26, 26, 26, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.mobile-menu-toggle:hover {
+  background: rgba(26, 26, 26, 1);
+  border-color: #00bcd4;
+}
+
+.mobile-menu-toggle.open {
+  background: #00bcd4;
+  border-color: #00bcd4;
+}
+
+/* Sidebar */
+.live-tv-sidebar {
+  width: 350px;
+  height: 100%;
+  flex-shrink: 0;
+  background: #1a1a1a;
+  transition: transform 0.3s ease;
+  z-index: 100;
+}
+
+/* Main Content */
 .live-tv-content {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  background: #000;
 }
 
-/* Ensure full height on mobile */
+/* Sidebar Overlay (mobile only) */
+.sidebar-overlay {
+  display: none;
+}
+
+/* Tablet and Mobile Responsive */
+@media (max-width: 1024px) {
+  .live-tv-sidebar {
+    width: 320px;
+  }
+}
+
 @media (max-width: 768px) {
-  .live-tv-page {
+  .mobile-menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .live-tv-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 85%;
+    max-width: 350px;
     height: 100%;
-    min-height: 100vh;
+    transform: translateX(-100%);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+
+  .live-tv-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .live-tv-content {
-    min-height: 100vh;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .live-tv-sidebar {
+    width: 90%;
+  }
+
+  .mobile-menu-toggle {
+    top: 16px;
+    left: 16px;
+    padding: 8px;
   }
 }
 

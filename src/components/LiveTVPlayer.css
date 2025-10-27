@@ -90,6 +90,19 @@
   height: 100%;
 }
 
+/* Live Video and YouTube Player */
+.live-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.youtube-player {
+  border: none;
+  border-radius: 0;
+}
+
 .error-message {
   position: absolute;
   top: 50%;

@@ -3,12 +3,62 @@ import { DateTime } from 'luxon';
 import PropTypes from 'prop-types';
 import './LiveTVPlayer.css';
 
-const LiveTVPlayer = ({ streamUrl = 'https://sabconeta.cdn.mangomolo.com/sabc1/smil:sabc1.stream.smil/master.m3u8' }) => {
+const LiveTVPlayer = ({
+  streamData = null,
+  channelName = 'Live Stream',
+  onStreamError
+}) => {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
   const [currentTime, setCurrentTime] = useState(DateTime.now());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Check if stream data is available
+  const hasStreamData = streamData !== null && streamData !== undefined;
+
+  // Extract stream URL and type
+  const streamUrl = streamData?.url || (typeof streamData === 'string' ? streamData : null);
+  const streamType = streamData?.type || 'hls';
+  const isYouTube = streamType === 'youtube';
+
+  // Convert YouTube URL to embed URL
+  const getYouTubeEmbedUrl = (url) => {
+    if (!url) return null;
+
+    // If URL is already an embed URL (youtube.com or youtube-nocookie.com), use it directly
+    if (url.includes('/embed/')) {
+      // Extract video ID and rebuild with our preferred parameters
+      const videoId = url.split('/embed/')[1]?.split('?')[0];
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1`;
+      }
+      // If we can't extract ID, return the URL as-is
+      return url;
+    }
+
+    // Handle different YouTube URL formats
+    let videoId = null;
+
+    // Format: https://www.youtube.com/watch?v=VIDEO_ID
+    if (url.includes('youtube.com/watch')) {
+      const urlParams = new URLSearchParams(url.split('?')[1]);
+      videoId = urlParams.get('v');
+    }
+    // Format: https://youtu.be/VIDEO_ID
+    else if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1]?.split('?')[0];
+    }
+    // Format: https://www.youtube.com/live/VIDEO_ID
+    else if (url.includes('youtube.com/live/')) {
+      videoId = url.split('live/')[1]?.split('?')[0];
+    }
+
+    if (!videoId) return null;
+
+    // Return embed URL with autoplay and live stream parameters
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1`;
+  };
 
   // Update current time every second
   useEffect(() => {
@@ -19,8 +69,15 @@ const LiveTVPlayer = ({ streamUrl = 'https://sabconeta.cdn.mangomolo.com/sabc1/s
     return () => clearInterval(timer);
   }, []);
 
-  // Initialize HLS player
+  // Initialize HLS player (only for non-YouTube streams)
   useEffect(() => {
+    // Skip HLS initialization for YouTube streams
+    if (isYouTube) {
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
+
     const video = videoRef.current;
     if (!video) return;
 
@@ -55,16 +112,22 @@ const LiveTVPlayer = ({ streamUrl = 'https://sabconeta.cdn.mangomolo.com/sabc1/s
               });
             });
             
-            hls.on(HLS.Events.ERROR, (event, data) => {
+            hls.on(HLS.Events.ERROR, (_event, data) => {
               console.error('HLS error:', data);
               if (data.fatal) {
+                let errorMessage = '';
                 switch (data.type) {
                   case HLS.ErrorTypes.NETWORK_ERROR:
                     console.error('Network error details:', data.details, data.response);
                     if (data.response?.code === 0) {
-                      setError('CORS Error - Stream blocked by browser security. This stream may only work in VLC or similar players.');
+                      errorMessage = 'CORS Error - Stream blocked by browser security. This stream may only work in VLC or similar players.';
                     } else {
-                      setError('Network error - Failed to load stream. Please check your connection.');
+                      errorMessage = 'Network error - Failed to load stream. Please check your connection.';
+                    }
+                    setError(errorMessage);
+                    // Notify parent component
+                    if (onStreamError) {
+                      onStreamError(errorMessage);
                     }
                     // Try to recover
                     setTimeout(() => {
@@ -74,11 +137,16 @@ const LiveTVPlayer = ({ streamUrl = 'https://sabconeta.cdn.mangomolo.com/sabc1/s
                     }, 3000);
                     break;
                   case HLS.ErrorTypes.MEDIA_ERROR:
-                    setError('Media error - Trying to recover...');
+                    errorMessage = 'Media error - Trying to recover...';
+                    setError(errorMessage);
                     hls.recoverMediaError();
                     break;
                   default:
-                    setError('Fatal error - Cannot play stream. Try using VLC or another media player.');
+                    errorMessage = 'Fatal error - Cannot play stream. Try using VLC or another media player.';
+                    setError(errorMessage);
+                    if (onStreamError) {
+                      onStreamError(errorMessage);
+                    }
                     hls.destroy();
                     break;
                 }
@@ -131,7 +199,7 @@ const LiveTVPlayer = ({ streamUrl = 'https://sabconeta.cdn.mangomolo.com/sabc1/s
         hlsRef.current = null;
       }
     };
-  }, [streamUrl]);
+  }, [streamUrl, isYouTube]);
 
   const formattedTime = currentTime.toFormat('HH:mm:ss');
   const formattedDate = currentTime.toFormat('EEEE, MMMM d, yyyy');
@@ -151,7 +219,24 @@ const LiveTVPlayer = ({ streamUrl = 'https://sabconeta.cdn.mangomolo.com/sabc1/s
         </div>
 
         <div className="video-container">
-          {error && (
+          {/* No Stream Available */}
+          {!hasStreamData && (
+            <div className="error-message" style={{ background: 'rgba(255, 165, 0, 0.1)', borderColor: '#ffa500' }}>
+              <p style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+                {streamData === null && !channelName.includes('Live Stream')
+                  ? 'No Stream Available'
+                  : 'Select a Channel'}
+              </p>
+              <p>
+                {streamData === null && !channelName.includes('Live Stream')
+                  ? 'This channel does not have any available stream URLs.'
+                  : 'Please select a channel from the sidebar to start watching.'}
+              </p>
+            </div>
+          )}
+
+          {/* Stream Errors */}
+          {hasStreamData && error && (
             <div className="error-message">
               <p style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1rem' }}>{error}</p>
               {error.includes('CORS') ? (
@@ -179,25 +264,43 @@ const LiveTVPlayer = ({ streamUrl = 'https://sabconeta.cdn.mangomolo.com/sabc1/s
               )}
             </div>
           )}
-          {isLoading && !error && (
+
+          {/* Loading State */}
+          {hasStreamData && isLoading && !error && (
             <div className="loading-spinner">
               <div className="spinner"></div>
               <p>Loading stream...</p>
             </div>
           )}
-          <video
-            ref={videoRef}
-            className="live-video"
-            controls
-            playsInline
-            muted
-            crossOrigin="anonymous"
-            style={{ width: '100%', height: '100%', backgroundColor: '#000' }}
-          />
+
+          {/* YouTube Player */}
+          {hasStreamData && isYouTube && !error && (
+            <iframe
+              className="live-video youtube-player"
+              src={getYouTubeEmbedUrl(streamUrl)}
+              title={channelName}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              style={{ width: '100%', height: '100%', backgroundColor: '#000', border: 'none' }}
+            />
+          )}
+
+          {/* HLS Video Player */}
+          {hasStreamData && !isYouTube && (
+            <video
+              ref={videoRef}
+              className="live-video"
+              controls
+              playsInline
+              muted
+              crossOrigin="anonymous"
+              style={{ width: '100%', height: '100%', backgroundColor: '#000' }}
+            />
+          )}
         </div>
 
         <div className="live-tv-footer">
-          <p>SABC1 Live Stream</p>
+          <p>{channelName}</p>
         </div>
       </div>
     </div>
@@ -205,7 +308,15 @@ const LiveTVPlayer = ({ streamUrl = 'https://sabconeta.cdn.mangomolo.com/sabc1/s
 };
 
 LiveTVPlayer.propTypes = {
-  streamUrl: PropTypes.string,
+  streamData: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.shape({
+      url: PropTypes.string.isRequired,
+      type: PropTypes.oneOf(['hls', 'youtube']).isRequired,
+    }),
+  ]),
+  channelName: PropTypes.string,
+  onStreamError: PropTypes.func,
 };
 
 export default LiveTVPlayer;
