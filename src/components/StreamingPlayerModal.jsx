@@ -24,6 +24,16 @@ const StreamingPlayerModal = ({
   const [seasonsData, setSeasonsData] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Sync state with props when they change (e.g., from deep linking)
+  useEffect(() => {
+    if (season !== null && season !== selectedSeason) {
+      setSelectedSeason(season);
+    }
+    if (episode !== null && episode !== selectedEpisode) {
+      setSelectedEpisode(episode);
+    }
+  }, [season, episode]);
+
   // Handle season change - reset episode to 1
   const handleSeasonChange = newSeason => {
     const seasonNum = Number.parseInt(newSeason, 10);
@@ -83,15 +93,6 @@ const StreamingPlayerModal = ({
 
     fetchSeasonsData();
   }, [isOpen, contentType, content?.id]);
-
-  // Reset season/episode/platform when modal opens with new content
-  useEffect(() => {
-    if (isOpen) {
-      setSelectedSeason(season || 1);
-      setSelectedEpisode(episode || 1);
-      setSelectedPlatform(platform);
-    }
-  }, [isOpen, season, episode, platform]);
 
   // Store original title on mount
   const originalTitleRef = useRef(document.title);

@@ -1,16 +1,18 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Search as SearchIcon } from 'lucide-react';
 import StreamingSearchBar from '../components/StreamingSearchBar';
 import StreamingResultCard from '../components/StreamingResultCard';
 import StreamingPlayerModal from '../components/StreamingPlayerModal';
 import { Loading } from '../components';
 import tmdbApi from '../services/tmdbApi';
+import streamingServices from '../services/streamingServices';
 import { analytics } from '../utils';
 import { parseStreamingUrl } from '../utils/urlRouting';
 
 const Search = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -47,13 +49,10 @@ const Search = () => {
           }
 
           // Open modal with fetched content
-          const urls = require('../services/streamingServices').default.getAllStreamingUrls(
-            content,
-            {
-              season: parsedUrl.season || 1,
-              episode: parsedUrl.episode || 1,
-            }
-          );
+          const urls = streamingServices.getAllStreamingUrls(content, {
+            season: parsedUrl.season || 1,
+            episode: parsedUrl.episode || 1,
+          });
 
           setPlayerModal({
             isOpen: true,
@@ -149,7 +148,12 @@ const Search = () => {
       season: null,
       episode: null,
     });
-  }, []);
+
+    // Navigate back if we're on a streaming URL
+    if (parseStreamingUrl(location.pathname)) {
+      navigate('/');
+    }
+  }, [location.pathname, navigate]);
 
   return (
     <div className="streaming-app">

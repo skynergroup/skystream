@@ -27,7 +27,7 @@ function App() {
           <Route path="/live-tv" element={<LiveTV />} />
           {/* Streaming URLs - render on Search page with modal handling */}
           <Route path="/movie/:slug" element={<Search />} />
-          <Route path="/tv/:slug" element={<Search />} />
+          <Route path="/tv/*" element={<Search />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>
