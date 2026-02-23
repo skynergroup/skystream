@@ -1,13 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, Search, Check } from 'lucide-react';
 import PropTypes from 'prop-types';
-import { COUNTRIES, getCountryByCode, getCountryName, getCountryFlag } from '../data/countries';
-import {
-  CATEGORIES,
-  getCategoryByCode,
-  getCategoryName,
-  getCategoryIcon,
-} from '../data/categories';
+import { COUNTRIES, getCountryName, getCountryFlag } from '../data/countries';
+import { CATEGORIES, getCategoryName, getCategoryIcon } from '../data/categories';
 import './FilterSelectionScreen.css';
 
 const FilterSelectionScreen = ({ mode, selectedValue, onSelect, onBack }) => {
