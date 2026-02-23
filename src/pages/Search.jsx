@@ -41,10 +41,9 @@ const Search = () => {
             deepLinkContent.type === 'movie'
               ? `Watch ${deepLinkContent.title} Online Free`
               : `Watch ${deepLinkContent.title} Online Free`,
-          description:
-            deepLinkContent.overview
-              ? `${deepLinkContent.overview.slice(0, 155)}...`
-              : `Stream ${deepLinkContent.title} online free in HD on SkyStream. No sign-up required.`,
+          description: deepLinkContent.overview
+            ? `${deepLinkContent.overview.slice(0, 155)}...`
+            : `Stream ${deepLinkContent.title} online free in HD on SkyStream. No sign-up required.`,
           image: deepLinkContent.poster_path
             ? `https://image.tmdb.org/t/p/w500${deepLinkContent.poster_path}`
             : undefined,
