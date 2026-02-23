@@ -9,6 +9,9 @@ import tmdbApi from '../services/tmdbApi';
 import streamingServices from '../services/streamingServices';
 import { analytics } from '../utils';
 import { parseStreamingUrl } from '../utils/urlRouting';
+import { useSeoMeta, buildMovieSchema, buildTVSeriesSchema } from '../utils/useSeoMeta';
+
+const BASE_URL = 'https://www.sky-stream.online';
 
 const Search = () => {
   const location = useLocation();
@@ -26,6 +29,39 @@ const Search = () => {
     season: null,
     episode: null,
   });
+
+  // SEO: track current deep-link content for dynamic meta tags
+  const [deepLinkContent, setDeepLinkContent] = useState(null);
+
+  // Dynamic SEO meta — updates when viewing a specific movie/show
+  useSeoMeta(
+    deepLinkContent
+      ? {
+          title:
+            deepLinkContent.type === 'movie'
+              ? `Watch ${deepLinkContent.title} Online Free`
+              : `Watch ${deepLinkContent.title} Online Free`,
+          description:
+            deepLinkContent.overview
+              ? `${deepLinkContent.overview.slice(0, 155)}...`
+              : `Stream ${deepLinkContent.title} online free in HD on SkyStream. No sign-up required.`,
+          image: deepLinkContent.poster_path
+            ? `https://image.tmdb.org/t/p/w500${deepLinkContent.poster_path}`
+            : undefined,
+          url: location.pathname,
+          type: deepLinkContent.type === 'movie' ? 'video.movie' : 'video.tv_show',
+          structuredData:
+            deepLinkContent.type === 'movie'
+              ? buildMovieSchema(deepLinkContent, `${BASE_URL}${location.pathname}`)
+              : buildTVSeriesSchema(deepLinkContent, `${BASE_URL}${location.pathname}`),
+        }
+      : {
+          title: null,
+          description:
+            'Discover and stream a vast collection of free movies and TV shows online in HD, Full HD and 4K on SkyStream. No sign-up required.',
+          url: '/',
+        }
+  );
 
   // Track page view on mount
   useEffect(() => {
@@ -47,6 +83,9 @@ const Search = () => {
             const tvData = await tmdbApi.getTVDetails(parsedUrl.id);
             content = tmdbApi.transformContent(tvData);
           }
+
+          // Update SEO meta for this specific content page
+          setDeepLinkContent({ ...content, type: parsedUrl.type });
 
           // Open modal with fetched content
           const urls = streamingServices.getAllStreamingUrls(content, {
@@ -148,6 +187,9 @@ const Search = () => {
       season: null,
       episode: null,
     });
+
+    // Reset SEO meta back to homepage defaults
+    setDeepLinkContent(null);
 
     // Navigate back if we're on a streaming URL
     if (parseStreamingUrl(location.pathname)) {

@@ -21,8 +21,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run tests with coverage
-        run: npm run test:coverage
+        run: npm run test:ci
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarcloud-github-action@v3
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

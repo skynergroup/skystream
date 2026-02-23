@@ -4,11 +4,14 @@
  */
 
 class StreamingServices {
-  // Vidsrc mirror domains (updated 2025-10-19)
-  // Use vidsrc-embed.ru as primary, with fallback mirrors
-  vidsrcDomain = 'https://vidsrc-embed.ru';
+  // Vidsrc mirror domains (updated 2026-02-23)
+  // vsembed.ru / vsembed.su are the new announced primary domains
+  // vidsrc-embed.ru / vidsrc-embed.su kept as fallbacks
+  vidsrcDomain = 'https://vsembed.ru';
 
   vidsrcMirrors = [
+    'https://vsembed.ru',
+    'https://vsembed.su',
     'https://vidsrc-embed.ru',
     'https://vidsrc-embed.su',
     'https://vidsrcme.su',
@@ -169,11 +172,13 @@ class StreamingServices {
   }
 
   /**
-   * Get Vidsrc URL for a specific mirror (0-3)
-   * Server 1 = vidsrc-embed.ru (index 0)
-   * Server 2 = vidsrc-embed.su (index 1)
-   * Server 3 = vidsrcme.su (index 2)
-   * Server 4 = vsrc.su (index 3)
+   * Get Vidsrc URL for a specific mirror (0-5)
+   * Server 1 = vsembed.ru (index 0) — new primary
+   * Server 2 = vsembed.su (index 1) — new mirror
+   * Server 3 = vidsrc-embed.ru (index 2)
+   * Server 4 = vidsrc-embed.su (index 3)
+   * Server 5 = vidsrcme.su (index 4)
+   * Server 6 = vsrc.su (index 5)
    */
   getVidsrcMirrorUrl(
     mirrorIndex,
@@ -215,38 +220,42 @@ class StreamingServices {
   }
 
   /**
-   * Get all available streaming URLs for a content item (5 servers)
-   * Servers 1-4: Vidsrc mirrors
-   * Server 5: Videasy
+   * Get all available streaming URLs for a content item (7 servers)
+   * Servers 1-6: Vidsrc mirrors (1-2 are new vsembed domains)
+   * Server 7: Videasy
    */
   getAllStreamingUrls(content, options = {}) {
     const { season, episode } = options;
     const urls = {};
 
     if (content.type === 'movie') {
-      // Servers 1-4: Vidsrc mirrors
+      // Servers 1-6: Vidsrc mirrors
       urls.server1 = this.getVidsrcMirrorUrl(0, content.id, 'movie', null, null, options);
       urls.server2 = this.getVidsrcMirrorUrl(1, content.id, 'movie', null, null, options);
       urls.server3 = this.getVidsrcMirrorUrl(2, content.id, 'movie', null, null, options);
       urls.server4 = this.getVidsrcMirrorUrl(3, content.id, 'movie', null, null, options);
-      // Server 5: Videasy
-      urls.server5 = this.getVideasyMovieUrl(content.id, options);
+      urls.server5 = this.getVidsrcMirrorUrl(4, content.id, 'movie', null, null, options);
+      urls.server6 = this.getVidsrcMirrorUrl(5, content.id, 'movie', null, null, options);
+      // Server 7: Videasy
+      urls.server7 = this.getVideasyMovieUrl(content.id, options);
 
       // Keep backward compatibility
       urls.vidsrc = urls.server1;
-      urls.videasy = urls.server5;
+      urls.videasy = urls.server7;
     } else if (content.type === 'tv') {
-      // Servers 1-4: Vidsrc mirrors
+      // Servers 1-6: Vidsrc mirrors
       urls.server1 = this.getVidsrcMirrorUrl(0, content.id, 'tv', season, episode, options);
       urls.server2 = this.getVidsrcMirrorUrl(1, content.id, 'tv', season, episode, options);
       urls.server3 = this.getVidsrcMirrorUrl(2, content.id, 'tv', season, episode, options);
       urls.server4 = this.getVidsrcMirrorUrl(3, content.id, 'tv', season, episode, options);
-      // Server 5: Videasy
-      urls.server5 = this.getVideasyTVUrl(content.id, season, episode, options);
+      urls.server5 = this.getVidsrcMirrorUrl(4, content.id, 'tv', season, episode, options);
+      urls.server6 = this.getVidsrcMirrorUrl(5, content.id, 'tv', season, episode, options);
+      // Server 7: Videasy
+      urls.server7 = this.getVideasyTVUrl(content.id, season, episode, options);
 
       // Keep backward compatibility
       urls.vidsrc = urls.server1;
-      urls.videasy = urls.server5;
+      urls.videasy = urls.server7;
     }
 
     return urls;
