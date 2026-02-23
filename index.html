@@ -12,33 +12,70 @@
     />
     <meta
       name="keywords"
-      content="free movies,free tv shows,stream online,hd streaming,no sign up movies,skystream,watch movies online,watch tv shows online,4K movies,full HD"
+      content="free movies,free tv shows,stream online,hd streaming,no sign up movies,skystream,watch movies online,watch tv shows online,4K movies,full HD,streaming site"
     />
     <meta name="robots" content="index, follow" />
     <meta name="referrer" content="origin" />
+    <link rel="canonical" href="https://www.sky-stream.online/" />
 
     <!-- Content Security Policy -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com; script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com; connect-src 'self' https:; frame-src 'self' https:; img-src 'self' data: https: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;"
+      content="script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com; script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com; connect-src 'self' https:; frame-src 'self' https://player.videasy.net https://vsembed.ru https://vsembed.su https://vidsrc-embed.ru https://vidsrc-embed.su https://vidsrcme.su https://vsrc.su https:; img-src 'self' data: https: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;"
     />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.sky-stream.online/" />
     <meta property="og:title" content="SkyStream | Free Movies & TV Shows Online - No Sign Up" />
     <meta
       property="og:description"
       content="Watch thousands of movies and TV shows in HD, Full HD and 4K. No sign-up required."
     />
     <meta property="og:site_name" content="SkyStream" />
+    <meta property="og:image" content="https://www.sky-stream.online/LOGO.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@SkyStream" />
     <meta name="twitter:title" content="SkyStream | Free Movies & TV Shows - No Sign Up" />
     <meta
       name="twitter:description"
       content="Stream free movies and TV shows in HD, Full HD and 4K. No registration needed."
     />
+    <meta name="twitter:image" content="https://www.sky-stream.online/LOGO.png" />
+
+    <!-- Structured Data: WebSite + SearchAction -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "SkyStream",
+        "url": "https://www.sky-stream.online",
+        "description": "Watch free movies and TV shows online in HD, Full HD and 4K. No sign-up required.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://www.sky-stream.online/?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+
+    <!-- Structured Data: Organization -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "SkyStream",
+        "url": "https://www.sky-stream.online",
+        "logo": "https://www.sky-stream.online/LOGO.png"
+      }
+    </script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

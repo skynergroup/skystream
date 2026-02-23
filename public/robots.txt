@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.sky-stream.online/sitemap.xml
+
+# Disallow API and auth paths
+Disallow: /api/
+Disallow: /auth/
+Disallow: /callback
