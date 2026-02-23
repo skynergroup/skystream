@@ -7,7 +7,12 @@ import { DEFAULT_COUNTRY, getCountryName } from '../data/countries';
 import { DEFAULT_CATEGORY, getCategoryName } from '../data/categories';
 import './ChannelSelector.css';
 
-const ChannelSelector = ({ selectedChannel, onChannelSelect, currentlyPlayingId, onClose }) => {
+const ChannelSelector = ({
+  selectedChannel,
+  onChannelSelect,
+  currentlyPlayingId,
+  onClose: _onClose,
+}) => {
   // Navigation state: 'mode-selection', 'filter-selection', 'channel-list'
   const [currentScreen, setCurrentScreen] = useState(() => {
     // Check if user has previously selected a mode and filter

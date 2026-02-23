@@ -86,14 +86,24 @@ export function useSeoMeta({
   structuredData = null,
 } = {}) {
   useEffect(() => {
-    const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} | Watch Free Movies & TV Shows Online`;
+    // Guard: DOM operations are browser-only.
+    // useEffect never runs during SSR, but this makes intent explicit
+    // and keeps the hook safe if the project migrates to Next.js / SSR.
+    if (typeof window === 'undefined') return;
+
+    const fullTitle = title
+      ? `${title} | ${SITE_NAME}`
+      : `${SITE_NAME} | Watch Free Movies & TV Shows Online`;
     const canonicalUrl = url.startsWith('http') ? url : `${BASE_URL}${url}`;
 
     // Document title
     document.title = fullTitle;
 
     // Basic meta
-    setMeta('description', description || 'Watch free movies and TV shows in HD. No sign-up required.');
+    setMeta(
+      'description',
+      description || 'Watch free movies and TV shows in HD. No sign-up required.'
+    );
     setLink('canonical', canonicalUrl);
 
     // Open Graph
