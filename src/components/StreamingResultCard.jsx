@@ -2,6 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Play, Star, Calendar, Info } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
+import TrailerButton from './TrailerButton';
 import './StreamingResultCard.css';
 
 const StreamingResultCard = ({ content, onPlay }) => {
@@ -34,6 +35,7 @@ const StreamingResultCard = ({ content, onPlay }) => {
   return (
     <div className="streaming-result-card">
       <div className="streaming-result-card__poster">
+        <TrailerButton content={content} onWatch={handlePlay} />
         {posterUrl && !imageError ? (
           <img
             src={posterUrl}

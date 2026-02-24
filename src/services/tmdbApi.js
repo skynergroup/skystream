@@ -400,6 +400,7 @@ class TMDBApi {
       original_language: item.original_language,
       original_title: item.original_title || item.original_name,
       original_name: item.original_name || item.original_title,
+      videos: item.videos?.results || [],
       type: isMovie ? 'movie' : isTVShow ? 'tv' : 'unknown',
       media_type: item.media_type || (isMovie ? 'movie' : 'tv'),
     };

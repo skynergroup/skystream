@@ -26,6 +26,28 @@
   flex-shrink: 0;
 }
 
+.streaming-result-card__poster .trailer-button {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 5;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.streaming-result-card__poster .trailer-button:hover {
+  background: var(--netflix-red);
+}
+
 .streaming-result-card__image {
   width: 100%;
   height: 100%;
