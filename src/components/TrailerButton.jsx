@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Film } from 'lucide-react';
-import TrailerModal from './TrailerModal';
+import { TrailerModal } from './TrailerModal';
 
-const TrailerButton = ({ content, onWatch }) => {
+export const TrailerButton = ({ content, onWatch }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const trailer = content.videos?.find(v => v.site === 'YouTube' && v.type === 'Trailer');
@@ -47,5 +47,3 @@ TrailerButton.propTypes = {
   }).isRequired,
   onWatch: PropTypes.func,
 };
-
-export default TrailerButton;
