@@ -7,7 +7,7 @@ self.addEventListener('install', event => {
   self.skipWaiting();
 });
 
-// Activate: clean up old caches
+// Activate: clean up old caches and claim clients
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches
@@ -24,16 +24,19 @@ self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET requests
+  // Skip non-GET requests and cross-origin requests
   if (request.method !== 'GET') return;
+  if (url.origin !== self.location.origin) return;
 
-  // Network-first for API calls and HTML navigation
+  // Network-first for navigation and API calls
   if (request.mode === 'navigate' || url.pathname.startsWith('/api')) {
     event.respondWith(
       fetch(request)
         .then(response => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+          }
           return response;
         })
         .catch(() => caches.match(request))
@@ -46,8 +49,10 @@ self.addEventListener('fetch', event => {
     caches.match(request).then(cached => {
       if (cached) return cached;
       return fetch(request).then(response => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+        }
         return response;
       });
     })
