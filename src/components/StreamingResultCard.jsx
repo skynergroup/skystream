@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Play, Star, Calendar, Info } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
-import TrailerButton from './TrailerButton';
+import { TrailerButton } from './TrailerButton';
 import './StreamingResultCard.css';
 
 const StreamingResultCard = ({ content, onPlay }) => {

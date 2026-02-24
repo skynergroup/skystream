@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { X, Play } from 'lucide-react';
 import './TrailerModal.css';
 
-const TrailerModal = ({ isOpen, onClose, onWatch, trailerKey, title }) => {
+export const TrailerModal = ({ isOpen, onClose, onWatch, trailerKey, title }) => {
   if (!isOpen) return null;
 
   return (
@@ -41,5 +41,3 @@ TrailerModal.propTypes = {
   trailerKey: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
 };
-
-export default TrailerModal;
