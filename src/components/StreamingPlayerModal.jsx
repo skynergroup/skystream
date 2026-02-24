@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { X, ExternalLink, Download } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
@@ -6,11 +6,41 @@ import tmdbApi from '../services/tmdbApi';
 import { generateMovieUrl, generateTVUrl, updateBrowserUrl } from '../utils/urlRouting';
 import './StreamingPlayerModal.css';
 
+const STORAGE_KEY = 'skystream-preferred-server';
+
+const SERVER_OPTIONS = [
+  { key: 'server1', label: 'Server 1' },
+  { key: 'server2', label: 'Server 2' },
+  { key: 'server3', label: 'Server 3' },
+  { key: 'server4', label: 'Server 4' },
+  { key: 'server5', label: 'Server 5' },
+  { key: 'server6', label: 'Server 6' },
+  { key: 'server7', label: 'Videasy' },
+];
+
+const getPreferredServer = () => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved && SERVER_OPTIONS.some(s => s.key === saved)) return saved;
+  } catch {
+    /* ignore */
+  }
+  return 'server1';
+};
+
+const savePreferredServer = key => {
+  try {
+    localStorage.setItem(STORAGE_KEY, key);
+  } catch {
+    /* ignore */
+  }
+};
+
 const StreamingPlayerModal = ({
   isOpen,
   onClose,
   content,
-  platform,
+  platform: _platform,
   embedUrl,
   contentType = 'movie',
   season = null,
@@ -20,9 +50,10 @@ const StreamingPlayerModal = ({
   const [selectedSeason, setSelectedSeason] = useState(season || 1);
   const [selectedEpisode, setSelectedEpisode] = useState(episode || 1);
   const [currentEmbedUrl, setCurrentEmbedUrl] = useState(embedUrl);
-  const [selectedPlatform, setSelectedPlatform] = useState(platform || 'server1');
+  const [selectedPlatform, setSelectedPlatform] = useState(() => getPreferredServer());
   const [seasonsData, setSeasonsData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [iframeSwitching, setIframeSwitching] = useState(false);
 
   // Sync state with props when they change (e.g., from deep linking)
   useEffect(() => {
@@ -50,6 +81,17 @@ const StreamingPlayerModal = ({
     }
   };
 
+  // Handle server switch with loading transition
+  const handleServerSwitch = useCallback(
+    serverKey => {
+      if (serverKey === selectedPlatform) return;
+      setIframeSwitching(true);
+      setSelectedPlatform(serverKey);
+      savePreferredServer(serverKey);
+    },
+    [selectedPlatform]
+  );
+
   // Update embed URL when season/episode/platform changes
   useEffect(() => {
     if (content?.id && selectedPlatform) {
@@ -58,18 +100,32 @@ const StreamingPlayerModal = ({
         episode: selectedEpisode,
       });
 
-      // Support both old format (vidsrc/videasy) and new format (server1-5)
-      if (selectedPlatform?.startsWith('server')) {
+      // Support both new format (server1-7) and legacy keys
+      if (urls[selectedPlatform]) {
         setCurrentEmbedUrl(urls[selectedPlatform]);
       } else if (selectedPlatform === 'vidsrc') {
         setCurrentEmbedUrl(urls.server1);
       } else if (selectedPlatform === 'videasy') {
-        setCurrentEmbedUrl(urls.server5);
+        setCurrentEmbedUrl(urls.server7);
       }
     } else {
       setCurrentEmbedUrl(embedUrl);
     }
-  }, [selectedSeason, selectedEpisode, selectedPlatform, contentType, content, embedUrl]);
+
+    // Clear switching state after a brief delay
+    if (iframeSwitching) {
+      const timer = setTimeout(() => setIframeSwitching(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [
+    selectedSeason,
+    selectedEpisode,
+    selectedPlatform,
+    contentType,
+    content,
+    embedUrl,
+    iframeSwitching,
+  ]);
 
   // Fetch seasons data from TMDB when modal opens for TV content
   useEffect(() => {
@@ -266,21 +322,6 @@ const StreamingPlayerModal = ({
         <div className="streaming-player-modal__header">
           <div className="streaming-player-modal__title">
             <h2>{content?.title}</h2>
-            <div className="streaming-player-modal__server-selector">
-              <label htmlFor="server-select">Server:</label>
-              <select
-                id="server-select"
-                value={selectedPlatform}
-                onChange={e => setSelectedPlatform(e.target.value)}
-                className="streaming-player-modal__server-select"
-              >
-                <option value="server1">Server 1 (Vidsrc)</option>
-                <option value="server2">Server 2 (Vidsrc)</option>
-                <option value="server3">Server 3 (Vidsrc)</option>
-                <option value="server4">Server 4 (Vidsrc)</option>
-                <option value="server5">Server 5 (Videasy)</option>
-              </select>
-            </div>
           </div>
 
           {/* Season and Episode Selectors for TV Series */}
@@ -375,11 +416,29 @@ const StreamingPlayerModal = ({
           </div>
         </div>
 
+        <div className="streaming-player-modal__server-bar">
+          <div className="streaming-player-modal__server-pills">
+            {SERVER_OPTIONS.map(({ key, label }) => (
+              <button
+                key={key}
+                type="button"
+                className={`streaming-player-modal__server-pill${selectedPlatform === key ? ' streaming-player-modal__server-pill--active' : ''}`}
+                onClick={() => handleServerSwitch(key)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <span className="streaming-player-modal__server-hint">
+            Video not loading? Try another server
+          </span>
+        </div>
+
         <div className="streaming-player-modal__player">
           <iframe
             src={currentEmbedUrl}
-            title={`${content?.title} - ${platform}`}
-            className="streaming-player-modal__iframe"
+            title={`${content?.title} - ${selectedPlatform}`}
+            className={`streaming-player-modal__iframe ${iframeSwitching ? 'streaming-player-modal__iframe--loading' : 'streaming-player-modal__iframe--loaded'}`}
             allowFullScreen
             allow="encrypted-media; autoplay; fullscreen"
             referrerPolicy="origin"
@@ -411,6 +470,8 @@ StreamingPlayerModal.propTypes = {
     'server3',
     'server4',
     'server5',
+    'server6',
+    'server7',
     'vidsrc',
     'videasy',
   ]).isRequired,
