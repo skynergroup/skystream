@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { X, ExternalLink, Download } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
@@ -18,12 +18,17 @@ const SERVER_OPTIONS = [
   { key: 'server7', label: 'Videasy' },
 ];
 
-const getPreferredServer = () => {
+const getPreferredServer = fallbackKey => {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved && SERVER_OPTIONS.some(s => s.key === saved)) return saved;
   } catch {
     /* ignore */
+  }
+  if (fallbackKey) {
+    if (SERVER_OPTIONS.some(s => s.key === fallbackKey)) return fallbackKey;
+    if (fallbackKey === 'videasy') return 'server7';
+    if (fallbackKey === 'vidsrc') return 'server1';
   }
   return 'server1';
 };
@@ -50,7 +55,7 @@ const StreamingPlayerModal = ({
   const [selectedSeason, setSelectedSeason] = useState(season || 1);
   const [selectedEpisode, setSelectedEpisode] = useState(episode || 1);
   const [currentEmbedUrl, setCurrentEmbedUrl] = useState(embedUrl);
-  const [selectedPlatform, setSelectedPlatform] = useState(() => getPreferredServer());
+  const [selectedPlatform, setSelectedPlatform] = useState(() => getPreferredServer(_platform));
   const [seasonsData, setSeasonsData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [iframeSwitching, setIframeSwitching] = useState(false);
@@ -82,15 +87,12 @@ const StreamingPlayerModal = ({
   };
 
   // Handle server switch with loading transition
-  const handleServerSwitch = useCallback(
-    serverKey => {
-      if (serverKey === selectedPlatform) return;
-      setIframeSwitching(true);
-      setSelectedPlatform(serverKey);
-      savePreferredServer(serverKey);
-    },
-    [selectedPlatform]
-  );
+  const handleServerSwitch = serverKey => {
+    if (serverKey === selectedPlatform) return;
+    setIframeSwitching(true);
+    setSelectedPlatform(serverKey);
+    savePreferredServer(serverKey);
+  };
 
   // Update embed URL when season/episode/platform changes
   useEffect(() => {
