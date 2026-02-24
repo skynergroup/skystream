@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { Search, Discover, LiveTV } from './pages';
+import { Search, Discover } from './pages';
 import { Layout } from './components';
 import { analytics } from './utils';
 
@@ -24,7 +24,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Search />} />
           <Route path="/home" element={<Discover />} />
-          <Route path="/live-tv" element={<LiveTV />} />
+          <Route path="/live-tv" element={<Navigate to="/" replace />} />
           {/* Streaming URLs - render on Search page with modal handling */}
           <Route path="/movie/:slug" element={<Search />} />
           <Route path="/tv/*" element={<Search />} />

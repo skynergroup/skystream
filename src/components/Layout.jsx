@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Home, Search, Tv } from 'lucide-react';
+import { Home, Search } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import './Layout.css';
 
@@ -30,13 +30,6 @@ const Layout = ({ children }) => {
             >
               <Search size={20} />
               <span>Search</span>
-            </Link>
-            <Link
-              to="/live-tv"
-              className={`layout__nav-link ${location.pathname === '/live-tv' ? 'layout__nav-link--active' : ''}`}
-            >
-              <Tv size={20} />
-              <span>Live TV</span>
             </Link>
           </nav>
 

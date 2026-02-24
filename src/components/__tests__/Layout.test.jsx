@@ -34,7 +34,7 @@ describe('Layout', () => {
 
     expect(screen.getByText('Discover')).toBeInTheDocument();
     expect(screen.getByText('Search')).toBeInTheDocument();
-    expect(screen.getByText('Live TV')).toBeInTheDocument();
+    expect(screen.queryByText('Live TV')).not.toBeInTheDocument();
   });
 
   test('renders children content', () => {
@@ -90,28 +90,5 @@ describe('Layout', () => {
 
     const searchLink = screen.getByText('Search').closest('a');
     expect(searchLink).toHaveClass('layout__nav-link--active');
-  });
-
-  test('highlights active Live TV link when on /live-tv', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Content</div>
-      </Layout>,
-      { route: '/live-tv' }
-    );
-
-    const liveTVLink = screen.getByText('Live TV').closest('a');
-    expect(liveTVLink).toHaveClass('layout__nav-link--active');
-  });
-
-  test('Live TV link is functional', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Content</div>
-      </Layout>
-    );
-
-    const liveTVLink = screen.getByText('Live TV').closest('a');
-    expect(liveTVLink).toHaveAttribute('href', '/live-tv');
   });
 });
