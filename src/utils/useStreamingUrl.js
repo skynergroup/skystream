@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   generateMovieUrl,
   generateTVUrl,
@@ -20,20 +20,20 @@ import {
  * @returns {object} Object with methods to handle URL routing
  */
 export const useStreamingUrl = (_playerModal, onOpenModal) => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const pathname = usePathname();
+  const router = useRouter();
 
   // Handle deep linking - when user navigates directly to a streaming URL
   useEffect(() => {
-    if (isStreamingUrl(location.pathname)) {
-      const parsedUrl = parseStreamingUrl(location.pathname);
+    if (isStreamingUrl(pathname)) {
+      const parsedUrl = parseStreamingUrl(pathname);
       if (parsedUrl && onOpenModal) {
         // Trigger modal opening with parsed content
         // The actual content will be fetched by the page component
         onOpenModal(parsedUrl);
       }
     }
-  }, [location.pathname, onOpenModal]);
+  }, [pathname, onOpenModal]);
 
   // Update URL when modal opens
   const handleModalOpen = useCallback((content, season = null, episode = null) => {
@@ -54,14 +54,14 @@ export const useStreamingUrl = (_playerModal, onOpenModal) => {
   // Restore URL when modal closes
   const handleModalClose = useCallback(() => {
     // Go back to the previous page (home or search)
-    navigate(-1);
-  }, [navigate]);
+    router.back();
+  }, [router]);
 
   return {
     handleModalOpen,
     handleModalClose,
-    isStreamingUrl: isStreamingUrl(location.pathname),
-    parsedUrl: parseStreamingUrl(location.pathname),
+    isStreamingUrl: isStreamingUrl(pathname),
+    parsedUrl: parseStreamingUrl(pathname),
   };
 };
 

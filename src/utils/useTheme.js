@@ -14,6 +14,8 @@ const THEME_ATTRIBUTE = 'data-theme';
 
 // Get initial theme based on localStorage or system preference
 const getInitialTheme = () => {
+  if (typeof window === 'undefined') return 'dark';
+
   // Check localStorage first
   const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
   if (storedTheme === 'light' || storedTheme === 'dark') {

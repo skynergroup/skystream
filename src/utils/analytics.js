@@ -547,9 +547,9 @@ class Analytics {
 const analytics = new Analytics();
 
 // Make analytics available globally for testing in development
-if (import.meta.env.DEV) {
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   window.skyStreamAnalytics = analytics;
-  console.log('🧪 Analytics available globally as window.skyStreamAnalytics for testing');
+  console.log('Analytics available globally as window.skyStreamAnalytics for testing');
 }
 
 // Export both the class and instance
