@@ -106,7 +106,7 @@ self.__SERVER_FILES_MANIFEST={
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "/tmp/skystream-nextjs",
+    "outputFileTracingRoot": "/home/apollo/workspace/Github/SkynerGroup/skystream",
     "cacheComponents": false,
     "cacheLife": {
       "default": {
@@ -299,11 +299,11 @@ self.__SERVER_FILES_MANIFEST={
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.mjs",
     "turbopack": {
-      "root": "/tmp/skystream-nextjs"
+      "root": "/home/apollo/workspace/Github/SkynerGroup/skystream"
     },
     "distDirRoot": ".next"
   },
-  "appDir": "/tmp/skystream-nextjs",
+  "appDir": "/home/apollo/workspace/Github/SkynerGroup/skystream",
   "relativeAppDir": "",
   "files": [
     ".next/routes-manifest.json",

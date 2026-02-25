@@ -6,7 +6,6 @@ import StreamingPlayerModal from '../../../components/StreamingPlayerModal';
 import { Loading } from '../../../components';
 import tmdbApi from '../../../services/tmdbApi';
 import streamingServices from '../../../services/streamingServices';
-import { analytics } from '../../../utils';
 
 function parseTVSlug(slugSegments) {
   if (!slugSegments || slugSegments.length === 0) return null;

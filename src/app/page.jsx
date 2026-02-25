@@ -1,19 +1,15 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
 import { Search as SearchIcon } from 'lucide-react';
 import StreamingSearchBar from '../components/StreamingSearchBar';
 import StreamingResultCard from '../components/StreamingResultCard';
 import StreamingPlayerModal from '../components/StreamingPlayerModal';
 import { Loading } from '../components';
 import tmdbApi from '../services/tmdbApi';
-import streamingServices from '../services/streamingServices';
 import { analytics } from '../utils';
 
 const Search = () => {
-  const router = useRouter();
-  const pathname = usePathname();
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
