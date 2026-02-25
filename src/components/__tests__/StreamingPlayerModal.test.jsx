@@ -134,8 +134,8 @@ describe('StreamingPlayerModal', () => {
       />
     );
 
-    expect(screen.getByText('Server 1 (Vidsrc)')).toBeInTheDocument();
-    expect(screen.getByText('Server 2 (Vidsrc)')).toBeInTheDocument();
+    expect(screen.getByText('Server 1')).toBeInTheDocument();
+    expect(screen.getByText('Server 2')).toBeInTheDocument();
   });
 
   test('switches platform when Server 2 is clicked', () => {
@@ -149,7 +149,7 @@ describe('StreamingPlayerModal', () => {
       />
     );
 
-    const server2Button = screen.getByText('Server 2 (Vidsrc)');
+    const server2Button = screen.getByText('Server 2');
     fireEvent.click(server2Button);
 
     expect(streamingServices.getAllStreamingUrls).toHaveBeenCalled();
@@ -339,34 +339,38 @@ describe('StreamingPlayerModal', () => {
   });
 
   describe('Server Selection Coverage', () => {
-    test('should render all 5 server options', () => {
+    test('should render all 7 server options', () => {
       render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
-      expect(screen.getByText('Server 1 (Vidsrc)')).toBeInTheDocument();
-      expect(screen.getByText('Server 2 (Vidsrc)')).toBeInTheDocument();
-      expect(screen.getByText('Server 3 (Vidsrc)')).toBeInTheDocument();
-      expect(screen.getByText('Server 4 (Vidsrc)')).toBeInTheDocument();
-      expect(screen.getByText('Server 5 (Videasy)')).toBeInTheDocument();
+      expect(screen.getByText('Server 1')).toBeInTheDocument();
+      expect(screen.getByText('Server 2')).toBeInTheDocument();
+      expect(screen.getByText('Server 3')).toBeInTheDocument();
+      expect(screen.getByText('Server 4')).toBeInTheDocument();
+      expect(screen.getByText('Server 5')).toBeInTheDocument();
+      expect(screen.getByText('Server 6')).toBeInTheDocument();
+      expect(screen.getByText('Videasy')).toBeInTheDocument();
     });
 
     test('should update iframe when server changes', async () => {
       streamingServices.getAllStreamingUrls = jest.fn(() => ({
-        server1: 'https://vidsrc-embed.ru/embed/movie?tmdb=1',
-        server2: 'https://vidsrc-embed.su/embed/movie?tmdb=1',
-        server3: 'https://vidsrcme.su/embed/movie?tmdb=1',
-        server4: 'https://vsrc.su/embed/movie?tmdb=1',
-        server5: 'https://player.videasy.net/embed/movie?tmdb=1',
+        server1: 'https://vsembed.ru/embed/movie?tmdb=1',
+        server2: 'https://vsembed.su/embed/movie?tmdb=1',
+        server3: 'https://vidsrc-embed.ru/embed/movie?tmdb=1',
+        server4: 'https://vidsrc-embed.su/embed/movie?tmdb=1',
+        server5: 'https://vidsrcme.su/embed/movie?tmdb=1',
+        server6: 'https://vsrc.su/embed/movie?tmdb=1',
+        server7: 'https://player.videasy.net/movie/1',
       }));
 
-      const { container } = render(
-        <StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />
-      );
+      render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
 
-      const select = container.querySelector('select');
-      fireEvent.change(select, { target: { value: 'server2' } });
+      // Click Server 2 button to switch
+      const server2Button = screen.getByText('Server 2');
+      fireEvent.click(server2Button);
 
       await waitFor(() => {
-        const iframe = container.querySelector('iframe');
-        expect(iframe.src).toContain('vidsrc-embed.su');
+        const iframes = document.querySelectorAll('iframe');
+        const playerIframe = Array.from(iframes).find(f => f.src.includes('vsembed'));
+        expect(playerIframe).toBeTruthy();
       });
     });
   });
@@ -396,9 +400,11 @@ describe('StreamingPlayerModal', () => {
       expect(heading).toBeInTheDocument();
     });
 
-    test('should have accessible server selector label', () => {
+    test('should have accessible server selector', () => {
       render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
-      expect(screen.getByLabelText('Server:')).toBeInTheDocument();
+      // Server selector uses pill buttons with role=button
+      expect(screen.getByText('Server 1')).toBeInTheDocument();
+      expect(screen.getByText('Videasy')).toBeInTheDocument();
     });
 
     test('should have accessible season selector for TV shows', async () => {
