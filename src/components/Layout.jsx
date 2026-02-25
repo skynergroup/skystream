@@ -1,32 +1,35 @@
-import { Link, useLocation } from 'react-router-dom';
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import PropTypes from 'prop-types';
 import { Home, Search } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import './Layout.css';
 
 const Layout = ({ children }) => {
-  const location = useLocation();
+  const pathname = usePathname();
 
   return (
     <div className="layout">
       {/* Header */}
       <header className="layout__header">
         <div className="layout__header-container">
-          <Link to="/home" className="layout__logo">
+          <Link href="/home" className="layout__logo">
             <h1 className="layout__logo-text">SkyStream</h1>
           </Link>
 
           <nav className="layout__nav">
             <Link
-              to="/home"
-              className={`layout__nav-link ${location.pathname === '/home' ? 'layout__nav-link--active' : ''}`}
+              href="/home"
+              className={`layout__nav-link ${pathname === '/home' ? 'layout__nav-link--active' : ''}`}
             >
               <Home size={20} />
               <span>Discover</span>
             </Link>
             <Link
-              to="/"
-              className={`layout__nav-link ${location.pathname === '/' ? 'layout__nav-link--active' : ''}`}
+              href="/"
+              className={`layout__nav-link ${pathname === '/' ? 'layout__nav-link--active' : ''}`}
             >
               <Search size={20} />
               <span>Search</span>

@@ -153,7 +153,7 @@ const StreamingPlayerModal = ({
   }, [isOpen, contentType, content?.id]);
 
   // Store original title on mount
-  const originalTitleRef = useRef(document.title);
+  const originalTitleRef = useRef(typeof document !== 'undefined' ? document.title : '');
 
   // Update browser URL and document title when modal opens with content
   useEffect(() => {

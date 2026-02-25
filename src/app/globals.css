@@ -1,5 +1,5 @@
 /* Netflix-inspired Global Styles */
-@import "./styles/responsive.css";
+@import "../styles/responsive.css";
 
 /* Dark Theme (Default - Netflix-inspired) */
 :root,
@@ -107,11 +107,6 @@ body {
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
-}
-
-#root {
-  min-height: 100vh;
-  width: 100%;
 }
 
 /* Typography */
