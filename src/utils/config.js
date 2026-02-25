@@ -5,7 +5,14 @@
 
 // Helper function to get environment variable with fallback
 const getEnvVar = (key, defaultValue = '') => {
-  return process.env[key] || defaultValue;
+  // Check NEXT_PUBLIC_ key first, then fall back to VITE_ equivalent
+  const value = process.env[key];
+  if (value) return value;
+  if (key.startsWith('NEXT_PUBLIC_')) {
+    const viteKey = key.replace('NEXT_PUBLIC_', 'VITE_');
+    if (process.env[viteKey]) return process.env[viteKey];
+  }
+  return defaultValue;
 };
 
 // Helper function to get boolean environment variable
