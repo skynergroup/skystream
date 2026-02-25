@@ -4,26 +4,18 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "build:analyze": "vite build --mode analyze",
-    "build:staging": "NODE_ENV=staging vite build",
-    "build:production": "NODE_ENV=production vite build",
-    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 10",
-    "lint:fix": "eslint src --ext js,jsx --fix",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,md,json}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css,md,json}\"",
-    "type-check": "echo 'TypeScript not configured yet'",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:unit": "jest",
     "test:e2e": "echo 'E2E tests not configured yet'",
-    "test:ci": "jest --coverage --ci",
-    "preview": "vite preview",
-    "serve": "vite preview --port 4173",
-    "clean": "rm -rf dist",
-    "prebuild": "npm run clean"
+    "test:ci": "jest --coverage --ci"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.11.2",
@@ -37,9 +29,9 @@
     "hls.js": "^1.6.13",
     "lucide-react": "^0.523.0",
     "luxon": "^3.7.2",
+    "next": "16.1.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.6.2",
     "video.js": "^8.23.4"
   },
   "devDependencies": {
@@ -48,14 +40,11 @@
     "@babel/preset-env": "^7.28.3",
     "@babel/preset-react": "^7.27.1",
     "@eslint/js": "^9.29.0",
-    "@locator/babel-jsx": "^0.4.4",
-    "@locator/runtime": "^0.4.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
-    "@vitejs/plugin-react": "^4.5.2",
     "eslint": "^9.29.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^5.2.0",
@@ -64,8 +53,6 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
-    "prettier": "^3.2.5",
-    "terser": "^5.43.1",
-    "vite": "^7.0.0"
+    "prettier": "^3.2.5"
   }
 }

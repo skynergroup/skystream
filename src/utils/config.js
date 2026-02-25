@@ -5,67 +5,70 @@
 
 // Helper function to get environment variable with fallback
 const getEnvVar = (key, defaultValue = '') => {
-  return import.meta.env[key] || defaultValue;
+  return process.env[key] || defaultValue;
 };
 
 // Helper function to get boolean environment variable
 const getBooleanEnvVar = (key, defaultValue = false) => {
-  const value = import.meta.env[key];
+  const value = process.env[key];
   if (value === undefined) return defaultValue;
   return value === 'true' || value === '1';
 };
 
 // Application Configuration
 export const APP_CONFIG = {
-  name: getEnvVar('VITE_APP_NAME', 'SkyStream'),
-  version: getEnvVar('VITE_APP_VERSION', '2.0.0'),
+  name: getEnvVar('NEXT_PUBLIC_APP_NAME', 'SkyStream'),
+  version: getEnvVar('NEXT_PUBLIC_APP_VERSION', '2.0.0'),
   description: getEnvVar(
-    'VITE_APP_DESCRIPTION',
+    'NEXT_PUBLIC_APP_DESCRIPTION',
     'Your ultimate destination for streaming movies and TV shows'
   ),
-  isDev: getBooleanEnvVar('VITE_DEV_MODE', import.meta.env.DEV),
-  enableLogs: getBooleanEnvVar('VITE_ENABLE_CONSOLE_LOGS', import.meta.env.DEV),
+  isDev: process.env.NODE_ENV === 'development',
+  enableLogs: getBooleanEnvVar(
+    'NEXT_PUBLIC_ENABLE_CONSOLE_LOGS',
+    process.env.NODE_ENV === 'development'
+  ),
 };
 
 // API Configuration
 export const API_CONFIG = {
   tmdb: {
-    apiKey: getEnvVar('VITE_TMDB_API_KEY'),
-    baseUrl: getEnvVar('VITE_TMDB_BASE_URL', 'https://api.themoviedb.org/3'),
-    imageBaseUrl: getEnvVar('VITE_TMDB_IMAGE_BASE_URL', 'https://image.tmdb.org/t/p'),
-    defaultPosterSize: getEnvVar('VITE_DEFAULT_POSTER_SIZE', 'w500'),
-    defaultBackdropSize: getEnvVar('VITE_DEFAULT_BACKDROP_SIZE', 'w1280'),
+    apiKey: getEnvVar('NEXT_PUBLIC_TMDB_API_KEY'),
+    baseUrl: getEnvVar('NEXT_PUBLIC_TMDB_BASE_URL', 'https://api.themoviedb.org/3'),
+    imageBaseUrl: getEnvVar('NEXT_PUBLIC_TMDB_IMAGE_BASE_URL', 'https://image.tmdb.org/t/p'),
+    defaultPosterSize: getEnvVar('NEXT_PUBLIC_DEFAULT_POSTER_SIZE', 'w500'),
+    defaultBackdropSize: getEnvVar('NEXT_PUBLIC_DEFAULT_BACKDROP_SIZE', 'w1280'),
   },
 };
 
 // Video Player Configuration
 export const PLAYER_CONFIG = {
   videasy: {
-    baseUrl: getEnvVar('VITE_VIDEASY_BASE_URL', 'https://player.videasy.net'),
+    baseUrl: getEnvVar('NEXT_PUBLIC_VIDEASY_BASE_URL', 'https://player.videasy.net'),
   },
   vidsrc: {
-    baseUrl: getEnvVar('VITE_VIDSRC_BASE_URL', 'https://vidsrc-embed.ru/embed'),
+    baseUrl: getEnvVar('NEXT_PUBLIC_VIDSRC_BASE_URL', 'https://vidsrc-embed.ru/embed'),
     mirrors: [
-      getEnvVar('VITE_VIDSRC_MIRROR_1', 'https://vidsrc-embed.ru/embed'),
-      getEnvVar('VITE_VIDSRC_MIRROR_2', 'https://vidsrc-embed.su/embed'),
-      getEnvVar('VITE_VIDSRC_MIRROR_3', 'https://vidsrcme.su/embed'),
-      getEnvVar('VITE_VIDSRC_MIRROR_4', 'https://vsrc.su/embed'),
+      getEnvVar('NEXT_PUBLIC_VIDSRC_MIRROR_1', 'https://vidsrc-embed.ru/embed'),
+      getEnvVar('NEXT_PUBLIC_VIDSRC_MIRROR_2', 'https://vidsrc-embed.su/embed'),
+      getEnvVar('NEXT_PUBLIC_VIDSRC_MIRROR_3', 'https://vidsrcme.su/embed'),
+      getEnvVar('NEXT_PUBLIC_VIDSRC_MIRROR_4', 'https://vsrc.su/embed'),
     ],
-    downloadUrl: getEnvVar('VITE_VIDSRC_DOWNLOAD_URL', 'https://dl.vidsrc.vip'),
+    downloadUrl: getEnvVar('NEXT_PUBLIC_VIDSRC_DOWNLOAD_URL', 'https://dl.vidsrc.vip'),
   },
 
   defaults: {
-    player: getEnvVar('VITE_DEFAULT_PLAYER', 'videasy'),
-    color: getEnvVar('VITE_PLAYER_COLOR', 'e50914'),
-    autoPlay: getBooleanEnvVar('VITE_AUTO_PLAY', true),
+    player: getEnvVar('NEXT_PUBLIC_DEFAULT_PLAYER', 'videasy'),
+    color: getEnvVar('NEXT_PUBLIC_PLAYER_COLOR', 'e50914'),
+    autoPlay: getBooleanEnvVar('NEXT_PUBLIC_AUTO_PLAY', true),
     language: 'en',
   },
 };
 
 // Analytics Configuration
 export const ANALYTICS_CONFIG = {
-  enabled: getBooleanEnvVar('VITE_ENABLE_ANALYTICS', true), // Enable analytics by default for testing
-  trackingId: getEnvVar('VITE_GA_TRACKING_ID', 'G-CR3ZVV9BE1'),
+  enabled: getBooleanEnvVar('NEXT_PUBLIC_ENABLE_ANALYTICS', true), // Enable analytics by default for testing
+  trackingId: getEnvVar('NEXT_PUBLIC_GA_TRACKING_ID', 'G-CR3ZVV9BE1'),
 };
 
 // Utility Functions
