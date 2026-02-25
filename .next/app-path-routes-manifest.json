@@ -1,8 +1,0 @@
-{
-  "/_global-error/page": "/_global-error",
-  "/_not-found/page": "/_not-found",
-  "/home/page": "/home",
-  "/movie/[slug]/page": "/movie/[slug]",
-  "/page": "/",
-  "/tv/[...slug]/page": "/tv/[...slug]"
-}
