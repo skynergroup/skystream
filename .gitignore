@@ -35,3 +35,4 @@ coverage
 *.sw?
 .augment/
 .next/
+.vercel
