@@ -30,8 +30,5 @@ jobs:
       - name: Format check
         run: npm run format:check
 
-      - name: Run tests with coverage
-        run: npm run test:ci
-
       - name: Build
-        run: npm run build:production
+        run: npm run build

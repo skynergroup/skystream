@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 10",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,md,json}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css,md,json}\"",
     "test": "jest",
@@ -15,7 +15,8 @@
     "test:coverage": "jest --coverage",
     "test:unit": "jest",
     "test:e2e": "echo 'E2E tests not configured yet'",
-    "test:ci": "jest --coverage --ci"
+    "test:ci": "jest --coverage --ci",
+    "lint:fix": "eslint src --ext js,jsx --fix"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.11.2",

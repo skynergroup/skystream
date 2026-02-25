@@ -7,10 +7,20 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 export default defineConfig([
   globalIgnores(['dist', 'coverage', 'node_modules']),
 
-  // Source files
+  // Source files (browser)
   {
     files: ['**/*.{js,jsx}'],
-    ignores: ['**/*.test.{js,jsx}', '**/*.spec.{js,jsx}', '**/__tests__/**', '**/__mocks__/**'],
+    ignores: [
+      '**/*.test.{js,jsx}',
+      '**/*.spec.{js,jsx}',
+      '**/__tests__/**',
+      '**/__mocks__/**',
+      'src/services/tmdbServer.js',
+      'src/utils/config.js',
+      'src/utils/analytics.js',
+      'src/app/**/page.jsx',
+      'src/app/layout.jsx',
+    ],
     extends: [
       js.configs.recommended,
       reactHooks.configs['recommended-latest'],
@@ -18,7 +28,31 @@ export default defineConfig([
     ],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: { ...globals.browser, ...globals.node },
+      parserOptions: {
+        ecmaVersion: 'latest',
+        ecmaFeatures: { jsx: true },
+        sourceType: 'module',
+      },
+    },
+    rules: {
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]', argsIgnorePattern: '^_' }],
+    },
+  },
+
+  // Next.js server files + page routes (export metadata + component)
+  {
+    files: [
+      'src/app/**/page.jsx',
+      'src/app/layout.jsx',
+      'src/services/tmdbServer.js',
+      'src/utils/config.js',
+      'src/utils/analytics.js',
+    ],
+    extends: [js.configs.recommended],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: { ...globals.browser, ...globals.node },
       parserOptions: {
         ecmaVersion: 'latest',
         ecmaFeatures: { jsx: true },
