@@ -31,9 +31,10 @@ function parseTVSlug(slugSegments) {
   return { type: 'tv', id, season, episode };
 }
 
-export default function TVClient({ slugSegments }) {
+export default function TVClient({ slugSegments, initialTVData }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialTVData);
+  const [error, setError] = useState(false);
   const [playerModal, setPlayerModal] = useState({
     isOpen: false,
     content: null,
@@ -51,11 +52,21 @@ export default function TVClient({ slugSegments }) {
       return;
     }
 
-    const fetchContent = async () => {
+    const initPlayer = async () => {
       try {
-        const tvData = await tmdbApi.getTVDetails(parsed.id);
-        const content = tmdbApi.transformContent(tvData);
+        let tvData = initialTVData;
 
+        if (!tvData) {
+          tvData = await tmdbApi.getTVDetails(parsed.id);
+        }
+
+        if (!tvData) {
+          setError(true);
+          setLoading(false);
+          return;
+        }
+
+        const content = tmdbApi.transformContent(tvData);
         const urls = streamingServices.getAllStreamingUrls(content, {
           season: parsed.season,
           episode: parsed.episode,
@@ -71,14 +82,15 @@ export default function TVClient({ slugSegments }) {
           episode: parsed.episode,
         });
       } catch (err) {
-        console.error('Failed to fetch TV show for deep link:', err);
+        console.error('Failed to load TV show:', err);
+        setError(true);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchContent();
-  }, [slugSegments, router]);
+    initPlayer();
+  }, [slugSegments, router, initialTVData]);
 
   const handleClosePlayer = useCallback(() => {
     setPlayerModal({
@@ -104,6 +116,41 @@ export default function TVClient({ slugSegments }) {
         }}
       >
         <Loading text="Loading TV show..." />
+      </div>
+    );
+  }
+
+  if (error && !playerModal.isOpen) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '50vh',
+          textAlign: 'center',
+          padding: '2rem',
+        }}
+      >
+        <h3 style={{ color: 'var(--netflix-red)', marginBottom: '1rem' }}>TV Show Not Found</h3>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+          Unable to load this TV show. It may have been removed or is temporarily unavailable.
+        </p>
+        <button
+          onClick={() => router.push('/')}
+          style={{
+            padding: '0.75rem 1.5rem',
+            background: 'var(--netflix-red)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '1rem',
+          }}
+        >
+          Back to Search
+        </button>
       </div>
     );
   }

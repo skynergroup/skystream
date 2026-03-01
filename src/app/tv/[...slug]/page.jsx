@@ -100,5 +100,12 @@ export async function generateMetadata({ params }) {
 
 export default async function TVPage({ params }) {
   const { slug } = await params;
-  return <TVClient slugSegments={slug} />;
+  const parsed = parseTVSlug(slug);
+  let initialTVData = null;
+
+  if (parsed) {
+    initialTVData = await fetchTVDetails(parsed.id);
+  }
+
+  return <TVClient slugSegments={slug} initialTVData={initialTVData} />;
 }

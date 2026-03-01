@@ -80,5 +80,12 @@ export async function generateMetadata({ params }) {
 
 export default async function MoviePage({ params }) {
   const { slug } = await params;
-  return <MovieClient slug={slug} />;
+  const movieId = parseMovieSlug(slug);
+  let initialMovieData = null;
+
+  if (movieId) {
+    initialMovieData = await fetchMovieDetails(movieId);
+  }
+
+  return <MovieClient slug={slug} initialMovieData={initialMovieData} />;
 }

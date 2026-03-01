@@ -13,9 +13,10 @@ function parseMovieSlug(slug) {
   return { type: 'movie', id: parseInt(match[1], 10) };
 }
 
-export default function MovieClient({ slug }) {
+export default function MovieClient({ slug, initialMovieData }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialMovieData);
+  const [error, setError] = useState(false);
   const [playerModal, setPlayerModal] = useState({
     isOpen: false,
     content: null,
@@ -33,11 +34,22 @@ export default function MovieClient({ slug }) {
       return;
     }
 
-    const fetchContent = async () => {
+    const initPlayer = async () => {
       try {
-        const movieData = await tmdbApi.getMovieDetails(parsed.id);
-        const content = tmdbApi.transformContent(movieData);
+        let movieData = initialMovieData;
 
+        // Fall back to client-side fetch only if server didn't provide data
+        if (!movieData) {
+          movieData = await tmdbApi.getMovieDetails(parsed.id);
+        }
+
+        if (!movieData) {
+          setError(true);
+          setLoading(false);
+          return;
+        }
+
+        const content = tmdbApi.transformContent(movieData);
         const urls = streamingServices.getAllStreamingUrls(content, {
           season: 1,
           episode: 1,
@@ -53,14 +65,15 @@ export default function MovieClient({ slug }) {
           episode: null,
         });
       } catch (err) {
-        console.error('Failed to fetch movie for deep link:', err);
+        console.error('Failed to load movie:', err);
+        setError(true);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchContent();
-  }, [slug, router]);
+    initPlayer();
+  }, [slug, router, initialMovieData]);
 
   const handleClosePlayer = useCallback(() => {
     setPlayerModal({
@@ -86,6 +99,41 @@ export default function MovieClient({ slug }) {
         }}
       >
         <Loading text="Loading movie..." />
+      </div>
+    );
+  }
+
+  if (error && !playerModal.isOpen) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '50vh',
+          textAlign: 'center',
+          padding: '2rem',
+        }}
+      >
+        <h3 style={{ color: 'var(--netflix-red)', marginBottom: '1rem' }}>Movie Not Found</h3>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+          Unable to load this movie. It may have been removed or is temporarily unavailable.
+        </p>
+        <button
+          onClick={() => router.push('/')}
+          style={{
+            padding: '0.75rem 1.5rem',
+            background: 'var(--netflix-red)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '1rem',
+          }}
+        >
+          Back to Search
+        </button>
       </div>
     );
   }
