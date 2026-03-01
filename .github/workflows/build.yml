@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Build & Test
-    runs-on: [self-hosted, Linux, X64, apollo]
+    runs-on:[self-hosted, Linux, X64, astra]
 
     steps:
       - uses: actions/checkout@v4
