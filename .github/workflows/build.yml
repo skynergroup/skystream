@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Build & Test
-    runs-on:[self-hosted, Linux, X64, astra]
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
