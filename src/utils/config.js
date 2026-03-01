@@ -1,81 +1,72 @@
 /**
  * Application Configuration
  * Centralizes all environment variables and provides defaults
+ *
+ * IMPORTANT: Next.js only inlines process.env.NEXT_PUBLIC_* when accessed
+ * as a direct static property (NOT via dynamic key lookup like process.env[key]).
+ * Every env var must be referenced as process.env.NEXT_PUBLIC_XXX directly.
  */
-
-// Helper function to get environment variable with fallback
-const getEnvVar = (key, defaultValue = '') => {
-  // Check NEXT_PUBLIC_ key first, then fall back to VITE_ equivalent
-  const value = process.env[key];
-  if (value) return value;
-  if (key.startsWith('NEXT_PUBLIC_')) {
-    const viteKey = key.replace('NEXT_PUBLIC_', 'VITE_');
-    if (process.env[viteKey]) return process.env[viteKey];
-  }
-  return defaultValue;
-};
-
-// Helper function to get boolean environment variable
-const getBooleanEnvVar = (key, defaultValue = false) => {
-  const value = process.env[key];
-  if (value === undefined) return defaultValue;
-  return value === 'true' || value === '1';
-};
 
 // Application Configuration
 export const APP_CONFIG = {
-  name: getEnvVar('NEXT_PUBLIC_APP_NAME', 'SkyStream'),
-  version: getEnvVar('NEXT_PUBLIC_APP_VERSION', '2.0.0'),
-  description: getEnvVar(
-    'NEXT_PUBLIC_APP_DESCRIPTION',
-    'Your ultimate destination for streaming movies and TV shows'
-  ),
+  name: process.env.NEXT_PUBLIC_APP_NAME || 'SkyStream',
+  version: process.env.NEXT_PUBLIC_APP_VERSION || '2.0.0',
+  description:
+    process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
+    'Your ultimate destination for streaming movies and TV shows',
   isDev: process.env.NODE_ENV === 'development',
-  enableLogs: getBooleanEnvVar(
-    'NEXT_PUBLIC_ENABLE_CONSOLE_LOGS',
-    process.env.NODE_ENV === 'development'
-  ),
+  enableLogs:
+    process.env.NEXT_PUBLIC_ENABLE_CONSOLE_LOGS === 'true' ||
+    process.env.NEXT_PUBLIC_ENABLE_CONSOLE_LOGS === '1' ||
+    process.env.NODE_ENV === 'development',
 };
 
 // API Configuration
 export const API_CONFIG = {
   tmdb: {
-    apiKey: getEnvVar('NEXT_PUBLIC_TMDB_API_KEY'),
-    baseUrl: getEnvVar('NEXT_PUBLIC_TMDB_BASE_URL', 'https://api.themoviedb.org/3'),
-    imageBaseUrl: getEnvVar('NEXT_PUBLIC_TMDB_IMAGE_BASE_URL', 'https://image.tmdb.org/t/p'),
-    defaultPosterSize: getEnvVar('NEXT_PUBLIC_DEFAULT_POSTER_SIZE', 'w500'),
-    defaultBackdropSize: getEnvVar('NEXT_PUBLIC_DEFAULT_BACKDROP_SIZE', 'w1280'),
+    apiKey: process.env.NEXT_PUBLIC_TMDB_API_KEY || '',
+    baseUrl: process.env.NEXT_PUBLIC_TMDB_BASE_URL || 'https://api.themoviedb.org/3',
+    imageBaseUrl: process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE_URL || 'https://image.tmdb.org/t/p',
+    defaultPosterSize: process.env.NEXT_PUBLIC_DEFAULT_POSTER_SIZE || 'w500',
+    defaultBackdropSize: process.env.NEXT_PUBLIC_DEFAULT_BACKDROP_SIZE || 'w1280',
   },
 };
 
 // Video Player Configuration
 export const PLAYER_CONFIG = {
   videasy: {
-    baseUrl: getEnvVar('NEXT_PUBLIC_VIDEASY_BASE_URL', 'https://player.videasy.net'),
+    baseUrl: process.env.NEXT_PUBLIC_VIDEASY_BASE_URL || 'https://player.videasy.net',
   },
   vidsrc: {
-    baseUrl: getEnvVar('NEXT_PUBLIC_VIDSRC_BASE_URL', 'https://vidsrc-embed.ru/embed'),
+    baseUrl: process.env.NEXT_PUBLIC_VIDSRC_BASE_URL || 'https://vidsrc-embed.ru/embed',
     mirrors: [
-      getEnvVar('NEXT_PUBLIC_VIDSRC_MIRROR_1', 'https://vidsrc-embed.ru/embed'),
-      getEnvVar('NEXT_PUBLIC_VIDSRC_MIRROR_2', 'https://vidsrc-embed.su/embed'),
-      getEnvVar('NEXT_PUBLIC_VIDSRC_MIRROR_3', 'https://vidsrcme.su/embed'),
-      getEnvVar('NEXT_PUBLIC_VIDSRC_MIRROR_4', 'https://vsrc.su/embed'),
+      process.env.NEXT_PUBLIC_VIDSRC_MIRROR_1 || 'https://vidsrc-embed.ru/embed',
+      process.env.NEXT_PUBLIC_VIDSRC_MIRROR_2 || 'https://vidsrc-embed.su/embed',
+      process.env.NEXT_PUBLIC_VIDSRC_MIRROR_3 || 'https://vidsrcme.su/embed',
+      process.env.NEXT_PUBLIC_VIDSRC_MIRROR_4 || 'https://vsrc.su/embed',
     ],
-    downloadUrl: getEnvVar('NEXT_PUBLIC_VIDSRC_DOWNLOAD_URL', 'https://dl.vidsrc.vip'),
+    downloadUrl: process.env.NEXT_PUBLIC_VIDSRC_DOWNLOAD_URL || 'https://dl.vidsrc.vip',
   },
 
   defaults: {
-    player: getEnvVar('NEXT_PUBLIC_DEFAULT_PLAYER', 'videasy'),
-    color: getEnvVar('NEXT_PUBLIC_PLAYER_COLOR', 'e50914'),
-    autoPlay: getBooleanEnvVar('NEXT_PUBLIC_AUTO_PLAY', true),
+    player: process.env.NEXT_PUBLIC_DEFAULT_PLAYER || 'videasy',
+    color: process.env.NEXT_PUBLIC_PLAYER_COLOR || 'e50914',
+    autoPlay:
+      process.env.NEXT_PUBLIC_AUTO_PLAY === undefined
+        ? true
+        : process.env.NEXT_PUBLIC_AUTO_PLAY === 'true' || process.env.NEXT_PUBLIC_AUTO_PLAY === '1',
     language: 'en',
   },
 };
 
 // Analytics Configuration
 export const ANALYTICS_CONFIG = {
-  enabled: getBooleanEnvVar('NEXT_PUBLIC_ENABLE_ANALYTICS', true), // Enable analytics by default for testing
-  trackingId: getEnvVar('NEXT_PUBLIC_GA_TRACKING_ID', 'G-CR3ZVV9BE1'),
+  enabled:
+    process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === undefined
+      ? true
+      : process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true' ||
+        process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === '1',
+  trackingId: process.env.NEXT_PUBLIC_GA_TRACKING_ID || 'G-CR3ZVV9BE1',
 };
 
 // Utility Functions
