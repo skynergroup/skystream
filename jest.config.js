@@ -1,16 +1,18 @@
-export default {
+import nextJest from 'next/jest.js';
+
+const createJestConfig = nextJest({
+  dir: './',
+});
+
+const customJestConfig = {
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
   },
-  transform: {
-    '^.+\\.(js|jsx)$': ['babel-jest', { configFile: './babel.config.cjs' }],
-  },
-  transformIgnorePatterns: [
-    'node_modules/(?!(lucide-react)/)',
-  ],
+  transformIgnorePatterns: ['node_modules/(?!(lucide-react)/)'],
   collectCoverageFrom: [
     'src/**/*.{js,jsx}',
     '!src/main.jsx',
@@ -30,15 +32,8 @@ export default {
     '<rootDir>/src/**/*.{spec,test}.{js,jsx}',
   ],
   moduleFileExtensions: ['js', 'jsx', 'json'],
-  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
-  coveragePathIgnorePatterns: ['/node_modules/', '/dist/'],
-  globals: {
-    'import.meta': {
-      env: {
-        VITE_TMDB_API_KEY: 'test-api-key',
-        VITE_APP_ENV: 'test',
-      },
-    },
-  },
+  testPathIgnorePatterns: ['/node_modules/', '/.next/'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/.next/'],
 };
 
+export default createJestConfig(customJestConfig);

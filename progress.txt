@@ -13,3 +13,9 @@ Stories: 7
 - [14:20] Validation complete: `npm run lint` (warnings only), `npm run build` (passed)
 - [14:20] Committed: `1159158`
 - Learning: Keep root docs anchored to `src/app/` and explicitly label Vite-era files as historical drift instead of implied active architecture.
+
+## STORY-002: Restore Jest to a Next-compatible baseline
+- [14:27] Started fresh retry on `feat/dev-85-cleanup`
+- [14:29] Replaced the custom `babel-jest` config in `jest.config.js` with `next/jest` and preserved existing setup/mappers/coverage rules
+- [14:29] Validation complete: `npm test -- --runInBand` now executes suites instead of crashing on missing `babel.config.cjs`
+- [14:29] Post-repair baseline: 15 suites passed, 3 suites failed with real module resolution issues (`react-router-dom` and `../pages`), confirming the config crash is resolved
