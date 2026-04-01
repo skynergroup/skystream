@@ -25,5 +25,5 @@ Stories: 7
 - [14:31] Replaced stale React Router-era tests with App Router-aware coverage for `src/app/page.jsx`, `src/app/home/page.jsx`, and `src/components/Layout.jsx`
 - [14:31] Focused validation complete: `npm test -- --runInBand src/components/__tests__/Layout.test.jsx src/pages-legacy/__tests__/Search.test.jsx src/pages-legacy/__tests__/Discover.test.jsx src/__tests__/App.test.jsx`
 - [14:32] Full validation complete: `npm test -- --runInBand`
-- [14:32] Committed: `85951bc`
+- [14:32] Committed: `4045bb0`
 - Learning: Keep route coverage pointed at `src/app/` entrypoints and mock Next navigation primitives instead of reviving deleted React Router wiring.
