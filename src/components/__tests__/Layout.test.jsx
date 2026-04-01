@@ -1,6 +1,21 @@
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 import Layout from '../Layout';
+
+let mockPathname = '/';
+
+jest.mock('next/navigation', () => ({
+  usePathname: jest.fn(() => mockPathname),
+}));
+
+jest.mock('next/link', () => {
+  return function MockLink({ href, className, children }) {
+    return (
+      <a href={href} className={className}>
+        {children}
+      </a>
+    );
+  };
+});
 
 jest.mock('../Layout.css', () => ({}));
 jest.mock('../ThemeToggle', () => {
@@ -9,86 +24,56 @@ jest.mock('../ThemeToggle', () => {
   };
 });
 
-const renderWithRouter = (ui, { route = '/' } = {}) => {
-  window.history.pushState({}, 'Test page', route);
-  return render(ui, { wrapper: BrowserRouter });
-};
+const renderLayout = () =>
+  render(
+    <Layout>
+      <div>Test Content</div>
+    </Layout>
+  );
 
 describe('Layout', () => {
-  test('renders logo', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Content</div>
-      </Layout>
-    );
-
-    expect(screen.getByText('SkyStream')).toBeInTheDocument();
+  beforeEach(() => {
+    mockPathname = '/';
   });
 
-  test('renders navigation links', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Content</div>
-      </Layout>
-    );
+  test('renders logo, navigation, children, footer, and theme toggle', () => {
+    renderLayout();
 
-    expect(screen.getByText('Discover')).toBeInTheDocument();
-    expect(screen.getByText('Search')).toBeInTheDocument();
-    expect(screen.queryByText('Live TV')).not.toBeInTheDocument();
-  });
-
-  test('renders children content', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Test Content</div>
-      </Layout>
-    );
-
+    expect(screen.getByRole('heading', { name: 'SkyStream' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'SkyStream' })).toHaveAttribute('href', '/home');
+    expect(screen.getByRole('link', { name: /discover/i })).toHaveAttribute('href', '/home');
+    expect(screen.getByRole('link', { name: /search/i })).toHaveAttribute('href', '/');
     expect(screen.getByText('Test Content')).toBeInTheDocument();
-  });
-
-  test('renders footer', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Content</div>
-      </Layout>
-    );
-
-    expect(screen.getByText(/SkyStream - Search and stream/)).toBeInTheDocument();
-    expect(screen.getByText(/Content provided by third-party services/)).toBeInTheDocument();
-  });
-
-  test('renders theme toggle', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Content</div>
-      </Layout>
-    );
-
+    expect(
+      screen.getByText(/SkyStream - Search and stream your favorite content instantly/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Content provided by third-party services\. We do not host any content\./)
+    ).toBeInTheDocument();
     expect(screen.getByTestId('theme-toggle')).toBeInTheDocument();
   });
 
-  test('highlights active Discover link when on /home', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Content</div>
-      </Layout>,
-      { route: '/home' }
-    );
+  test('highlights Discover when pathname is /home', () => {
+    mockPathname = '/home';
 
-    const discoverLink = screen.getByText('Discover').closest('a');
-    expect(discoverLink).toHaveClass('layout__nav-link--active');
+    renderLayout();
+
+    expect(screen.getByRole('link', { name: /discover/i })).toHaveClass(
+      'layout__nav-link--active'
+    );
+    expect(screen.getByRole('link', { name: /search/i })).not.toHaveClass(
+      'layout__nav-link--active'
+    );
   });
 
-  test('highlights active Search link when on /', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Content</div>
-      </Layout>,
-      { route: '/' }
-    );
+  test('highlights Search when pathname is /', () => {
+    renderLayout();
 
-    const searchLink = screen.getByText('Search').closest('a');
-    expect(searchLink).toHaveClass('layout__nav-link--active');
+    expect(screen.getByRole('link', { name: /search/i })).toHaveClass(
+      'layout__nav-link--active'
+    );
+    expect(screen.getByRole('link', { name: /discover/i })).not.toHaveClass(
+      'layout__nav-link--active'
+    );
   });
 });

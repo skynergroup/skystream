@@ -1,5 +1,5 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import Discover from '../Discover';
+import DiscoverPage from '../../app/home/page';
 import tmdbApi from '../../services/tmdbApi';
 import { analytics } from '../../utils';
 
@@ -37,7 +37,7 @@ jest.mock('../../components', () => ({
   Loading: ({ text }) => <div data-testid="loading">{text}</div>,
 }));
 
-describe('Discover', () => {
+describe('Discover page', () => {
   const mockContent = {
     featured: [{ id: 1, title: 'Featured Movie', type: 'movie' }],
     trending: [{ id: 2, title: 'Trending Movie', type: 'movie' }],
@@ -53,7 +53,6 @@ describe('Discover', () => {
     analytics.trackEvent = jest.fn();
     analytics.trackError = jest.fn();
 
-    // Suppress console.error for expected errors
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
@@ -64,16 +63,16 @@ describe('Discover', () => {
   test('shows loading state initially', () => {
     tmdbApi.getHomePageContent = jest.fn(() => new Promise(() => {}));
 
-    render(<Discover />);
+    render(<DiscoverPage />);
 
     expect(screen.getByTestId('loading')).toBeInTheDocument();
     expect(screen.getByText('Loading content...')).toBeInTheDocument();
   });
 
-  test('fetches and displays content successfully', async () => {
+  test('fetches and displays the active /home route sections', async () => {
     tmdbApi.getHomePageContent = jest.fn().mockResolvedValue(mockContent);
 
-    render(<Discover />);
+    render(<DiscoverPage />);
 
     await waitFor(() => {
       expect(screen.getByTestId('featured-hero')).toBeInTheDocument();
@@ -84,23 +83,14 @@ describe('Discover', () => {
     expect(screen.getByTestId('content-row-Popular TV Shows')).toBeInTheDocument();
     expect(screen.getByTestId('content-row-Top Rated')).toBeInTheDocument();
     expect(screen.getByTestId('content-row-Popular Anime')).toBeInTheDocument();
+    expect(analytics.trackPageView).toHaveBeenCalledWith('/home', 'SkyStream - Discover');
   });
 
-  test('tracks page view on mount', async () => {
-    tmdbApi.getHomePageContent = jest.fn().mockResolvedValue(mockContent);
-
-    render(<Discover />);
-
-    await waitFor(() => {
-      expect(analytics.trackPageView).toHaveBeenCalledWith('/home', 'SkyStream - Discover');
-    });
-  });
-
-  test('displays error state when fetch fails', async () => {
+  test('displays the error state and tracks failures', async () => {
     const error = new Error('Failed to fetch');
     tmdbApi.getHomePageContent = jest.fn().mockRejectedValue(error);
 
-    render(<Discover />);
+    render(<DiscoverPage />);
 
     await waitFor(() => {
       expect(screen.getByText('Failed to Load Content')).toBeInTheDocument();
@@ -108,81 +98,24 @@ describe('Discover', () => {
 
     expect(screen.getByText(/Unable to fetch content/)).toBeInTheDocument();
     expect(screen.getByText('Retry')).toBeInTheDocument();
+    expect(analytics.trackError).toHaveBeenCalledWith(
+      'Homepage content fetch failed: Failed to fetch',
+      'content_error'
+    );
   });
 
-  test('tracks error when fetch fails', async () => {
-    const error = new Error('Failed to fetch');
-    tmdbApi.getHomePageContent = jest.fn().mockRejectedValue(error);
-
-    render(<Discover />);
-
-    await waitFor(() => {
-      expect(analytics.trackError).toHaveBeenCalledWith(
-        'Homepage content fetch failed: Failed to fetch',
-        'content_error'
-      );
-    });
-  });
-
-  test('shows retry button on error', async () => {
-    const error = new Error('Failed to fetch');
-    tmdbApi.getHomePageContent = jest.fn().mockRejectedValue(error);
-
-    render(<Discover />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Retry')).toBeInTheDocument();
-    });
-
-    expect(screen.getByText('Failed to Load Content')).toBeInTheDocument();
-  });
-
-  test('opens player modal when play is clicked', async () => {
+  test('opens and closes the player modal while tracking play analytics', async () => {
     tmdbApi.getHomePageContent = jest.fn().mockResolvedValue(mockContent);
 
-    render(<Discover />);
+    render(<DiscoverPage />);
 
     await waitFor(() => {
       expect(screen.getByTestId('featured-hero')).toBeInTheDocument();
     });
 
-    const playButton = screen.getAllByText('Play')[0];
-    fireEvent.click(playButton);
+    fireEvent.click(screen.getAllByText('Play')[0]);
 
     expect(screen.getByTestId('player-modal')).toBeInTheDocument();
-  });
-
-  test('closes player modal when close is clicked', async () => {
-    tmdbApi.getHomePageContent = jest.fn().mockResolvedValue(mockContent);
-
-    render(<Discover />);
-
-    await waitFor(() => {
-      expect(screen.getByTestId('featured-hero')).toBeInTheDocument();
-    });
-
-    const playButton = screen.getAllByText('Play')[0];
-    fireEvent.click(playButton);
-
-    expect(screen.getByTestId('player-modal')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText('Close'));
-
-    expect(screen.queryByTestId('player-modal')).not.toBeInTheDocument();
-  });
-
-  test('tracks play event when content is played', async () => {
-    tmdbApi.getHomePageContent = jest.fn().mockResolvedValue(mockContent);
-
-    render(<Discover />);
-
-    await waitFor(() => {
-      expect(screen.getByTestId('featured-hero')).toBeInTheDocument();
-    });
-
-    const playButton = screen.getAllByText('Play')[0];
-    fireEvent.click(playButton);
-
     expect(analytics.trackEvent).toHaveBeenCalledWith(
       'content_play',
       expect.objectContaining({
@@ -193,41 +126,27 @@ describe('Discover', () => {
         content_title: 'Featured Movie',
       })
     );
+
+    fireEvent.click(screen.getByText('Close'));
+    expect(screen.queryByTestId('player-modal')).not.toBeInTheDocument();
   });
 
   test('does not render sections with empty content', async () => {
-    const emptyContent = {
+    tmdbApi.getHomePageContent = jest.fn().mockResolvedValue({
       featured: [],
       trending: [],
       popularMovies: [],
       popularTV: [],
       topRated: [],
       popularAnime: [],
-    };
+    });
 
-    tmdbApi.getHomePageContent = jest.fn().mockResolvedValue(emptyContent);
-
-    render(<Discover />);
+    render(<DiscoverPage />);
 
     await waitFor(() => {
       expect(screen.queryByTestId('featured-hero')).not.toBeInTheDocument();
     });
 
     expect(screen.queryByTestId('content-row-Trending Now')).not.toBeInTheDocument();
-  });
-
-  test('retry button is clickable on error', async () => {
-    const error = new Error('Failed to fetch');
-    tmdbApi.getHomePageContent = jest.fn().mockRejectedValue(error);
-
-    render(<Discover />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Retry')).toBeInTheDocument();
-    });
-
-    const retryButton = screen.getByText('Retry');
-    expect(retryButton).toBeInTheDocument();
-    expect(retryButton).toBeEnabled();
   });
 });
