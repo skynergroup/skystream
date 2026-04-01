@@ -1,0 +1,15 @@
+Started: 2026-04-01 14:04 SAST
+PRD: DEV-85 Migration Cleanup for Next.js App Router
+Branch target: feat/dev-85-cleanup
+Phases: 3
+Stories: 7
+
+2026-04-01 14:04 SAST - Planner created prd.json, wiring-checklist.json, CLAUDE.md, AGENTS.md, and ARCHITECTURE.md from authoritative research/findings.md. Assumptions documented: staged migration cleanup, preserve env fallback until infra verification, and protect live Next routes/integrations during cleanup.
+
+## STORY-001: Rewrite runtime documentation around the active Next.js app
+- [14:16] Started
+- [14:19] Documentation rewrite complete for README.md, CLAUDE.md, AGENTS.md, and ARCHITECTURE.md
+- [14:19] Runtime routes and script ownership aligned to the live Next.js App Router surface
+- [14:20] Validation complete: `npm run lint` (warnings only), `npm run build` (passed)
+- [14:20] Committed: `1159158`
+- Learning: Keep root docs anchored to `src/app/` and explicitly label Vite-era files as historical drift instead of implied active architecture.

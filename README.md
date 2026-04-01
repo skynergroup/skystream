@@ -1,291 +1,147 @@
 # SkyStream
 
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TMDB API](https://img.shields.io/badge/TMDB_API-01B4E4?style=for-the-badge&logo=themoviedatabase&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
 
-A modern, responsive streaming platform interface built with React.js that provides a feature-rich user experience for browsing and viewing movies, TV shows, and anime content. The application leverages The Movie Database (TMDB) API for comprehensive content metadata and integrates with multiple third-party streaming services.
+SkyStream is a Next.js 16 App Router streaming and discovery application built by Skyner Group. It uses TMDB metadata together with third-party embed providers to power the live runtime routes `/`, `/home`, `/movie/[slug]`, and `/tv/[...slug]`.
 
-**Live Demo:** [https://www.sky-stream.online/](https://www.sky-stream.online/)
+Live site: <https://www.sky-stream.online/>
 
-## Overview
+## Maintainers and Showcase
 
-SkyStream is a content discovery and streaming aggregator that serves as a centralized platform for searching and accessing entertainment content. The application features a Netflix-inspired user interface with advanced search capabilities, real-time content discovery, and seamless integration with multiple video streaming platforms.
+SkyStream is part of the Skyner Group product showcase.
 
-### Disclaimer
+- Skyner Group: <https://github.com/skynergroup>
+- Yashiel Sookdeo: <https://github.com/yashiels>
+- Mpho Ndlela: <https://github.com/mphocodes>
 
-SkyStream is a viewing platform interface only. The application does not host, store, or distribute any movies, TV shows, or other media content. All content is sourced from third-party services and streamed directly to users. SkyStream acts solely as an interface to browse and access content in a user-friendly manner.
+## Runtime Overview
 
-## Key Features
+This repository now reflects the active Next.js app, not the older Vite + React Router implementation.
 
-### Content Discovery
-- **Discover Page** (`/home`) - Curated content sections with featured hero carousel
-  - Featured content with auto-rotating carousel
-  - Trending movies and TV shows
-  - Popular movies and TV shows sections
-  - Top-rated content
-  - Popular anime section
-  - Horizontal scrolling content rows
-- **Search Page** (`/`) - Real-time search across movies, TV shows, and anime
-  - Instant search results
-  - Grid-based result display
-  - Comprehensive content metadata including ratings, release dates, and descriptions
+Supported runtime surface:
+- `/` — search-first landing route
+- `/home` — discover experience with curated sections
+- `/movie/[slug]` — dynamic movie playback/detail route
+- `/tv/[...slug]` — dynamic TV playback/detail route
 
-### User Interface
-- Netflix-inspired dark theme with light mode support
-- Fully responsive design optimized for desktop, tablet, and mobile devices
-- Smooth animations and transitions
-- Intuitive navigation between Discover and Search pages
-- Persistent header with navigation links
+Shared runtime shell:
+- `src/app/layout.jsx` — metadata, analytics, scripts, service worker registration
+- `src/components/Layout.jsx` — shared application chrome used by route pages
 
-### Streaming Integration
-- Multiple streaming service integrations (Vidsrc, Videasy)
-- Season and episode selection for TV content
-- Embedded video player with quality controls
-- Automatic episode progression for series
+## Architecture at a Glance
 
-### Technical Features
-- Server-side rendering optimization
-- Code splitting and lazy loading for improved performance
-- Comprehensive analytics and user behavior tracking
-- Error handling with user-friendly fallbacks
-- SEO optimization for content discovery
+Key directories:
+- `src/app/` — live Next App Router entrypoints and route pages
+- `src/components/` — shared UI for search, discovery, playback, and some legacy-adjacent components still under review
+- `src/services/` — TMDB access and streaming URL generation
+- `src/utils/` — config/env helpers, analytics, hooks, and route utilities
+- `src/pages-legacy/` — React Router-era pages retained as historical migration drift, not the active route tree
+- `public/` — service worker, manifest, icons, and static assets
+- `research/` — authoritative research used for DEV-85 planning
 
-## Technology Stack
+## Historical Notes
 
-### Frontend Framework
-- **React 19.1.0** - Modern React with hooks and functional components
-- **React Router DOM 7.6.2** - Client-side routing
-- **Vite 7.0.0** - Next-generation frontend build tool
+The repo still contains migration-era artifacts. Treat them carefully:
 
-### Styling & UI
-- **CSS3** with CSS Variables for dynamic theming
-- **Lucide React** - Modern icon library
-- **Custom responsive design system** with mobile-first approach
+- `src/App.jsx` — deleted; this is not the runtime entrypoint anymore
+- `src/main.jsx` — deleted; Next owns bootstrapping through `src/app/`
+- `vite.config.js` — deleted/not used by the current app
+- `src/pages-legacy/` — historical React Router pages kept for staged cleanup, not active runtime routes
 
-### APIs & External Services
-- **The Movie Database (TMDB) API** - Content metadata, search, and images
-- **Vidsrc** - Primary streaming service integration
-- **Videasy** - Alternative streaming service integration
-- **Google Analytics** - User behavior and engagement tracking
-- **Vercel Analytics** - Performance monitoring and insights
+If a doc or test mentions the Vite app structure, treat it as historical unless it has been explicitly revalidated against the Next.js runtime.
 
-### Development Tools
-- **ESLint** - Code quality and consistency
-- **Prettier** - Code formatting
-- **Terser** - Production code minification
-- **LocatorJS** - Development debugging tool
+## Environment Configuration
 
-## Architecture
+Environment handling is intentionally conservative during cleanup.
 
-### Project Structure
-```
-skystream/
-├── public/              # Static assets and configuration
-│   ├── _redirects      # Vercel SPA routing configuration
-│   └── favicon.ico     # Application favicon
-├── src/
-│   ├── components/     # Reusable UI components
-│   │   ├── ContentRow.jsx          # Horizontal scrolling content row
-│   │   ├── FeaturedHero.jsx        # Hero banner with carousel
-│   │   ├── Layout.jsx              # Shared layout wrapper
-│   │   ├── Loading.jsx
-│   │   ├── MaintenanceBanner.jsx
-│   │   ├── StreamingPlayerModal.jsx
-│   │   ├── StreamingResultCard.jsx
-│   │   ├── StreamingSearchBar.jsx
-│   │   └── ThemeToggle.jsx
-│   ├── pages/          # Page-level components
-│   │   ├── Discover.jsx            # Content discovery page (/home)
-│   │   └── Search.jsx              # Search page (/)
-│   ├── services/       # API service layers
-│   │   ├── tmdbApi.js
-│   │   └── streamingServices.js
-│   ├── utils/          # Utility functions and configuration
-│   │   ├── analytics.js
-│   │   ├── config.js
-│   │   └── useTheme.js
-│   ├── styles/         # Global styles
-│   │   └── responsive.css
-│   ├── App.jsx         # Root application component with routing
-│   ├── main.jsx        # Application entry point
-│   └── index.css       # Global styles and theme variables
-├── package.json        # Project dependencies and scripts
-├── vite.config.js      # Vite configuration
-└── README.md
-```
+Primary runtime env names should be `NEXT_PUBLIC_*`, but the app still preserves `VITE_*` fallback compatibility in `src/utils/config.js` until deployment infrastructure is verified.
 
-### Design Patterns
-- **Component-based architecture** with React functional components
-- **Service layer pattern** for API interactions and business logic
-- **Utility-first approach** with centralized configuration management
-- **Single Page Application (SPA)** with client-side routing via React Router
-- **Layout pattern** with shared header/footer wrapper component
+Common variables used by the app include:
+- `NEXT_PUBLIC_TMDB_API_KEY` with fallback to `VITE_TMDB_API_KEY`
+- `NEXT_PUBLIC_TMDB_BASE_URL` with fallback to `VITE_TMDB_BASE_URL`
+- `NEXT_PUBLIC_TMDB_IMAGE_BASE_URL` with fallback to `VITE_TMDB_IMAGE_BASE_URL`
+- analytics-related `NEXT_PUBLIC_*` values where configured, while preserving legacy compatibility where code still expects it
 
-### Routing Structure
-
-| Route | Page | Description |
-|-------|------|-------------|
-| `/` | Search | Search-focused interface for finding specific content |
-| `/home` | Discover | Content discovery with featured carousel and curated sections |
-| `*` | Redirect | Catch-all route redirects to search page |
+Do not remove the fallback behavior as part of documentation-only cleanup.
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18.x or higher
-- npm or yarn package manager
-- TMDB API Key (obtain from [themoviedb.org](https://www.themoviedb.org/settings/api))
 
-### Installation
+- Node.js 18+
+- npm
+- TMDB API key
 
-1. Clone the repository:
+### Install
+
 ```bash
 git clone https://github.com/skynergroup/skystream.git
 cd skystream
-```
-
-2. Install dependencies:
-```bash
 npm install
 ```
 
-3. Configure environment variables:
+### Run locally
 
-Create a `.env` file in the root directory:
-```bash
-cp .env.example .env
-```
-
-Add your TMDB API key to the `.env` file:
-```env
-VITE_TMDB_API_KEY=your_tmdb_api_key_here
-VITE_TMDB_BASE_URL=https://api.themoviedb.org/3
-VITE_TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p
-```
-
-4. Start the development server:
 ```bash
 npm run dev
 ```
 
-The application will be available at `http://localhost:3000`
+The Next.js development server runs locally on the default Next port unless overridden by your environment.
 
-### Available Scripts
+### Build for production
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run build:staging` - Build for staging environment
-- `npm run build:production` - Build for production environment
-- `npm run preview` - Preview production build locally
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint errors automatically
-- `npm run format` - Format code with Prettier
-- `npm run format:check` - Check code formatting
+```bash
+npm run build
+npm run start
+```
+
+## Available Scripts
+
+- `npm run dev` — start the Next.js development server
+- `npm run build` — create the production build with Next.js
+- `npm run start` — serve the production build
+- `npm run lint` — run ESLint against `src/**/*.js` and `src/**/*.jsx`
+- `npm run lint:fix` — apply ESLint auto-fixes where possible
+- `npm run format` — format source files with Prettier
+- `npm run format:check` — verify formatting with Prettier
+- `npm test` — run the current Jest suite
+- `npm run test:watch` — run Jest in watch mode
+- `npm run test:coverage` — run Jest with coverage
+- `npm run test:ci` — run the CI-style Jest coverage command
+
+Note: the current Jest setup is known migration drift and may require separate cleanup work; `npm run build` and `npm run lint` are the reliable runtime verification commands today.
+
+## Runtime Ownership
+
+If you are cleaning up the app, preserve these runtime-critical areas unless your task explicitly covers them:
+- TMDB client and server helpers in `src/services/`
+- streaming provider URL generation in `src/services/streamingServices.js`
+- CSP/header alignment in `next.config.mjs`
+- analytics wiring in `src/app/layout.jsx` and `src/utils/analytics.js`
+- service worker registration and PWA assets in `public/`
 
 ## Deployment
 
-The application is deployed on Vercel and optimized for static hosting platforms.
+SkyStream is deployed as a Vercel-hosted Next.js application.
 
-### Vercel Deployment
+Deployment expectations:
+- App Router pages under `src/app/` define the live route surface
+- `next build` is the production build step
+- `vercel.json` identifies the app as a Next.js deployment target
 
-1. Install Vercel CLI:
-```bash
-npm install -g vercel
-```
+## Documentation Sources of Truth
 
-2. Deploy to Vercel:
-```bash
-vercel
-```
+For DEV-85 cleanup work, use these files in order:
+- `research/findings.md` — authoritative migration/runtime findings
+- `prd.json` — story definitions and acceptance criteria
+- `CLAUDE.md` — concise repo operating notes
+- `AGENTS.md` — engineering conventions and guardrails
+- `ARCHITECTURE.md` — active runtime structure and drift notes
 
-3. Configure environment variables in the Vercel dashboard:
-   - `VITE_TMDB_API_KEY`
-   - `VITE_GA_TRACKING_ID` (optional)
+## Disclaimer
 
-### Build Optimization
-
-The production build includes:
-- Code splitting with vendor, router, and icon chunks
-- Asset optimization with hashed filenames
-- Minification with Terser
-- CSS code splitting
-- Optimized bundle size with tree shaking
-
-## Configuration
-
-### Environment Variables
-
-| Variable | Description | Required | Default |
-|----------|-------------|----------|---------|
-| `VITE_TMDB_API_KEY` | TMDB API key for content data | Yes | - |
-| `VITE_TMDB_BASE_URL` | TMDB API base URL | No | `https://api.themoviedb.org/3` |
-| `VITE_TMDB_IMAGE_BASE_URL` | TMDB image CDN URL | No | `https://image.tmdb.org/t/p` |
-| `VITE_GA_TRACKING_ID` | Google Analytics tracking ID | No | - |
-| `VITE_ENABLE_ANALYTICS` | Enable/disable analytics | No | `true` |
-| `VITE_DEFAULT_PLAYER` | Default video player | No | `videasy` |
-
-## Performance
-
-### Optimization Techniques
-- Lazy loading of images with loading states
-- Code splitting for reduced initial bundle size
-- Optimized asset delivery with CDN
-- Responsive images with multiple size options
-- Debounced search input for reduced API calls
-- Memoized components to prevent unnecessary re-renders
-
-### Analytics & Monitoring
-- Google Analytics for user behavior tracking
-- Vercel Analytics for performance insights
-- Custom event tracking for content interactions
-- Error tracking and reporting
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Mobile browsers (iOS Safari, Chrome Mobile)
-
-## Contributing
-
-Contributions are welcome. Please follow these guidelines:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -m 'feat: add new feature'`)
-4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a Pull Request
-
-### Commit Message Convention
-
-Follow the conventional commits specification:
-- `feat:` - New features
-- `fix:` - Bug fixes
-- `docs:` - Documentation changes
-- `style:` - Code style changes (formatting, etc.)
-- `refactor:` - Code refactoring
-- `test:` - Test additions or modifications
-- `chore:` - Build process or auxiliary tool changes
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- [The Movie Database (TMDB)](https://www.themoviedb.org/) for providing comprehensive movie and TV show data
-- [Vidsrc](https://vidsrc.xyz/) and [Videasy](https://videasy.net/) for streaming service integration
-- [Vercel](https://vercel.com/) for hosting and deployment infrastructure
-
-## Contact
-
-For questions, issues, or suggestions, please open an issue on GitHub or contact the development team.
-
----
-
-**Note:** This project is for educational and demonstration purposes. Please ensure compliance with all applicable laws and terms of service when using third-party APIs and streaming services.
+SkyStream is an interface for discovery and playback access. It does not claim to host or distribute media files directly. Metadata is sourced from TMDB and playback depends on third-party providers configured by the application.
