@@ -10,42 +10,34 @@ class Analytics {
   }
 
   // Initialize Google Analytics
+  // gtag.js is loaded via <Script strategy="afterInteractive"> in app/layout.jsx.
+  // This method waits for the real gtag to become available rather than installing
+  // a stub that would race with the script load.
   init() {
     if (!this.enabled || !this.trackingId || this.isInitialized) {
       return;
     }
 
-    try {
-      // If gtag is already loaded (e.g. via Script tag in layout), reuse it
-      if (typeof window.gtag === 'function') {
-        this.isInitialized = true;
-        console.log('[Analytics] Attached to existing gtag instance');
-        return;
-      }
+    if (typeof window === 'undefined') return;
 
-      // Fallback: initialize dataLayer and gtag manually
-      window.dataLayer = window.dataLayer || [];
-
-      window.gtag = function () {
-        window.dataLayer.push(arguments);
-      };
-
-      window.gtag('js', new Date());
-
-      window.gtag('config', this.trackingId, {
-        page_title: document.title,
-        page_location: window.location.href,
-        anonymize_ip: true,
-        respect_dnt: true,
-        allow_google_signals: false,
-        allow_ad_personalization_signals: false,
-      });
-
+    // If gtag is already loaded, attach immediately
+    if (typeof window.gtag === 'function') {
       this.isInitialized = true;
-      console.log('[Analytics] Google Analytics initialized');
-    } catch (error) {
-      console.error('[Analytics] Failed to initialize Google Analytics:', error);
+      return;
     }
+
+    // Poll for gtag — the Script tag in layout.jsx defines it after hydration
+    let attempts = 0;
+    const maxAttempts = 20; // 20 * 250ms = 5s max wait
+    const poll = setInterval(() => {
+      attempts++;
+      if (typeof window.gtag === 'function') {
+        clearInterval(poll);
+        this.isInitialized = true;
+      } else if (attempts >= maxAttempts) {
+        clearInterval(poll);
+      }
+    }, 250);
   }
 
   // Track page views
@@ -58,10 +50,8 @@ class Analytics {
         page_title: title || document.title,
         page_location: window.location.href,
       });
-
-      console.log('[Analytics] Page view tracked:', path);
-    } catch (error) {
-      console.error('[Analytics] Failed to track page view:', error);
+    } catch {
+      // silently fail — analytics should never break the app
     }
   }
 
@@ -76,10 +66,8 @@ class Analytics {
         value: parameters.value,
         ...parameters,
       });
-
-      console.log('[Analytics] Event tracked:', eventName, parameters);
-    } catch (error) {
-      console.error('[Analytics] Failed to track event:', error);
+    } catch {
+      // silently fail
     }
   }
 
@@ -340,27 +328,13 @@ class Analytics {
 
   // Check if analytics is ready
   isReady() {
-    if (!this.enabled) {
-      console.log('[Analytics] Analytics is disabled');
-      return false;
-    }
-
-    if (!this.trackingId) {
-      console.warn('[Analytics] No tracking ID configured');
-      return false;
-    }
-
-    if (!this.isInitialized) {
-      console.warn('[Analytics] Analytics not initialized');
-      return false;
-    }
-
-    if (typeof window.gtag !== 'function') {
-      console.warn('[Analytics] gtag function not available');
-      return false;
-    }
-
-    return true;
+    return (
+      this.enabled &&
+      this.trackingId &&
+      this.isInitialized &&
+      typeof window !== 'undefined' &&
+      typeof window.gtag === 'function'
+    );
   }
 
   // Track popular movies specifically
@@ -531,10 +505,8 @@ class Analytics {
           [propertyName]: value,
         },
       });
-
-      console.log('[Analytics] User property set:', propertyName, value);
-    } catch (error) {
-      console.error('[Analytics] Failed to set user property:', error);
+    } catch {
+      // silently fail
     }
   }
 
@@ -549,12 +521,6 @@ class Analytics {
 
 // Create singleton instance
 const analytics = new Analytics();
-
-// Make analytics available globally for testing in development
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  window.skyStreamAnalytics = analytics;
-  console.log('Analytics available globally as window.skyStreamAnalytics for testing');
-}
 
 // Export both the class and instance
 export { Analytics };
