@@ -6,7 +6,15 @@ export default {
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
   },
   transform: {
-    '^.+\\.(js|jsx)$': ['babel-jest', { configFile: './babel.config.cjs' }],
+    '^.+\\.(js|jsx)$': [
+      'babel-jest',
+      {
+        presets: [
+          ['@babel/preset-env', { targets: { node: 'current' } }],
+          ['@babel/preset-react', { runtime: 'automatic' }],
+        ],
+      },
+    ],
   },
   transformIgnorePatterns: [
     'node_modules/(?!(lucide-react)/)',
