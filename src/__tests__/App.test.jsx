@@ -1,7 +1,17 @@
 import { render, screen } from '@testing-library/react';
-import App from '../App';
 
-// Mock all dependencies
+// Mock next/font/google
+jest.mock('next/font/google', () => ({
+  Inter: () => ({ className: 'inter' }),
+}));
+
+// Mock next/script
+jest.mock('next/script', () => {
+  return function MockScript({ children, ...props }) {
+    return <script {...props}>{children}</script>;
+  };
+});
+
 jest.mock('@vercel/analytics/react', () => ({
   Analytics: () => null,
 }));
@@ -10,39 +20,24 @@ jest.mock('@vercel/speed-insights/react', () => ({
   SpeedInsights: () => null,
 }));
 
-jest.mock('../pages', () => ({
-  Search: () => <div>Search Page</div>,
-  Discover: () => <div>Discover Page</div>,
-}));
+jest.mock('../components/Layout', () => {
+  return function MockLayout({ children }) {
+    return <div data-testid="layout">{children}</div>;
+  };
+});
 
-jest.mock('../components', () => ({
-  Layout: ({ children }) => <div data-testid="layout">{children}</div>,
-}));
+describe('App (RootLayout)', () => {
+  test('renders layout component', async () => {
+    // Import dynamically after mocks are set up
+    const { default: RootLayout } = await import('../app/layout');
 
-jest.mock('../utils', () => ({
-  analytics: {
-    init: jest.fn(),
-  },
-}));
-
-describe('App', () => {
-  test('renders without crashing', () => {
-    render(<App />);
+    render(
+      <RootLayout>
+        <div>Test Content</div>
+      </RootLayout>
+    );
 
     expect(screen.getByTestId('layout')).toBeInTheDocument();
-  });
-
-  test('renders Search page on root path', () => {
-    window.history.pushState({}, 'Test page', '/');
-    render(<App />);
-
-    expect(screen.getByText('Search Page')).toBeInTheDocument();
-  });
-
-  test('renders Discover page on /home path', () => {
-    window.history.pushState({}, 'Test page', '/home');
-    render(<App />);
-
-    expect(screen.getByText('Discover Page')).toBeInTheDocument();
+    expect(screen.getByText('Test Content')).toBeInTheDocument();
   });
 });

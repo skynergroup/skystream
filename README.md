@@ -1,291 +1,163 @@
 # SkyStream
 
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
+![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TMDB API](https://img.shields.io/badge/TMDB_API-01B4E4?style=for-the-badge&logo=themoviedatabase&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
 
-A modern, responsive streaming platform interface built with React.js that provides a feature-rich user experience for browsing and viewing movies, TV shows, and anime content. The application leverages The Movie Database (TMDB) API for comprehensive content metadata and integrates with multiple third-party streaming services.
+A streaming platform interface built with Next.js 16 and React 19 for browsing and streaming movies, TV shows, and anime. Powered by the TMDB API for content metadata and integrated with multiple third-party streaming providers.
 
-**Live Demo:** [https://www.sky-stream.online/](https://www.sky-stream.online/)
-
-## Overview
-
-SkyStream is a content discovery and streaming aggregator that serves as a centralized platform for searching and accessing entertainment content. The application features a Netflix-inspired user interface with advanced search capabilities, real-time content discovery, and seamless integration with multiple video streaming platforms.
+**Live:** [https://www.sky-stream.online/](https://www.sky-stream.online/)
 
 ### Disclaimer
 
-SkyStream is a viewing platform interface only. The application does not host, store, or distribute any movies, TV shows, or other media content. All content is sourced from third-party services and streamed directly to users. SkyStream acts solely as an interface to browse and access content in a user-friendly manner.
+SkyStream does not host, store, or distribute any media content. All content is sourced from third-party streaming services. SkyStream acts solely as an interface to browse and access content.
 
-## Key Features
+## Features
 
-### Content Discovery
-- **Discover Page** (`/home`) - Curated content sections with featured hero carousel
-  - Featured content with auto-rotating carousel
-  - Trending movies and TV shows
-  - Popular movies and TV shows sections
-  - Top-rated content
-  - Popular anime section
-  - Horizontal scrolling content rows
-- **Search Page** (`/`) - Real-time search across movies, TV shows, and anime
-  - Instant search results
-  - Grid-based result display
-  - Comprehensive content metadata including ratings, release dates, and descriptions
+- **Discover** (`/home`) — Featured hero carousel, trending/popular/top-rated movies, TV shows, and anime
+- **Search** (`/`) — Real-time search across movies, TV shows, and anime with instant results
+- **Streaming** — Multi-server player (Videasy, Vidsrc) with season/episode selection for TV content
+- **Trailer Previews** — Watch trailers directly from content cards
+- **Dark/Light Theme** — Toggle between themes with persistent preference
+- **PWA** — Installable as a Progressive Web App
+- **SEO** — Structured data (JSON-LD), dynamic meta tags, sitemap
+- **Analytics** — Google Analytics + Vercel Analytics for usage tracking
+- **Responsive** — Optimized for desktop, tablet, and mobile
 
-### User Interface
-- Netflix-inspired dark theme with light mode support
-- Fully responsive design optimized for desktop, tablet, and mobile devices
-- Smooth animations and transitions
-- Intuitive navigation between Discover and Search pages
-- Persistent header with navigation links
+## Tech Stack
 
-### Streaming Integration
-- Multiple streaming service integrations (Vidsrc, Videasy)
-- Season and episode selection for TV content
-- Embedded video player with quality controls
-- Automatic episode progression for series
+| Category | Technology |
+|----------|-----------|
+| Framework | Next.js 16 (App Router, Turbopack) |
+| UI | React 19, CSS3 with CSS Variables, Lucide React icons |
+| Video | video.js, hls.js |
+| API | TMDB API (content metadata, search, images) |
+| Streaming | Videasy, Vidsrc (multi-server) |
+| Analytics | Google Analytics, Vercel Analytics, Vercel Speed Insights |
+| Testing | Jest 30, React Testing Library |
+| Linting | ESLint, Prettier |
+| Hosting | Vercel |
 
-### Technical Features
-- Server-side rendering optimization
-- Code splitting and lazy loading for improved performance
-- Comprehensive analytics and user behavior tracking
-- Error handling with user-friendly fallbacks
-- SEO optimization for content discovery
+## Project Structure
 
-## Technology Stack
-
-### Frontend Framework
-- **React 19.1.0** - Modern React with hooks and functional components
-- **React Router DOM 7.6.2** - Client-side routing
-- **Vite 7.0.0** - Next-generation frontend build tool
-
-### Styling & UI
-- **CSS3** with CSS Variables for dynamic theming
-- **Lucide React** - Modern icon library
-- **Custom responsive design system** with mobile-first approach
-
-### APIs & External Services
-- **The Movie Database (TMDB) API** - Content metadata, search, and images
-- **Vidsrc** - Primary streaming service integration
-- **Videasy** - Alternative streaming service integration
-- **Google Analytics** - User behavior and engagement tracking
-- **Vercel Analytics** - Performance monitoring and insights
-
-### Development Tools
-- **ESLint** - Code quality and consistency
-- **Prettier** - Code formatting
-- **Terser** - Production code minification
-- **LocatorJS** - Development debugging tool
-
-## Architecture
-
-### Project Structure
 ```
 skystream/
-├── public/              # Static assets and configuration
-│   ├── _redirects      # Vercel SPA routing configuration
-│   └── favicon.ico     # Application favicon
 ├── src/
-│   ├── components/     # Reusable UI components
-│   │   ├── ContentRow.jsx          # Horizontal scrolling content row
-│   │   ├── FeaturedHero.jsx        # Hero banner with carousel
-│   │   ├── Layout.jsx              # Shared layout wrapper
-│   │   ├── Loading.jsx
-│   │   ├── MaintenanceBanner.jsx
-│   │   ├── StreamingPlayerModal.jsx
-│   │   ├── StreamingResultCard.jsx
-│   │   ├── StreamingSearchBar.jsx
-│   │   └── ThemeToggle.jsx
-│   ├── pages/          # Page-level components
-│   │   ├── Discover.jsx            # Content discovery page (/home)
-│   │   └── Search.jsx              # Search page (/)
-│   ├── services/       # API service layers
-│   │   ├── tmdbApi.js
-│   │   └── streamingServices.js
-│   ├── utils/          # Utility functions and configuration
-│   │   ├── analytics.js
-│   │   ├── config.js
-│   │   └── useTheme.js
-│   ├── styles/         # Global styles
-│   │   └── responsive.css
-│   ├── App.jsx         # Root application component with routing
-│   ├── main.jsx        # Application entry point
-│   └── index.css       # Global styles and theme variables
-├── package.json        # Project dependencies and scripts
-├── vite.config.js      # Vite configuration
-└── README.md
+│   ├── app/                    # Next.js App Router pages
+│   │   ├── layout.jsx          # Root layout (SEO, analytics, fonts)
+│   │   ├── page.jsx            # Search page (/)
+│   │   ├── not-found.jsx       # 404 page
+│   │   ├── home/page.jsx       # Discover page (/home)
+│   │   ├── movie/[slug]/       # Dynamic movie pages
+│   │   └── tv/[...slug]/       # Dynamic TV show pages
+│   ├── components/             # UI components
+│   │   ├── Layout.jsx          # Shared header/footer wrapper
+│   │   ├── FeaturedHero.jsx    # Hero banner with carousel
+│   │   ├── ContentRow.jsx      # Horizontal scrolling content row
+│   │   ├── StreamingPlayerModal.jsx  # Video player modal
+│   │   ├── StreamingSearchBar.jsx    # Search input
+│   │   ├── StreamingResultCard.jsx   # Content result card
+│   │   ├── ThemeToggle.jsx     # Dark/light mode toggle
+│   │   └── ...                 # Other components
+│   ├── services/               # API service layers
+│   │   ├── tmdbApi.js          # TMDB API client
+│   │   ├── tmdbServer.js       # Server-side TMDB fetching
+│   │   └── streamingServices.js # Streaming provider integration
+│   └── utils/                  # Utilities and configuration
+│       ├── config.js           # Centralized app config
+│       ├── analytics.js        # Google Analytics wrapper
+│       ├── useTheme.js         # Theme hook
+│       ├── useSeoMeta.js       # SEO meta tag hook
+│       └── useStreamingUrl.js  # Player URL generation hook
+├── public/                     # Static assets (favicon, manifest, sw.js)
+├── .github/
+│   ├── CODEOWNERS              # @yashiels @MphoCodes
+│   └── workflows/build.yml    # CI: lint, format, build
+└── package.json
 ```
 
-### Design Patterns
-- **Component-based architecture** with React functional components
-- **Service layer pattern** for API interactions and business logic
-- **Utility-first approach** with centralized configuration management
-- **Single Page Application (SPA)** with client-side routing via React Router
-- **Layout pattern** with shared header/footer wrapper component
-
-### Routing Structure
+## Routes
 
 | Route | Page | Description |
 |-------|------|-------------|
-| `/` | Search | Search-focused interface for finding specific content |
-| `/home` | Discover | Content discovery with featured carousel and curated sections |
-| `*` | Redirect | Catch-all route redirects to search page |
+| `/` | Search | Search for movies, TV shows, and anime |
+| `/home` | Discover | Featured content, trending, popular, top-rated |
+| `/movie/[slug]` | Movie | Movie details and streaming player |
+| `/tv/[slug]/[season]/[episode]` | TV Show | TV show with season/episode selection |
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18.x or higher
-- npm or yarn package manager
-- TMDB API Key (obtain from [themoviedb.org](https://www.themoviedb.org/settings/api))
 
-### Installation
+- Node.js 22+ (see `.nvmrc`)
+- TMDB API key ([themoviedb.org](https://www.themoviedb.org/settings/api))
 
-1. Clone the repository:
+### Setup
+
 ```bash
 git clone https://github.com/skynergroup/skystream.git
 cd skystream
-```
-
-2. Install dependencies:
-```bash
 npm install
 ```
 
-3. Configure environment variables:
+Create a `.env.local` file:
 
-Create a `.env` file in the root directory:
-```bash
-cp .env.example .env
-```
-
-Add your TMDB API key to the `.env` file:
 ```env
-VITE_TMDB_API_KEY=your_tmdb_api_key_here
-VITE_TMDB_BASE_URL=https://api.themoviedb.org/3
-VITE_TMDB_IMAGE_BASE_URL=https://image.tmdb.org/t/p
+NEXT_PUBLIC_TMDB_API_KEY=your_tmdb_api_key
+NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXXX    # optional
 ```
 
-4. Start the development server:
+Start the dev server:
+
 ```bash
 npm run dev
 ```
 
-The application will be available at `http://localhost:3000`
+### Scripts
 
-### Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run build:staging` - Build for staging environment
-- `npm run build:production` - Build for production environment
-- `npm run preview` - Preview production build locally
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint errors automatically
-- `npm run format` - Format code with Prettier
-- `npm run format:check` - Check code formatting
-
-## Deployment
-
-The application is deployed on Vercel and optimized for static hosting platforms.
-
-### Vercel Deployment
-
-1. Install Vercel CLI:
-```bash
-npm install -g vercel
-```
-
-2. Deploy to Vercel:
-```bash
-vercel
-```
-
-3. Configure environment variables in the Vercel dashboard:
-   - `VITE_TMDB_API_KEY`
-   - `VITE_GA_TRACKING_ID` (optional)
-
-### Build Optimization
-
-The production build includes:
-- Code splitting with vendor, router, and icon chunks
-- Asset optimization with hashed filenames
-- Minification with Terser
-- CSS code splitting
-- Optimized bundle size with tree shaking
-
-## Configuration
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run lint:fix` | Auto-fix lint errors |
+| `npm run format` | Format code with Prettier |
+| `npm run format:check` | Check formatting |
+| `npm test` | Run tests |
+| `npm run test:coverage` | Run tests with coverage |
 
 ### Environment Variables
 
-| Variable | Description | Required | Default |
-|----------|-------------|----------|---------|
-| `VITE_TMDB_API_KEY` | TMDB API key for content data | Yes | - |
-| `VITE_TMDB_BASE_URL` | TMDB API base URL | No | `https://api.themoviedb.org/3` |
-| `VITE_TMDB_IMAGE_BASE_URL` | TMDB image CDN URL | No | `https://image.tmdb.org/t/p` |
-| `VITE_GA_TRACKING_ID` | Google Analytics tracking ID | No | - |
-| `VITE_ENABLE_ANALYTICS` | Enable/disable analytics | No | `true` |
-| `VITE_DEFAULT_PLAYER` | Default video player | No | `videasy` |
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `NEXT_PUBLIC_TMDB_API_KEY` | TMDB API key | Yes |
+| `NEXT_PUBLIC_TMDB_BASE_URL` | TMDB API base URL | No |
+| `NEXT_PUBLIC_TMDB_IMAGE_BASE_URL` | TMDB image CDN URL | No |
+| `NEXT_PUBLIC_GA_TRACKING_ID` | Google Analytics tracking ID | No |
+| `NEXT_PUBLIC_ENABLE_ANALYTICS` | Enable/disable analytics | No |
+| `NEXT_PUBLIC_DEFAULT_PLAYER` | Default video player (`videasy` or `vidsrc`) | No |
 
-## Performance
+## Deployment
 
-### Optimization Techniques
-- Lazy loading of images with loading states
-- Code splitting for reduced initial bundle size
-- Optimized asset delivery with CDN
-- Responsive images with multiple size options
-- Debounced search input for reduced API calls
-- Memoized components to prevent unnecessary re-renders
-
-### Analytics & Monitoring
-- Google Analytics for user behavior tracking
-- Vercel Analytics for performance insights
-- Custom event tracking for content interactions
-- Error tracking and reporting
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Mobile browsers (iOS Safari, Chrome Mobile)
+Deployed on [Vercel](https://vercel.com). Set environment variables in the Vercel dashboard. Pushes to `production` branch trigger automatic deploys.
 
 ## Contributing
 
-Contributions are welcome. Please follow these guidelines:
-
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -m 'feat: add new feature'`)
-4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a Pull Request
-
-### Commit Message Convention
-
-Follow the conventional commits specification:
-- `feat:` - New features
-- `fix:` - Bug fixes
-- `docs:` - Documentation changes
-- `style:` - Code style changes (formatting, etc.)
-- `refactor:` - Code refactoring
-- `test:` - Test additions or modifications
-- `chore:` - Build process or auxiliary tool changes
+2. Create a feature branch (`git checkout -b feat/your-feature`)
+3. Commit using [conventional commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, etc.)
+4. Push and open a Pull Request — code owners (`@yashiels`, `@MphoCodes`) will be auto-assigned for review
+5. All PRs require passing CI (lint, format, build) and squash merge
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+MIT License. See [LICENSE](LICENSE) for details.
 
-## Acknowledgments
+## Credits
 
-- [The Movie Database (TMDB)](https://www.themoviedb.org/) for providing comprehensive movie and TV show data
-- [Vidsrc](https://vidsrc.xyz/) and [Videasy](https://videasy.net/) for streaming service integration
-- [Vercel](https://vercel.com/) for hosting and deployment infrastructure
+Built by [Skyner Group](https://github.com/skynergroup) — [Yashiel Sookdeo](https://github.com/yashiels) and [Mpho Ndlela](https://github.com/MphoCodes).
 
-## Contact
-
-For questions, issues, or suggestions, please open an issue on GitHub or contact the development team.
-
----
-
-**Note:** This project is for educational and demonstration purposes. Please ensure compliance with all applicable laws and terms of service when using third-party APIs and streaming services.
+Powered by [TMDB](https://www.themoviedb.org/), [Videasy](https://player.videasy.net/), [Vidsrc](https://vidsrc.xyz/), and [Vercel](https://vercel.com/).

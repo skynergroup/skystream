@@ -131,6 +131,23 @@
   opacity: 0.7;
 }
 
+.layout__footer-credits {
+  margin-top: 1rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.layout__footer-credits a {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.layout__footer-credits a:hover {
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .layout__header {

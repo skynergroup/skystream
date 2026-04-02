@@ -1,14 +1,21 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import PropTypes from 'prop-types';
 import { Home, Search } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
+import analytics from '../utils/analytics';
 import './Layout.css';
 
 const Layout = ({ children }) => {
   const pathname = usePathname();
+
+  // Initialize analytics on mount
+  useEffect(() => {
+    analytics.init();
+  }, []);
 
   return (
     <div className="layout">
@@ -52,6 +59,37 @@ const Layout = ({ children }) => {
           <p className="layout__footer-disclaimer">
             Content provided by third-party services. We do not host any content.
           </p>
+          <div className="layout__footer-credits">
+            <p>
+              This site was made by{' '}
+              <a
+                href="https://github.com/skynergroup"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Skyner Group (opens in new tab)"
+              >
+                Skyner Group
+              </a>
+              , by devs{' '}
+              <a
+                href="https://github.com/yashiels"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Yashiel Sookdeo (opens in new tab)"
+              >
+                Yashiel Sookdeo
+              </a>{' '}
+              and{' '}
+              <a
+                href="https://github.com/MphoCodes"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Mpho Ndlela (opens in new tab)"
+              >
+                Mpho Ndlela
+              </a>
+            </p>
+          </div>
         </div>
       </footer>
     </div>

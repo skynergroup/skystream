@@ -1,94 +1,95 @@
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 import Layout from '../Layout';
 
 jest.mock('../Layout.css', () => ({}));
+
 jest.mock('../ThemeToggle', () => {
   return function MockThemeToggle() {
     return <div data-testid="theme-toggle">Theme Toggle</div>;
   };
 });
 
-const renderWithRouter = (ui, { route = '/' } = {}) => {
-  window.history.pushState({}, 'Test page', route);
-  return render(ui, { wrapper: BrowserRouter });
+jest.mock('../../utils/analytics', () => ({
+  __esModule: true,
+  default: { init: jest.fn() },
+}));
+
+let mockPathname = '/';
+jest.mock('next/navigation', () => ({
+  usePathname: () => mockPathname,
+}));
+
+jest.mock('next/link', () => {
+  return function MockLink({ children, href, className }) {
+    return (
+      <a href={href} className={className}>
+        {children}
+      </a>
+    );
+  };
+});
+
+const renderLayout = (route = '/') => {
+  mockPathname = route;
+  return render(
+    <Layout>
+      <div>Content</div>
+    </Layout>
+  );
 };
 
 describe('Layout', () => {
   test('renders logo', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Content</div>
-      </Layout>
-    );
-
+    renderLayout();
     expect(screen.getByText('SkyStream')).toBeInTheDocument();
   });
 
   test('renders navigation links', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Content</div>
-      </Layout>
-    );
-
+    renderLayout();
     expect(screen.getByText('Discover')).toBeInTheDocument();
     expect(screen.getByText('Search')).toBeInTheDocument();
     expect(screen.queryByText('Live TV')).not.toBeInTheDocument();
   });
 
   test('renders children content', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Test Content</div>
-      </Layout>
-    );
-
-    expect(screen.getByText('Test Content')).toBeInTheDocument();
+    renderLayout();
+    expect(screen.getByText('Content')).toBeInTheDocument();
   });
 
   test('renders footer', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Content</div>
-      </Layout>
-    );
-
+    renderLayout();
     expect(screen.getByText(/SkyStream - Search and stream/)).toBeInTheDocument();
     expect(screen.getByText(/Content provided by third-party services/)).toBeInTheDocument();
   });
 
-  test('renders theme toggle', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Content</div>
-      </Layout>
-    );
+  test('renders footer credits with attribution links', () => {
+    renderLayout();
+    expect(screen.getByText('Skyner Group')).toBeInTheDocument();
+    expect(screen.getByText('Yashiel Sookdeo')).toBeInTheDocument();
+    expect(screen.getByText('Mpho Ndlela')).toBeInTheDocument();
+  });
 
+  test('renders theme toggle', () => {
+    renderLayout();
     expect(screen.getByTestId('theme-toggle')).toBeInTheDocument();
   });
 
   test('highlights active Discover link when on /home', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Content</div>
-      </Layout>,
-      { route: '/home' }
-    );
-
+    renderLayout('/home');
     const discoverLink = screen.getByText('Discover').closest('a');
     expect(discoverLink).toHaveClass('layout__nav-link--active');
   });
 
   test('highlights active Search link when on /', () => {
-    renderWithRouter(
-      <Layout>
-        <div>Content</div>
-      </Layout>,
-      { route: '/' }
-    );
-
+    renderLayout('/');
     const searchLink = screen.getByText('Search').closest('a');
     expect(searchLink).toHaveClass('layout__nav-link--active');
+  });
+
+  test('external links have aria-labels for accessibility', () => {
+    renderLayout();
+    expect(screen.getByLabelText('Skyner Group (opens in new tab)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Yashiel Sookdeo (opens in new tab)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Mpho Ndlela (opens in new tab)')).toBeInTheDocument();
   });
 });
