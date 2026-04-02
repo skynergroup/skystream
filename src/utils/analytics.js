@@ -16,24 +16,28 @@ class Analytics {
     }
 
     try {
-      // Initialize dataLayer
+      // If gtag is already loaded (e.g. via Script tag in layout), reuse it
+      if (typeof window.gtag === 'function') {
+        this.isInitialized = true;
+        console.log('[Analytics] Attached to existing gtag instance');
+        return;
+      }
+
+      // Fallback: initialize dataLayer and gtag manually
       window.dataLayer = window.dataLayer || [];
 
-      // Define gtag function
       window.gtag = function () {
         window.dataLayer.push(arguments);
       };
 
-      // Initialize with current date
       window.gtag('js', new Date());
 
-      // Configure with tracking ID and privacy settings
       window.gtag('config', this.trackingId, {
         page_title: document.title,
         page_location: window.location.href,
         anonymize_ip: true,
         respect_dnt: true,
-        allow_google_signals: false, // Disable advertising features
+        allow_google_signals: false,
         allow_ad_personalization_signals: false,
       });
 

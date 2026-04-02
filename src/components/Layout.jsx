@@ -66,6 +66,7 @@ const Layout = ({ children }) => {
                 href="https://github.com/skynergroup"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Skyner Group (opens in new tab)"
               >
                 Skyner Group
               </a>
@@ -74,14 +75,16 @@ const Layout = ({ children }) => {
                 href="https://github.com/yashiels"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Yashiel Sookdeo (opens in new tab)"
               >
                 Yashiel Sookdeo
-              </a>
-              {' '}and{' '}
+              </a>{' '}
+              and{' '}
               <a
                 href="https://github.com/MphoCodes"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Mpho Ndlela (opens in new tab)"
               >
                 Mpho Ndlela
               </a>
