@@ -89,6 +89,7 @@ const Layout = ({ children }) => {
                 Mpho Ndlela
               </a>
             </p>
+            <p>© {new Date().getFullYear()} Skyner Group</p>
           </div>
         </div>
       </footer>
