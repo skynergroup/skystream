@@ -5,7 +5,7 @@ import { Search as SearchIcon } from 'lucide-react';
 import StreamingSearchBar from '../components/StreamingSearchBar';
 import StreamingResultCard from '../components/StreamingResultCard';
 import StreamingPlayerModal from '../components/StreamingPlayerModal';
-import { Loading } from '../components';
+import StreamingResultCardSkeleton from '../components/StreamingResultCardSkeleton';
 import tmdbApi from '../services/tmdbApi';
 import { analytics } from '../utils';
 
@@ -154,16 +154,32 @@ const Search = () => {
 
       {/* Search Results */}
       {loading && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '300px',
-            padding: '2rem',
-          }}
-        >
-          <Loading text="Searching..." />
+        <div style={{ padding: '2rem' }}>
+          <h2
+            style={{
+              color: 'var(--text-primary)',
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              margin: '0 0 2rem 0',
+              textAlign: 'center',
+            }}
+          >
+            Searching...
+          </h2>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+              gap: '1.5rem',
+              maxWidth: '1200px',
+              margin: '0 auto',
+            }}
+          >
+            {Array.from({ length: 8 }).map((_, index) => (
+              <StreamingResultCardSkeleton key={index} showOverview={true} />
+            ))}
+          </div>
         </div>
       )}
 
