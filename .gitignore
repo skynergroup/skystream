@@ -36,3 +36,10 @@ coverage
 .next/
 .vercel
 .env
+
+# autonomous-dev (ephemeral pipeline state)
+.autonomous-dev/
+prd.json
+research/
+progress.txt
+plan-grill-report.md
