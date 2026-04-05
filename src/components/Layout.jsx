@@ -52,6 +52,20 @@ const Layout = ({ children }) => {
           <p className="layout__footer-disclaimer">
             Content provided by third-party services. We do not host any content.
           </p>
+          <p className="layout__footer-credits">
+            This site was made by{' '}
+            <a href="https://github.com/skynergroup" target="_blank" rel="noopener noreferrer">
+              Skyner Group
+            </a>
+            , by devs{' '}
+            <a href="https://github.com/yashiels" target="_blank" rel="noopener noreferrer">
+              Yashiel Sookdeo
+            </a>{' '}
+            and{' '}
+            <a href="https://github.com/MphoCodes" target="_blank" rel="noopener noreferrer">
+              Mpho Ndlela
+            </a>
+          </p>
         </div>
       </footer>
     </div>
