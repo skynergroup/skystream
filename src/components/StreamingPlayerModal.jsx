@@ -68,6 +68,7 @@ const StreamingPlayerModal = ({
     if (episode !== null && episode !== selectedEpisode) {
       setSelectedEpisode(episode);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [season, episode]);
 
   // Handle season change - reset episode to 1

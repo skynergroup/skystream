@@ -198,7 +198,7 @@ const LiveTVPlayer = ({ streamData = null, channelName = 'Live Stream', onStream
         hlsRef.current = null;
       }
     };
-  }, [streamUrl, isYouTube]);
+  }, [streamUrl, isYouTube, onStreamError]);
 
   const formattedTime = currentTime.toFormat('HH:mm:ss');
   const formattedDate = currentTime.toFormat('EEEE, MMMM d, yyyy');

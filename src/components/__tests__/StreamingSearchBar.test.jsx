@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import StreamingSearchBar from '../StreamingSearchBar';
 
 jest.mock('../StreamingSearchBar.css', () => ({}));
@@ -12,8 +12,10 @@ describe('StreamingSearchBar', () => {
     jest.useFakeTimers();
   });
 
-  afterEach(() => {
-    jest.runOnlyPendingTimers();
+  afterEach(async () => {
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+    });
     jest.useRealTimers();
   });
 
@@ -37,7 +39,9 @@ describe('StreamingSearchBar', () => {
 
     expect(mockOnSearch).not.toHaveBeenCalled();
 
-    jest.advanceTimersByTime(300);
+    await act(async () => {
+      jest.advanceTimersByTime(300);
+    });
 
     await waitFor(() => {
       expect(mockOnSearch).toHaveBeenCalledWith('avengers');
@@ -50,13 +54,19 @@ describe('StreamingSearchBar', () => {
     const input = screen.getByPlaceholderText(/Search for movies/);
 
     fireEvent.change(input, { target: { value: 'a' } });
-    jest.advanceTimersByTime(100);
+    await act(async () => {
+      jest.advanceTimersByTime(100);
+    });
 
     fireEvent.change(input, { target: { value: 'av' } });
-    jest.advanceTimersByTime(100);
+    await act(async () => {
+      jest.advanceTimersByTime(100);
+    });
 
     fireEvent.change(input, { target: { value: 'ave' } });
-    jest.advanceTimersByTime(300);
+    await act(async () => {
+      jest.advanceTimersByTime(300);
+    });
 
     await waitFor(() => {
       expect(mockOnSearch).toHaveBeenCalledTimes(1);
@@ -70,10 +80,14 @@ describe('StreamingSearchBar', () => {
     const input = screen.getByPlaceholderText(/Search for movies/);
 
     fireEvent.change(input, { target: { value: 'test' } });
-    jest.advanceTimersByTime(300);
+    await act(async () => {
+      jest.advanceTimersByTime(300);
+    });
 
     fireEvent.change(input, { target: { value: '' } });
-    jest.advanceTimersByTime(300);
+    await act(async () => {
+      jest.advanceTimersByTime(300);
+    });
 
     await waitFor(() => {
       expect(mockOnClear).toHaveBeenCalled();
@@ -141,7 +155,9 @@ describe('StreamingSearchBar', () => {
     const input = screen.getByPlaceholderText(/Search for movies/);
     fireEvent.change(input, { target: { value: '  test query  ' } });
 
-    jest.advanceTimersByTime(300);
+    await act(async () => {
+      jest.advanceTimersByTime(300);
+    });
 
     await waitFor(() => {
       expect(mockOnSearch).toHaveBeenCalledWith('test query');
@@ -155,7 +171,9 @@ describe('StreamingSearchBar', () => {
     const input = screen.getByPlaceholderText(/Search for movies/);
     fireEvent.change(input, { target: { value: 'test' } });
 
-    jest.advanceTimersByTime(100);
+    await act(async () => {
+      jest.advanceTimersByTime(100);
+    });
 
     await waitFor(() => {
       expect(document.querySelector('.streaming-search-bar__loading')).toBeInTheDocument();
@@ -176,7 +194,7 @@ describe('StreamingSearchBar', () => {
     expect(input).not.toHaveFocus();
   });
 
-  test('cleans up debounce timer on unmount', () => {
+  test('cleans up debounce timer on unmount', async () => {
     const { unmount } = render(<StreamingSearchBar onSearch={mockOnSearch} debounceMs={300} />);
 
     const input = screen.getByPlaceholderText(/Search for movies/);
@@ -184,7 +202,9 @@ describe('StreamingSearchBar', () => {
 
     unmount();
 
-    jest.advanceTimersByTime(300);
+    await act(async () => {
+      jest.advanceTimersByTime(300);
+    });
 
     expect(mockOnSearch).not.toHaveBeenCalled();
   });
