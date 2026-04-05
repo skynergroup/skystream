@@ -32,3 +32,18 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  # Wrapper jobs to satisfy branch protection and ruleset required checks
+  ci-complete:
+    name: CI Complete
+    needs: build
+    runs-on: [self-hosted, Linux, X64, astra]
+    steps:
+      - run: echo "Build succeeded — CI Complete"
+
+  pr-checks-complete:
+    name: PR Checks Complete
+    needs: build
+    runs-on: [self-hosted, Linux, X64, astra]
+    steps:
+      - run: echo "Build succeeded — PR Checks Complete"
