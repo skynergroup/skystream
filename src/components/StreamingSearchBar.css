@@ -94,6 +94,26 @@
   z-index: 2;
 }
 
+.streaming-search-bar__hint {
+  position: absolute;
+  right: 1rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: var(--input-bg);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.streaming-search-bar__input-container:focus-within .streaming-search-bar__hint {
+  opacity: 0;
+}
+
 .streaming-search-bar__spinner {
   width: 20px;
   height: 20px;

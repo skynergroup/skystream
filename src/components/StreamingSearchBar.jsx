@@ -13,6 +13,7 @@ const StreamingSearchBar = ({
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const debounceTimerRef = useRef(null);
+  const inputRef = useRef(null);
 
   // Handle input change with debounce
   const handleInputChange = e => {
@@ -46,6 +47,18 @@ const StreamingSearchBar = ({
     };
   }, []);
 
+  // Listen for global focusSearch event (triggered by '/' keyboard shortcut)
+  useEffect(() => {
+    const handleFocusSearch = () => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    };
+
+    window.addEventListener('focusSearch', handleFocusSearch);
+    return () => window.removeEventListener('focusSearch', handleFocusSearch);
+  }, []);
+
   // Handle clear
   const handleClear = () => {
     setQuery('');
@@ -73,6 +86,7 @@ const StreamingSearchBar = ({
           </div>
 
           <input
+            ref={inputRef}
             type="text"
             value={query}
             onChange={handleInputChange}
@@ -98,6 +112,13 @@ const StreamingSearchBar = ({
             <div className="streaming-search-bar__loading">
               <div className="streaming-search-bar__spinner"></div>
             </div>
+          )}
+
+          {/* Keyboard shortcut hint */}
+          {!isLoading && !query && (
+            <span className="streaming-search-bar__hint" aria-hidden="true">
+              /
+            </span>
           )}
         </div>
       </form>

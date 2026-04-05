@@ -1,21 +1,54 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import { Home, Search } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
+import BackToTop from './BackToTop';
 import analytics from '../utils/analytics';
 import './Layout.css';
 
 const Layout = ({ children }) => {
   const pathname = usePathname();
+  const router = useRouter();
 
   // Initialize analytics on mount
   useEffect(() => {
     analytics.init();
   }, []);
+
+  // Handle global keyboard shortcuts
+  const handleGlobalKeyDown = useCallback(
+    e => {
+      // '/' key to focus search
+      if (e.key === '/' && !isInputFocused(e.target)) {
+        e.preventDefault();
+
+        // Dispatch custom event for StreamingSearchBar to handle
+        window.dispatchEvent(new CustomEvent('focusSearch'));
+
+        // If not on search page, navigate there
+        if (pathname !== '/') {
+          router.push('/');
+        }
+      }
+    },
+    [pathname, router]
+  );
+
+  // Check if an element is an input field
+  const isInputFocused = target => {
+    const tagName = target.tagName.toLowerCase();
+    return tagName === 'input' || tagName === 'textarea' || target.isContentEditable;
+  };
+
+  // Set up global keyboard listener
+  useEffect(() => {
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [handleGlobalKeyDown]);
 
   return (
     <div className="layout">
@@ -93,6 +126,9 @@ const Layout = ({ children }) => {
           </div>
         </div>
       </footer>
+
+      {/* Back to Top Button */}
+      <BackToTop threshold={300} />
     </div>
   );
 };

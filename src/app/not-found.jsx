@@ -40,20 +40,39 @@ export default function NotFound() {
       >
         The page you&apos;re looking for doesn&apos;t exist or has been moved.
       </p>
-      <Link
-        href="/"
-        style={{
-          padding: '0.75rem 2rem',
-          background: 'var(--netflix-red)',
-          color: 'white',
-          borderRadius: '4px',
-          fontSize: '1rem',
-          fontWeight: '600',
-          textDecoration: 'none',
-        }}
-      >
-        Go Home
-      </Link>
+      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <Link
+          href="/"
+          style={{
+            padding: '0.75rem 2rem',
+            background: 'var(--netflix-red)',
+            color: 'white',
+            borderRadius: '4px',
+            fontSize: '1rem',
+            fontWeight: '600',
+            textDecoration: 'none',
+            transition: 'background-color 0.2s ease',
+          }}
+        >
+          Go Home
+        </Link>
+        <Link
+          href="/?focus=search"
+          style={{
+            padding: '0.75rem 2rem',
+            background: 'transparent',
+            color: 'var(--text-primary)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '4px',
+            fontSize: '1rem',
+            fontWeight: '600',
+            textDecoration: 'none',
+            transition: 'border-color 0.2s ease, color 0.2s ease',
+          }}
+        >
+          Search Content
+        </Link>
+      </div>
     </div>
   );
 }
