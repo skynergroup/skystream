@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import FeaturedHero from '../../components/FeaturedHero';
 import ContentRow from '../../components/ContentRow';
 import StreamingPlayerModal from '../../components/StreamingPlayerModal';
-import { Loading } from '../../components';
+import ContentRowSkeleton from '../../components/ContentRowSkeleton';
 import tmdbApi from '../../services/tmdbApi';
 import { analytics } from '../../utils';
 
@@ -87,16 +87,12 @@ const Discover = () => {
 
   if (loading) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
-          background: 'var(--bg-primary)',
-        }}
-      >
-        <Loading text="Loading content..." />
+      <div style={{ background: 'var(--bg-primary)', minHeight: '100vh', paddingTop: '2rem' }}>
+        <ContentRowSkeleton title="Trending Now" cardCount={6} />
+        <ContentRowSkeleton title="Popular Movies" cardCount={6} />
+        <ContentRowSkeleton title="Popular TV Shows" cardCount={6} />
+        <ContentRowSkeleton title="Top Rated" cardCount={6} />
+        <ContentRowSkeleton title="Popular Anime" cardCount={6} />
       </div>
     );
   }

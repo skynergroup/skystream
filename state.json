@@ -27,6 +27,10 @@
     "STORY-007": {
       "status": "complete",
       "completedAt": "2026-04-05T18:18:00Z"
+    },
+    "STORY-008": {
+      "status": "complete",
+      "completedAt": "2026-04-05T18:21:00Z"
     }
   }
 }
