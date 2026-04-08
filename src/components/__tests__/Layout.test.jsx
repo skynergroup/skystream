@@ -15,8 +15,10 @@ jest.mock('../../utils/analytics', () => ({
 }));
 
 let mockPathname = '/';
+const mockPush = jest.fn();
 jest.mock('next/navigation', () => ({
   usePathname: () => mockPathname,
+  useRouter: () => ({ push: mockPush }),
 }));
 
 jest.mock('next/link', () => {
