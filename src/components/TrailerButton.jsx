@@ -8,7 +8,18 @@ export const TrailerButton = ({ content, onWatch }) => {
 
   const trailer = content.videos?.find(v => v.site === 'YouTube' && v.type === 'Trailer');
 
-  if (!trailer) return null;
+  if (!trailer) {
+    return (
+      <button
+        className="trailer-button trailer-button--disabled"
+        disabled
+        aria-label="No trailer available"
+        title="No trailer available"
+      >
+        <Film size={14} />
+      </button>
+    );
+  }
 
   return (
     <>
