@@ -1,10 +1,9 @@
-
 {
   "wiring_checklist": [
     {
       "file": "src/app/not-found.jsx",
       "verifications": [
-        "grep -q 'href="/"' src/app/not-found.jsx"
+        "grep -q 'href=\"/' src/app/not-found.jsx"
       ]
     },
     {
@@ -30,6 +29,48 @@
       "file": "src/app/page.jsx",
       "verifications": [
         "grep -q 'StreamingResultCardSkeleton' src/app/page.jsx"
+      ]
+    },
+    {
+      "file": "src/services/tmdbServer.js",
+      "verifications": [
+        "test -f src/services/tmdbServer.js",
+        "grep -q 'revalidate' src/services/tmdbServer.js"
+      ]
+    },
+    {
+      "file": "src/services/tmdbApi.js",
+      "verifications": [
+        "grep -q 'getPopularMovies' src/services/tmdbApi.js",
+        "grep -q 'getPopularTVShows' src/services/tmdbApi.js"
+      ]
+    },
+    {
+      "file": "src/components/__tests__/Layout.test.jsx",
+      "verifications": [
+        "grep -q 'jest.mock.*next/navigation' src/components/__tests__/Layout.test.jsx"
+      ]
+    },
+    {
+      "file": "public/sitemap.xml",
+      "verifications": [
+        "! test -f public/sitemap.xml || echo 'WARNING: static sitemap should be removed'"
+      ]
+    },
+    {
+      "file": "progress.txt",
+      "verifications": [
+        "test -f progress.txt",
+        "grep -q 'Phase 1' progress.txt",
+        "grep -q 'Phase 4' progress.txt"
+      ]
+    },
+    {
+      "file": "prd.json",
+      "verifications": [
+        "test -f prd.json",
+        "grep -q 'phases' prd.json",
+        "grep -q 'stories' prd.json"
       ]
     }
   ]
