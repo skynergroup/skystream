@@ -20,6 +20,7 @@ const SERVER_OPTIONS = [
 ];
 
 const getPreferredServer = fallbackKey => {
+  if (typeof window === 'undefined') return fallbackKey || 'server1';
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved && SERVER_OPTIONS.some(s => s.key === saved)) return saved;
