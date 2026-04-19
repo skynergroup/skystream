@@ -428,8 +428,8 @@ class TMDBApi {
   }
 
   async getHomePageContent() {
-    try {
-      const [trending, popularMovies, popularTV, topRatedMovies, popularAnime] = await Promise.all([
+    const [trending, popularMovies, popularTV, topRatedMovies, popularAnime] =
+      await Promise.allSettled([
         this.getTrending('all', 'week'),
         this.getPopularMovies(),
         this.getPopularTVShows(),
@@ -437,18 +437,19 @@ class TMDBApi {
         this.getPopularAnime(),
       ]);
 
-      return {
-        featured: trending.results.slice(0, 5).map(item => this.transformContent(item)), // Multiple featured items for carousel
-        trending: trending.results.slice(0, 20).map(item => this.transformContent(item)),
-        popularMovies: popularMovies.results.slice(0, 20).map(item => this.transformContent(item)),
-        popularTV: popularTV.results.slice(0, 20).map(item => this.transformContent(item)),
-        topRated: topRatedMovies.results.slice(0, 20).map(item => this.transformContent(item)),
-        popularAnime: popularAnime.results.slice(0, 20).map(item => this.transformContent(item)),
-      };
-    } catch (error) {
-      utils.error('Failed to fetch homepage content:', error);
-      throw error;
-    }
+    const pick = result =>
+      result.status === 'fulfilled' ? result.value.results ?? [] : [];
+
+    const trendingResults = pick(trending);
+
+    return {
+      featured: trendingResults.slice(0, 5).map(item => this.transformContent(item)),
+      trending: trendingResults.slice(0, 20).map(item => this.transformContent(item)),
+      popularMovies: pick(popularMovies).slice(0, 20).map(item => this.transformContent(item)),
+      popularTV: pick(popularTV).slice(0, 20).map(item => this.transformContent(item)),
+      topRated: pick(topRatedMovies).slice(0, 20).map(item => this.transformContent(item)),
+      popularAnime: pick(popularAnime).slice(0, 20).map(item => this.transformContent(item)),
+    };
   }
 }
 
