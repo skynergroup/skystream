@@ -69,7 +69,7 @@ const StreamingPlayerModal = ({
     if (episode !== null && episode !== selectedEpisode) {
       setSelectedEpisode(episode);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: sync from props only, not on internal state changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: sync from props only, not on internal state changes; see DEV-149 for full fix
   }, [season, episode]);
 
   // Handle season change - reset episode to 1
