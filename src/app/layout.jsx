@@ -61,6 +61,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={inter.className}>
       <head>
         {/* Structured Data: WebSite + SearchAction */}
+        {/* STATIC ONLY — never interpolate dynamic/user data here; use metadata.other instead */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -84,6 +85,7 @@ export default function RootLayout({ children }) {
         />
 
         {/* Structured Data: Organization */}
+        {/* STATIC ONLY — never interpolate dynamic/user data here; use metadata.other instead */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
