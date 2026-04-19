@@ -23,8 +23,8 @@ const getPreferredServer = fallbackKey => {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved && SERVER_OPTIONS.some(s => s.key === saved)) return saved;
-  } catch {
-    /* ignore */
+  } catch (e) {
+    console.warn('Failed to read server preference from localStorage:', e);
   }
   if (fallbackKey) {
     if (SERVER_OPTIONS.some(s => s.key === fallbackKey)) return fallbackKey;
@@ -37,8 +37,8 @@ const getPreferredServer = fallbackKey => {
 const savePreferredServer = key => {
   try {
     localStorage.setItem(STORAGE_KEY, key);
-  } catch {
-    /* ignore */
+  } catch (e) {
+    console.warn('Failed to save server preference to localStorage:', e);
   }
 };
 
