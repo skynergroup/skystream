@@ -68,7 +68,7 @@ const StreamingPlayerModal = ({
     if (episode !== null && episode !== selectedEpisode) {
       setSelectedEpisode(episode);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps — intentional: sync from props only, not on internal state changes
   }, [season, episode]);
 
   // Handle season change - reset episode to 1
@@ -186,6 +186,12 @@ const StreamingPlayerModal = ({
 
     // Listen for postMessage from iframe about navigation
     const handleMessage = event => {
+      const allowedOrigins = [
+        'https://player.videasy.net',
+        window.location.origin,
+      ];
+      if (!allowedOrigins.some(o => event.origin === o)) return;
+
       if (event.data && event.data.type === 'episodeChange') {
         const { season: newSeason, episode: newEpisode } = event.data;
         if (newSeason && newEpisode) {
