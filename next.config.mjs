@@ -1,11 +1,19 @@
 /** @type {import('next').NextConfig} */
+const isDev = process.env.NODE_ENV === 'development';
+
 const nextConfig = {
   // Map VITE_ env vars to NEXT_PUBLIC_ so they're inlined at build time
   env: {
-    NEXT_PUBLIC_TMDB_API_KEY: process.env.NEXT_PUBLIC_TMDB_API_KEY || process.env.VITE_TMDB_API_KEY || '',
-    NEXT_PUBLIC_TMDB_BASE_URL: process.env.NEXT_PUBLIC_TMDB_BASE_URL || process.env.VITE_TMDB_BASE_URL || 'https://api.themoviedb.org/3',
-    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || process.env.VITE_APP_NAME || 'SkyStream',
-    NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION || process.env.VITE_APP_VERSION || '2.0.0',
+    NEXT_PUBLIC_TMDB_API_KEY:
+      process.env.NEXT_PUBLIC_TMDB_API_KEY || process.env.VITE_TMDB_API_KEY || '',
+    NEXT_PUBLIC_TMDB_BASE_URL:
+      process.env.NEXT_PUBLIC_TMDB_BASE_URL ||
+      process.env.VITE_TMDB_BASE_URL ||
+      'https://api.themoviedb.org/3',
+    NEXT_PUBLIC_APP_NAME:
+      process.env.NEXT_PUBLIC_APP_NAME || process.env.VITE_APP_NAME || 'SkyStream',
+    NEXT_PUBLIC_APP_VERSION:
+      process.env.NEXT_PUBLIC_APP_VERSION || process.env.VITE_APP_VERSION || '2.0.0',
   },
   images: {
     remotePatterns: [
@@ -36,7 +44,7 @@ const nextConfig = {
           {
             key: 'Content-Security-Policy',
             value: [
-              "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com",
+              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com`,
               "worker-src 'self'",
               "manifest-src 'self'",
               "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com",
