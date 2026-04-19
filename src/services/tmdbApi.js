@@ -228,7 +228,7 @@ class TMDBApi {
 
       return results;
     } catch (error) {
-      console.error('Advanced search failed:', error);
+      utils.error('Advanced search failed:', error);
       throw error;
     }
   }
@@ -279,7 +279,7 @@ class TMDBApi {
     try {
       return await this.makeRequest(`/tv/${tvId}/season/${seasonNumber}`);
     } catch (error) {
-      console.error(`Failed to get season ${seasonNumber} details for TV ID ${tvId}:`, error);
+      utils.error(`Failed to get season ${seasonNumber} details for TV ID ${tvId}:`, error);
       throw error;
     }
   }
@@ -314,7 +314,7 @@ class TMDBApi {
         seasons: seasonsData,
       };
     } catch (error) {
-      console.error(`Failed to get seasons data for TV ID ${tvId}:`, error);
+      utils.error(`Failed to get seasons data for TV ID ${tvId}:`, error);
       throw error;
     }
   }
