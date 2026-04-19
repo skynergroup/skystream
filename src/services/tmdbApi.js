@@ -10,6 +10,8 @@ class TMDBApi {
     this.baseUrl = API_CONFIG.tmdb.baseUrl;
     this.apiKey = API_CONFIG.tmdb.apiKey;
     this.imageBaseUrl = API_CONFIG.tmdb.imageBaseUrl;
+    this._genreCache = {};
+    this._genreCacheTime = {};
   }
 
   /**
@@ -147,7 +149,7 @@ class TMDBApi {
       } else if (type === 'anime') {
         endpoint = '/discover/tv';
         // Add anime-specific filters
-        const genres = await this.getTVGenres();
+        const genres = await this._getGenresCached('tv');
         const animationGenre = genres.genres.find(g => g.name === 'Animation');
         if (animationGenre) {
           params.with_genres = animationGenre.id;
@@ -327,6 +329,20 @@ class TMDBApi {
   }
 
   /**
+   * Get genres with a 1-hour in-memory cache
+   */
+  async _getGenresCached(type) {
+    const now = Date.now();
+    if (this._genreCache[type] && now - this._genreCacheTime[type] < 3_600_000) {
+      return this._genreCache[type];
+    }
+    const result = type === 'tv' ? await this.getTVGenres() : await this.getMovieGenres();
+    this._genreCache[type] = result;
+    this._genreCacheTime[type] = now;
+    return result;
+  }
+
+  /**
    * Get movie genres
    */
   async getMovieGenres() {
@@ -360,7 +376,7 @@ class TMDBApi {
    */
   async getAnimeContent(page = 1) {
     // Get animation genre ID first
-    const genres = await this.getTVGenres();
+    const genres = await this._getGenresCached('tv');
     const animationGenre = genres.genres.find(g => g.name === 'Animation');
 
     if (!animationGenre) {
