@@ -34,9 +34,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const parsed = parseTVSlug(slug);
   if (!parsed) {
-    return {
-      title: 'TV Show Not Found | SkyStream',
-    };
+    return { title: 'TV Show Not Found | SkyStream', robots: 'noindex' };
   }
 
   const tvShow = await fetchTVDetails(parsed.id);
