@@ -10,6 +10,8 @@ class TMDBApi {
     this.baseUrl = API_CONFIG.tmdb.baseUrl;
     this.apiKey = API_CONFIG.tmdb.apiKey;
     this.imageBaseUrl = API_CONFIG.tmdb.imageBaseUrl;
+    this._genreCache = {};
+    this._genreCacheTime = {};
   }
 
   /**
@@ -147,7 +149,7 @@ class TMDBApi {
       } else if (type === 'anime') {
         endpoint = '/discover/tv';
         // Add anime-specific filters
-        const genres = await this.getTVGenres();
+        const genres = await this._getGenresCached('tv');
         const animationGenre = genres.genres.find(g => g.name === 'Animation');
         if (animationGenre) {
           params.with_genres = animationGenre.id;
@@ -226,7 +228,7 @@ class TMDBApi {
 
       return results;
     } catch (error) {
-      console.error('Advanced search failed:', error);
+      utils.error('Advanced search failed:', error);
       throw error;
     }
   }
@@ -277,7 +279,7 @@ class TMDBApi {
     try {
       return await this.makeRequest(`/tv/${tvId}/season/${seasonNumber}`);
     } catch (error) {
-      console.error(`Failed to get season ${seasonNumber} details for TV ID ${tvId}:`, error);
+      utils.error(`Failed to get season ${seasonNumber} details for TV ID ${tvId}:`, error);
       throw error;
     }
   }
@@ -312,7 +314,7 @@ class TMDBApi {
         seasons: seasonsData,
       };
     } catch (error) {
-      console.error(`Failed to get seasons data for TV ID ${tvId}:`, error);
+      utils.error(`Failed to get seasons data for TV ID ${tvId}:`, error);
       throw error;
     }
   }
@@ -324,6 +326,20 @@ class TMDBApi {
     const endpoint =
       contentType === 'movie' ? `/movie/${contentId}/credits` : `/tv/${contentId}/credits`;
     return this.makeRequest(endpoint);
+  }
+
+  /**
+   * Get genres with a 1-hour in-memory cache
+   */
+  async _getGenresCached(type) {
+    const now = Date.now();
+    if (this._genreCache[type] && now - this._genreCacheTime[type] < 3_600_000) {
+      return this._genreCache[type];
+    }
+    const result = type === 'tv' ? await this.getTVGenres() : await this.getMovieGenres();
+    this._genreCache[type] = result;
+    this._genreCacheTime[type] = now;
+    return result;
   }
 
   /**
@@ -360,7 +376,7 @@ class TMDBApi {
    */
   async getAnimeContent(page = 1) {
     // Get animation genre ID first
-    const genres = await this.getTVGenres();
+    const genres = await this._getGenresCached('tv');
     const animationGenre = genres.genres.find(g => g.name === 'Animation');
 
     if (!animationGenre) {
@@ -428,8 +444,8 @@ class TMDBApi {
   }
 
   async getHomePageContent() {
-    try {
-      const [trending, popularMovies, popularTV, topRatedMovies, popularAnime] = await Promise.all([
+    const [trending, popularMovies, popularTV, topRatedMovies, popularAnime] =
+      await Promise.allSettled([
         this.getTrending('all', 'week'),
         this.getPopularMovies(),
         this.getPopularTVShows(),
@@ -437,18 +453,26 @@ class TMDBApi {
         this.getPopularAnime(),
       ]);
 
-      return {
-        featured: trending.results.slice(0, 5).map(item => this.transformContent(item)), // Multiple featured items for carousel
-        trending: trending.results.slice(0, 20).map(item => this.transformContent(item)),
-        popularMovies: popularMovies.results.slice(0, 20).map(item => this.transformContent(item)),
-        popularTV: popularTV.results.slice(0, 20).map(item => this.transformContent(item)),
-        topRated: topRatedMovies.results.slice(0, 20).map(item => this.transformContent(item)),
-        popularAnime: popularAnime.results.slice(0, 20).map(item => this.transformContent(item)),
-      };
-    } catch (error) {
-      utils.error('Failed to fetch homepage content:', error);
-      throw error;
-    }
+    const pick = result => (result.status === 'fulfilled' ? (result.value.results ?? []) : []);
+
+    const trendingResults = pick(trending);
+
+    return {
+      featured: trendingResults.slice(0, 5).map(item => this.transformContent(item)),
+      trending: trendingResults.slice(0, 20).map(item => this.transformContent(item)),
+      popularMovies: pick(popularMovies)
+        .slice(0, 20)
+        .map(item => this.transformContent(item)),
+      popularTV: pick(popularTV)
+        .slice(0, 20)
+        .map(item => this.transformContent(item)),
+      topRated: pick(topRatedMovies)
+        .slice(0, 20)
+        .map(item => this.transformContent(item)),
+      popularAnime: pick(popularAnime)
+        .slice(0, 20)
+        .map(item => this.transformContent(item)),
+    };
   }
 }
 

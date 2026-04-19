@@ -23,7 +23,9 @@ class ErrorBoundary extends Component {
           <div className="error-boundary-content">
             <h2>Something went wrong</h2>
             <p>We encountered an error while loading this page.</p>
-            <p className="error-details">{this.state.error?.message}</p>
+            {process.env.NODE_ENV === 'development' && (
+              <p className="error-details">{this.state.error?.message}</p>
+            )}
             <button
               className="error-boundary-button"
               onClick={() => {

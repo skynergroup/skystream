@@ -6,9 +6,23 @@ import { TrailerModal } from './TrailerModal';
 export const TrailerButton = ({ content, onWatch }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const trailer = content.videos?.find(v => v.site === 'YouTube' && v.type === 'Trailer');
+  // videos undefined means not yet fetched — render nothing rather than "no trailer"
+  if (!content.videos) return null;
 
-  if (!trailer) return null;
+  const trailer = content.videos.find(v => v.site === 'YouTube' && v.type === 'Trailer');
+
+  if (!trailer) {
+    return (
+      <button
+        className="trailer-button trailer-button--disabled"
+        disabled
+        aria-label="No trailer available"
+        title="No trailer available"
+      >
+        <Film size={14} />
+      </button>
+    );
+  }
 
   return (
     <>

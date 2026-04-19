@@ -4,6 +4,7 @@ import { X, ExternalLink, Download } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
 import tmdbApi from '../services/tmdbApi';
 import { generateMovieUrl, generateTVUrl, updateBrowserUrl } from '../utils/urlRouting';
+import { PLAYER_CONFIG } from '../utils/config';
 import './StreamingPlayerModal.css';
 
 const STORAGE_KEY = 'skystream-preferred-server';
@@ -19,11 +20,12 @@ const SERVER_OPTIONS = [
 ];
 
 const getPreferredServer = fallbackKey => {
+  if (typeof window === 'undefined') return fallbackKey || 'server1';
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved && SERVER_OPTIONS.some(s => s.key === saved)) return saved;
-  } catch {
-    /* ignore */
+  } catch (e) {
+    console.warn('Failed to read server preference from localStorage:', e);
   }
   if (fallbackKey) {
     if (SERVER_OPTIONS.some(s => s.key === fallbackKey)) return fallbackKey;
@@ -36,8 +38,8 @@ const getPreferredServer = fallbackKey => {
 const savePreferredServer = key => {
   try {
     localStorage.setItem(STORAGE_KEY, key);
-  } catch {
-    /* ignore */
+  } catch (e) {
+    console.warn('Failed to save server preference to localStorage:', e);
   }
 };
 
@@ -68,7 +70,7 @@ const StreamingPlayerModal = ({
     if (episode !== null && episode !== selectedEpisode) {
       setSelectedEpisode(episode);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: sync from props only, not on internal state changes; see DEV-149 for full fix
   }, [season, episode]);
 
   // Handle season change - reset episode to 1
@@ -139,7 +141,7 @@ const StreamingPlayerModal = ({
           const data = await tmdbApi.getTVSeasonsData(content.id);
           setSeasonsData(data);
         } catch (error) {
-          console.error('Failed to fetch seasons data:', error);
+          console.warn('Failed to fetch seasons data:', error);
           // Fallback to generic data if API fails
           setSeasonsData(null);
         } finally {
@@ -186,6 +188,9 @@ const StreamingPlayerModal = ({
 
     // Listen for postMessage from iframe about navigation
     const handleMessage = event => {
+      const allowedOrigins = ['https://player.videasy.net', window.location.origin];
+      if (!allowedOrigins.some(o => event.origin === o)) return;
+
       if (event.data && event.data.type === 'episodeChange') {
         const { season: newSeason, episode: newEpisode } = event.data;
         if (newSeason && newEpisode) {
@@ -275,7 +280,7 @@ const StreamingPlayerModal = ({
   const generateDownloadUrl = () => {
     if (!content?.id) return null;
 
-    const baseUrl = 'https://dl.vidsrc.vip';
+    const baseUrl = PLAYER_CONFIG.vidsrc.downloadUrl;
 
     if (contentType === 'movie') {
       // Movie format: https://dl.vidsrc.vip/movie/986056
@@ -447,6 +452,7 @@ const StreamingPlayerModal = ({
             referrerPolicy="origin"
             style={{ border: 'none' }}
             loading="lazy"
+            sandbox="allow-scripts allow-same-origin allow-presentation allow-fullscreen allow-popups"
           />
         </div>
 

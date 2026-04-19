@@ -18,6 +18,7 @@ export const TrailerModal = ({ isOpen, onClose, onWatch, trailerKey, title }) =>
             title={`${title} Trailer`}
             allow="autoplay; encrypted-media"
             allowFullScreen
+            sandbox="allow-scripts allow-same-origin allow-presentation allow-fullscreen allow-popups"
           />
         </div>
 

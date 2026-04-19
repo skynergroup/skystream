@@ -5,8 +5,9 @@ import FeaturedHero from '../../components/FeaturedHero';
 import ContentRow from '../../components/ContentRow';
 import StreamingPlayerModal from '../../components/StreamingPlayerModal';
 import ContentRowSkeleton from '../../components/ContentRowSkeleton';
+import FeaturedHeroSkeleton from '../../components/FeaturedHeroSkeleton';
 import tmdbApi from '../../services/tmdbApi';
-import { analytics } from '../../utils';
+import { analytics, utils } from '../../utils';
 
 const Discover = () => {
   const [content, setContent] = useState(null);
@@ -35,7 +36,7 @@ const Discover = () => {
         // Track page view
         analytics.trackPageView('/home', 'SkyStream - Discover');
       } catch (err) {
-        console.error('Failed to fetch homepage content:', err);
+        utils.error('Failed to fetch homepage content:', err);
         setError(err);
         analytics.trackError(`Homepage content fetch failed: ${err.message}`, 'content_error');
       } finally {
@@ -87,7 +88,8 @@ const Discover = () => {
 
   if (loading) {
     return (
-      <div style={{ background: 'var(--bg-primary)', minHeight: '100vh', paddingTop: '2rem' }}>
+      <div style={{ background: 'var(--bg-primary)', minHeight: '100vh' }}>
+        <FeaturedHeroSkeleton />
         <ContentRowSkeleton title="Trending Now" cardCount={6} />
         <ContentRowSkeleton title="Popular Movies" cardCount={6} />
         <ContentRowSkeleton title="Popular TV Shows" cardCount={6} />

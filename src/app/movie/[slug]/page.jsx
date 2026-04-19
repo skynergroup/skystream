@@ -15,9 +15,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const movieId = parseMovieSlug(slug);
   if (!movieId) {
-    return {
-      title: 'Movie Not Found | SkyStream',
-    };
+    return { title: 'Movie Not Found | SkyStream', robots: 'noindex' };
   }
 
   const movie = await fetchMovieDetails(movieId);

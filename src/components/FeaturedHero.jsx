@@ -49,6 +49,8 @@ const FeaturedHero = ({ content, onPlay, onInfo }) => {
     <div className="featured-hero">
       <div
         className={`featured-hero__background ${isTransitioning ? 'featured-hero__background--transitioning' : ''}`}
+        role="img"
+        aria-label={`${currentContent?.title || 'Featured content'} backdrop`}
         style={{
           backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none',
         }}

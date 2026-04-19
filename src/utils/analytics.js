@@ -26,18 +26,13 @@ class Analytics {
       return;
     }
 
-    // Poll for gtag — the Script tag in layout.jsx defines it after hydration
-    let attempts = 0;
-    const maxAttempts = 20; // 20 * 250ms = 5s max wait
-    const poll = setInterval(() => {
-      attempts++;
+    // Wait for the Script tag in layout.jsx to define gtag after hydration
+    const checkGtag = () => {
       if (typeof window.gtag === 'function') {
-        clearInterval(poll);
         this.isInitialized = true;
-      } else if (attempts >= maxAttempts) {
-        clearInterval(poll);
       }
-    }, 250);
+    };
+    window.addEventListener('load', checkGtag, { once: true });
   }
 
   // Track page views
