@@ -187,10 +187,7 @@ const StreamingPlayerModal = ({
 
     // Listen for postMessage from iframe about navigation
     const handleMessage = event => {
-      const allowedOrigins = [
-        'https://player.videasy.net',
-        window.location.origin,
-      ];
+      const allowedOrigins = ['https://player.videasy.net', window.location.origin];
       if (!allowedOrigins.some(o => event.origin === o)) return;
 
       if (event.data && event.data.type === 'episodeChange') {

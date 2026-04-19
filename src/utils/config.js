@@ -34,9 +34,7 @@ export const API_CONFIG = {
 
 if (typeof window === 'undefined' && !API_CONFIG.tmdb.apiKey) {
   // Server-side startup check — throws during `next build` or `next start` if key is absent
-  console.error(
-    '[SkyStream] FATAL: NEXT_PUBLIC_TMDB_API_KEY is not set. All API calls will fail.'
-  );
+  console.error('[SkyStream] FATAL: NEXT_PUBLIC_TMDB_API_KEY is not set. All API calls will fail.');
 }
 
 // Video Player Configuration

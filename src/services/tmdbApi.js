@@ -453,18 +453,25 @@ class TMDBApi {
         this.getPopularAnime(),
       ]);
 
-    const pick = result =>
-      result.status === 'fulfilled' ? result.value.results ?? [] : [];
+    const pick = result => (result.status === 'fulfilled' ? (result.value.results ?? []) : []);
 
     const trendingResults = pick(trending);
 
     return {
       featured: trendingResults.slice(0, 5).map(item => this.transformContent(item)),
       trending: trendingResults.slice(0, 20).map(item => this.transformContent(item)),
-      popularMovies: pick(popularMovies).slice(0, 20).map(item => this.transformContent(item)),
-      popularTV: pick(popularTV).slice(0, 20).map(item => this.transformContent(item)),
-      topRated: pick(topRatedMovies).slice(0, 20).map(item => this.transformContent(item)),
-      popularAnime: pick(popularAnime).slice(0, 20).map(item => this.transformContent(item)),
+      popularMovies: pick(popularMovies)
+        .slice(0, 20)
+        .map(item => this.transformContent(item)),
+      popularTV: pick(popularTV)
+        .slice(0, 20)
+        .map(item => this.transformContent(item)),
+      topRated: pick(topRatedMovies)
+        .slice(0, 20)
+        .map(item => this.transformContent(item)),
+      popularAnime: pick(popularAnime)
+        .slice(0, 20)
+        .map(item => this.transformContent(item)),
     };
   }
 }
