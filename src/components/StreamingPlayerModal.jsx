@@ -140,7 +140,7 @@ const StreamingPlayerModal = ({
           const data = await tmdbApi.getTVSeasonsData(content.id);
           setSeasonsData(data);
         } catch (error) {
-          console.error('Failed to fetch seasons data:', error);
+          console.warn('Failed to fetch seasons data:', error);
           // Fallback to generic data if API fails
           setSeasonsData(null);
         } finally {
