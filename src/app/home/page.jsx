@@ -5,6 +5,7 @@ import FeaturedHero from '../../components/FeaturedHero';
 import ContentRow from '../../components/ContentRow';
 import StreamingPlayerModal from '../../components/StreamingPlayerModal';
 import ContentRowSkeleton from '../../components/ContentRowSkeleton';
+import FeaturedHeroSkeleton from '../../components/FeaturedHeroSkeleton';
 import tmdbApi from '../../services/tmdbApi';
 import { analytics, utils } from '../../utils';
 
@@ -87,7 +88,8 @@ const Discover = () => {
 
   if (loading) {
     return (
-      <div style={{ background: 'var(--bg-primary)', minHeight: '100vh', paddingTop: '2rem' }}>
+      <div style={{ background: 'var(--bg-primary)', minHeight: '100vh' }}>
+        <FeaturedHeroSkeleton />
         <ContentRowSkeleton title="Trending Now" cardCount={6} />
         <ContentRowSkeleton title="Popular Movies" cardCount={6} />
         <ContentRowSkeleton title="Popular TV Shows" cardCount={6} />
