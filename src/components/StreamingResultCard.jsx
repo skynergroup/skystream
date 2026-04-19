@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import Image from 'next/image';
 import { Play, Star, Calendar, Info } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
 import { TrailerButton } from './TrailerButton';
@@ -37,12 +38,17 @@ const StreamingResultCard = ({ content, onPlay }) => {
       <div className="streaming-result-card__poster">
         <TrailerButton content={content} onWatch={handlePlay} />
         {posterUrl && !imageError ? (
-          <img
+          <Image
             src={posterUrl}
-            alt={content.title}
+            alt={content.title || 'Content poster'}
+            width={300}
+            height={450}
             className={`streaming-result-card__image ${imageLoaded ? 'loaded' : ''}`}
+            loading="lazy"
+            unoptimized={!posterUrl.includes('image.tmdb.org')}
             onLoad={handleImageLoad}
             onError={handleImageError}
+            style={{ width: '100%', height: 'auto' }}
           />
         ) : (
           <div className="streaming-result-card__placeholder">
