@@ -4,6 +4,7 @@ import { X, ExternalLink, Download } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
 import tmdbApi from '../services/tmdbApi';
 import { generateMovieUrl, generateTVUrl, updateBrowserUrl } from '../utils/urlRouting';
+import { PLAYER_CONFIG } from '../utils/config';
 import './StreamingPlayerModal.css';
 
 const STORAGE_KEY = 'skystream-preferred-server';
@@ -281,7 +282,7 @@ const StreamingPlayerModal = ({
   const generateDownloadUrl = () => {
     if (!content?.id) return null;
 
-    const baseUrl = 'https://dl.vidsrc.vip';
+    const baseUrl = PLAYER_CONFIG.vidsrc.downloadUrl;
 
     if (contentType === 'movie') {
       // Movie format: https://dl.vidsrc.vip/movie/986056
