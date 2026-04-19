@@ -36,7 +36,7 @@ const nextConfig = {
           {
             key: 'Content-Security-Policy',
             value: [
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com",
+              "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com",
               "worker-src 'self'",
               "manifest-src 'self'",
               "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com",
