@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Search as SearchIcon } from 'lucide-react';
 import StreamingSearchBar from '../components/StreamingSearchBar';
 import StreamingResultCard from '../components/StreamingResultCard';
@@ -24,6 +24,9 @@ const Search = () => {
     episode: null,
   });
 
+  const abortControllerRef = useRef(null);
+  const lastQueryRef = useRef('');
+
   // Track page view on mount
   useEffect(() => {
     analytics.trackPageView('/', 'SkyStream - Search');
@@ -31,6 +34,13 @@ const Search = () => {
 
   // Handle search
   const handleSearch = useCallback(async query => {
+    const trimmed = query.trim();
+    if (trimmed === lastQueryRef.current) return;
+    lastQueryRef.current = trimmed;
+
+    if (abortControllerRef.current) abortControllerRef.current.abort();
+    abortControllerRef.current = new AbortController();
+
     try {
       setLoading(true);
       setError(null);
