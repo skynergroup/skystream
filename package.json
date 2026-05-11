@@ -32,7 +32,7 @@
   "devDependencies": {
     "@babel/plugin-transform-react-jsx-self": "^7.27.1",
     "@babel/plugin-transform-react-jsx-source": "^7.27.1",
-    "@babel/preset-env": "^7.28.3",
+    "@babel/preset-env": "^7.29.5",
     "@babel/preset-react": "^7.27.1",
     "@eslint/js": "^9.29.0",
     "@testing-library/jest-dom": "^6.9.1",
