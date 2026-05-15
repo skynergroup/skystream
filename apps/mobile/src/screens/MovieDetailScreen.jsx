@@ -53,7 +53,6 @@ export default function MovieDetailScreen({ colors }) {
   const contentId = routeContent?.id ?? routeId;
 
   useEffect(() => {
-    if (routeContent && !routeId) return;
     if (!contentId) return;
 
     let cancelled = false;
@@ -64,7 +63,7 @@ export default function MovieDetailScreen({ colors }) {
       .getMovieDetails(contentId)
       .then(data => {
         if (!cancelled) {
-          setDetails(tmdbApi.transformContent({ ...data, media_type: 'movie' }));
+          setDetails({ ...tmdbApi.transformContent({ ...data, media_type: 'movie' }), ...data });
         }
       })
       .catch(() => {
@@ -77,7 +76,7 @@ export default function MovieDetailScreen({ colors }) {
     return () => {
       cancelled = true;
     };
-  }, [contentId, routeContent, routeId]);
+  }, [contentId]);
 
   const handlePlay = useCallback(() => {
     navigation.navigate('Player', { content: details, contentType: 'movie' });

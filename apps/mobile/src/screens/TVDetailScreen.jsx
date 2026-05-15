@@ -63,7 +63,6 @@ export default function TVDetailScreen({ colors }) {
   const contentId = routeContent?.id ?? routeId;
 
   useEffect(() => {
-    if (routeContent && !routeId) return;
     if (!contentId) return;
 
     let cancelled = false;
@@ -74,7 +73,7 @@ export default function TVDetailScreen({ colors }) {
       .getTVShowDetails(contentId)
       .then(data => {
         if (!cancelled) {
-          setDetails(tmdbApi.transformContent({ ...data, media_type: 'tv' }));
+          setDetails({ ...tmdbApi.transformContent({ ...data, media_type: 'tv' }), ...data });
         }
       })
       .catch(() => {
@@ -87,7 +86,7 @@ export default function TVDetailScreen({ colors }) {
     return () => {
       cancelled = true;
     };
-  }, [contentId, routeContent, routeId]);
+  }, [contentId]);
 
   const handlePlay = useCallback(() => {
     navigation.navigate('Player', {
