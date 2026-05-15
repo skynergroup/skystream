@@ -2,7 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import { View, Animated, StyleSheet } from 'react-native';
 import { borderRadius } from '../theme';
 
-export default function SkeletonLoader({ width, height, borderRadius: br = borderRadius.md, style, colors }) {
+export default function SkeletonLoader({
+  width,
+  height,
+  borderRadius: br = borderRadius.md,
+  style,
+  colors,
+}) {
   const opacity = useRef(new Animated.Value(0.3)).current;
 
   useEffect(() => {

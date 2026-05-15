@@ -29,9 +29,7 @@ export default function LiveTVFilterScreen({ colors }) {
     const normalised = query.trim().toLowerCase();
     if (!normalised) return sourceList.filter(item => item.code !== SEPARATOR_CODE);
     return sourceList.filter(
-      item =>
-        item.code !== SEPARATOR_CODE &&
-        item.name.toLowerCase().includes(normalised)
+      item => item.code !== SEPARATOR_CODE && item.name.toLowerCase().includes(normalised)
     );
   }, [query, sourceList]);
 

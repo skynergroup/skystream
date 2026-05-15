@@ -1,5 +1,5 @@
 {
-    "sonarCloudOrganization": "skynergroup",
-    "projectKey": "skynergroup_skystream",
-    "region": "EU"
+  "sonarCloudOrganization": "skynergroup",
+  "projectKey": "skynergroup_skystream",
+  "region": "EU"
 }

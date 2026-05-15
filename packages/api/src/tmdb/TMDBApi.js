@@ -1,5 +1,10 @@
 class TMDBApi {
-  constructor({ apiKey = '', baseUrl = 'https://api.themoviedb.org/3', imageBaseUrl = 'https://image.tmdb.org/t/p', logger = null } = {}) {
+  constructor({
+    apiKey = '',
+    baseUrl = 'https://api.themoviedb.org/3',
+    imageBaseUrl = 'https://image.tmdb.org/t/p',
+    logger = null,
+  } = {}) {
     this.baseUrl = baseUrl;
     this.apiKey = apiKey;
     this.imageBaseUrl = imageBaseUrl;

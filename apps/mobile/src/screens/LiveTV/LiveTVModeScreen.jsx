@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { spacing, fontSize, borderRadius } from '../../theme';
@@ -38,9 +32,7 @@ export default function LiveTVModeScreen({ colors }) {
           <View style={[styles.iconCircle, { backgroundColor: colors.bgTertiary }]}>
             <Icon name="globe-outline" size={40} color={colors.accent} />
           </View>
-          <Text style={[styles.optionTitle, { color: colors.textPrimary }]}>
-            Browse by Country
-          </Text>
+          <Text style={[styles.optionTitle, { color: colors.textPrimary }]}>Browse by Country</Text>
           <Text style={[styles.optionDescription, { color: colors.textSecondary }]}>
             Explore channels from 168 countries worldwide
           </Text>

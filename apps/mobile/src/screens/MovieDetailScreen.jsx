@@ -22,7 +22,9 @@ const BACKDROP_HEIGHT = width * 0.65;
 
 function GenrePill({ name, colors }) {
   return (
-    <View style={[styles.genrePill, { backgroundColor: colors.bgTertiary, borderColor: colors.border }]}>
+    <View
+      style={[styles.genrePill, { backgroundColor: colors.bgTertiary, borderColor: colors.border }]}
+    >
       <Text style={[styles.genreText, { color: colors.textSecondary }]}>{name}</Text>
     </View>
   );
@@ -33,9 +35,19 @@ function DetailSkeleton({ colors }) {
     <ScrollView style={{ flex: 1 }} scrollEnabled={false}>
       <SkeletonLoader width={width} height={BACKDROP_HEIGHT} borderRadius={0} colors={colors} />
       <View style={styles.skeletonBody}>
-        <SkeletonLoader width={width * 0.7} height={30} colors={colors} style={styles.skeletonRow} />
+        <SkeletonLoader
+          width={width * 0.7}
+          height={30}
+          colors={colors}
+          style={styles.skeletonRow}
+        />
         <SkeletonLoader width={200} height={18} colors={colors} style={styles.skeletonRow} />
-        <SkeletonLoader width={width - spacing.md * 2} height={80} colors={colors} style={styles.skeletonRow} />
+        <SkeletonLoader
+          width={width - spacing.md * 2}
+          height={80}
+          colors={colors}
+          style={styles.skeletonRow}
+        />
       </View>
     </ScrollView>
   );
@@ -86,7 +98,7 @@ export default function MovieDetailScreen({ colors }) {
     item => {
       navigation.push('MovieDetail', { content: item });
     },
-    [navigation],
+    [navigation]
   );
 
   const handleBack = useCallback(() => navigation.goBack(), [navigation]);
@@ -200,7 +212,6 @@ export default function MovieDetailScreen({ colors }) {
           <Icon name="chevron-back" size={22} color="#fff" />
         </View>
       </TouchableOpacity>
-
     </View>
   );
 }

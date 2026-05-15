@@ -6,19 +6,26 @@
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
 
-A streaming platform interface built with Next.js 16 and React 19 for browsing and streaming movies, TV shows, and anime. Powered by the TMDB API for content metadata and integrated with multiple third-party streaming providers.
+A streaming platform interface built with Next.js 16 and React 19 for browsing
+and streaming movies, TV shows, and anime. Powered by the TMDB API for content
+metadata and integrated with multiple third-party streaming providers.
 
 **Live:** [https://www.sky-stream.online/](https://www.sky-stream.online/)
 
 ### Disclaimer
 
-SkyStream does not host, store, or distribute any media content. All content is sourced from third-party streaming services. SkyStream acts solely as an interface to browse and access content.
+SkyStream does not host, store, or distribute any media content. All content is
+sourced from third-party streaming services. SkyStream acts solely as an
+interface to browse and access content.
 
 ## Features
 
-- **Discover** (`/home`) — Featured hero carousel, trending/popular/top-rated movies, TV shows, and anime
-- **Search** (`/`) — Real-time search across movies, TV shows, and anime with instant results
-- **Streaming** — Multi-server player (Videasy, Vidsrc) with season/episode selection for TV content
+- **Discover** (`/home`) — Featured hero carousel, trending/popular/top-rated
+  movies, TV shows, and anime
+- **Search** (`/`) — Real-time search across movies, TV shows, and anime with
+  instant results
+- **Streaming** — Multi-server player (Videasy, Vidsrc) with season/episode
+  selection for TV content
 - **Trailer Previews** — Watch trailers directly from content cards
 - **Dark/Light Theme** — Toggle between themes with persistent preference
 - **PWA** — Installable as a Progressive Web App
@@ -28,17 +35,17 @@ SkyStream does not host, store, or distribute any media content. All content is 
 
 ## Tech Stack
 
-| Category | Technology |
-|----------|-----------|
-| Framework | Next.js 16 (App Router, Turbopack) |
-| UI | React 19, CSS3 with CSS Variables, Lucide React icons |
-| Video | video.js, hls.js |
-| API | TMDB API (content metadata, search, images) |
-| Streaming | Videasy, Vidsrc (multi-server) |
+| Category  | Technology                                                |
+| --------- | --------------------------------------------------------- |
+| Framework | Next.js 16 (App Router, Turbopack)                        |
+| UI        | React 19, CSS3 with CSS Variables, Lucide React icons     |
+| Video     | video.js, hls.js                                          |
+| API       | TMDB API (content metadata, search, images)               |
+| Streaming | Videasy, Vidsrc (multi-server)                            |
 | Analytics | Google Analytics, Vercel Analytics, Vercel Speed Insights |
-| Testing | Jest 30, React Testing Library |
-| Linting | ESLint, Prettier |
-| Hosting | Vercel |
+| Testing   | Jest 30, React Testing Library                            |
+| Linting   | ESLint, Prettier                                          |
+| Hosting   | Vercel                                                    |
 
 ## Project Structure
 
@@ -80,12 +87,12 @@ skystream/
 
 ## Routes
 
-| Route | Page | Description |
-|-------|------|-------------|
-| `/` | Search | Search for movies, TV shows, and anime |
-| `/home` | Discover | Featured content, trending, popular, top-rated |
-| `/movie/[slug]` | Movie | Movie details and streaming player |
-| `/tv/[slug]/[season]/[episode]` | TV Show | TV show with season/episode selection |
+| Route                           | Page     | Description                                    |
+| ------------------------------- | -------- | ---------------------------------------------- |
+| `/`                             | Search   | Search for movies, TV shows, and anime         |
+| `/home`                         | Discover | Featured content, trending, popular, top-rated |
+| `/movie/[slug]`                 | Movie    | Movie details and streaming player             |
+| `/tv/[slug]/[season]/[episode]` | TV Show  | TV show with season/episode selection          |
 
 ## Getting Started
 
@@ -117,39 +124,42 @@ npm run dev
 
 ### Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Production build |
-| `npm start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run lint:fix` | Auto-fix lint errors |
-| `npm run format` | Format code with Prettier |
-| `npm run format:check` | Check formatting |
-| `npm test` | Run tests |
-| `npm run test:coverage` | Run tests with coverage |
+| Command                 | Description               |
+| ----------------------- | ------------------------- |
+| `npm run dev`           | Start development server  |
+| `npm run build`         | Production build          |
+| `npm start`             | Start production server   |
+| `npm run lint`          | Run ESLint                |
+| `npm run lint:fix`      | Auto-fix lint errors      |
+| `npm run format`        | Format code with Prettier |
+| `npm run format:check`  | Check formatting          |
+| `npm test`              | Run tests                 |
+| `npm run test:coverage` | Run tests with coverage   |
 
 ### Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `NEXT_PUBLIC_TMDB_API_KEY` | TMDB API key | Yes |
-| `NEXT_PUBLIC_TMDB_BASE_URL` | TMDB API base URL | No |
-| `NEXT_PUBLIC_TMDB_IMAGE_BASE_URL` | TMDB image CDN URL | No |
-| `NEXT_PUBLIC_GA_TRACKING_ID` | Google Analytics tracking ID | No |
-| `NEXT_PUBLIC_ENABLE_ANALYTICS` | Enable/disable analytics | No |
-| `NEXT_PUBLIC_DEFAULT_PLAYER` | Default video player (`videasy` or `vidsrc`) | No |
+| Variable                          | Description                                  | Required |
+| --------------------------------- | -------------------------------------------- | -------- |
+| `NEXT_PUBLIC_TMDB_API_KEY`        | TMDB API key                                 | Yes      |
+| `NEXT_PUBLIC_TMDB_BASE_URL`       | TMDB API base URL                            | No       |
+| `NEXT_PUBLIC_TMDB_IMAGE_BASE_URL` | TMDB image CDN URL                           | No       |
+| `NEXT_PUBLIC_GA_TRACKING_ID`      | Google Analytics tracking ID                 | No       |
+| `NEXT_PUBLIC_ENABLE_ANALYTICS`    | Enable/disable analytics                     | No       |
+| `NEXT_PUBLIC_DEFAULT_PLAYER`      | Default video player (`videasy` or `vidsrc`) | No       |
 
 ## Deployment
 
-Deployed on [Vercel](https://vercel.com). Set environment variables in the Vercel dashboard. Pushes to `production` branch trigger automatic deploys.
+Deployed on [Vercel](https://vercel.com). Set environment variables in the
+Vercel dashboard. Pushes to `production` branch trigger automatic deploys.
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feat/your-feature`)
-3. Commit using [conventional commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, etc.)
-4. Push and open a Pull Request — code owners (`@yashiels`, `@MphoCodes`) will be auto-assigned for review
+3. Commit using [conventional commits](https://www.conventionalcommits.org/)
+   (`feat:`, `fix:`, `chore:`, etc.)
+4. Push and open a Pull Request — code owners (`@yashiels`, `@MphoCodes`) will
+   be auto-assigned for review
 5. All PRs require passing CI (lint, format, build) and squash merge
 
 ## License
@@ -158,6 +168,10 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 ## Credits
 
-Built by [Skyner Group](https://github.com/skynergroup) — [Yashiel Sookdeo](https://github.com/yashiels) and [Mpho Ndlela](https://github.com/MphoCodes).
+Built by [Skyner Group](https://github.com/skynergroup) —
+[Yashiel Sookdeo](https://github.com/yashiels) and
+[Mpho Ndlela](https://github.com/MphoCodes).
 
-Powered by [TMDB](https://www.themoviedb.org/), [Videasy](https://player.videasy.net/), [Vidsrc](https://vidsrc.xyz/), and [Vercel](https://vercel.com/).
+Powered by [TMDB](https://www.themoviedb.org/),
+[Videasy](https://player.videasy.net/), [Vidsrc](https://vidsrc.xyz/), and
+[Vercel](https://vercel.com/).

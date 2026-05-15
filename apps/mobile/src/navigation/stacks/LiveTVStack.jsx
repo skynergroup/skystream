@@ -16,10 +16,18 @@ export default function LiveTVStack({ colors }) {
         contentStyle: { backgroundColor: colors.bgPrimary },
       }}
     >
-      <Stack.Screen name="LiveTV">{props => <LiveTVScreen {...props} colors={colors} />}</Stack.Screen>
-      <Stack.Screen name="LiveTVMode">{props => <LiveTVModeScreen {...props} colors={colors} />}</Stack.Screen>
-      <Stack.Screen name="LiveTVFilter">{props => <LiveTVFilterScreen {...props} colors={colors} />}</Stack.Screen>
-      <Stack.Screen name="LiveTVChannelList">{props => <LiveTVChannelListScreen {...props} colors={colors} />}</Stack.Screen>
+      <Stack.Screen name="LiveTV">
+        {props => <LiveTVScreen {...props} colors={colors} />}
+      </Stack.Screen>
+      <Stack.Screen name="LiveTVMode">
+        {props => <LiveTVModeScreen {...props} colors={colors} />}
+      </Stack.Screen>
+      <Stack.Screen name="LiveTVFilter">
+        {props => <LiveTVFilterScreen {...props} colors={colors} />}
+      </Stack.Screen>
+      <Stack.Screen name="LiveTVChannelList">
+        {props => <LiveTVChannelListScreen {...props} colors={colors} />}
+      </Stack.Screen>
       <Stack.Screen
         name="LiveTVPlayer"
         options={{

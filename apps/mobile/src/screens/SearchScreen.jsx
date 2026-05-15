@@ -57,7 +57,7 @@ export default function SearchScreen({ colors }) {
     try {
       const data = await tmdbApi.search(text.trim());
       const filtered = (data.results || []).filter(
-        item => item.media_type === 'movie' || item.media_type === 'tv',
+        item => item.media_type === 'movie' || item.media_type === 'tv'
       );
       const transformed = filtered.map(item => tmdbApi.transformContent(item));
       setResults(transformed);
@@ -77,7 +77,7 @@ export default function SearchScreen({ colors }) {
         handleSearch(text);
       }, DEBOUNCE_MS);
     },
-    [handleSearch],
+    [handleSearch]
   );
 
   useEffect(() => {
@@ -91,7 +91,7 @@ export default function SearchScreen({ colors }) {
       const screen = item.type === 'movie' ? 'MovieDetail' : 'TVDetail';
       navigation.navigate(screen, { content: item });
     },
-    [navigation],
+    [navigation]
   );
 
   const renderItem = useCallback(
@@ -100,7 +100,7 @@ export default function SearchScreen({ colors }) {
         <ContentCard item={item} onPress={handleCardPress} colors={colors} />
       </View>
     ),
-    [handleCardPress, colors],
+    [handleCardPress, colors]
   );
 
   const keyExtractor = useCallback(item => String(item.id), []);
@@ -140,7 +140,12 @@ export default function SearchScreen({ colors }) {
         <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Search</Text>
       </View>
 
-      <View style={[styles.inputWrapper, { backgroundColor: colors.bgSecondary, borderColor: colors.border }]}>
+      <View
+        style={[
+          styles.inputWrapper,
+          { backgroundColor: colors.bgSecondary, borderColor: colors.border },
+        ]}
+      >
         <Icon name="search-outline" size={18} color={colors.textMuted} style={styles.inputIcon} />
         <TextInput
           style={[styles.input, { color: colors.textPrimary }]}

@@ -99,12 +99,7 @@ export default function PlayerScreen({ colors }) {
   const navigation = useNavigation();
   const route = useRoute();
   const webViewRef = useRef(null);
-  const {
-    content,
-    contentType,
-    season: initialSeason,
-    episode: initialEpisode,
-  } = route.params;
+  const { content, contentType, season: initialSeason, episode: initialEpisode } = route.params;
 
   const [season, setSeason] = useState(initialSeason ?? 1);
   const [episode, setEpisode] = useState(initialEpisode ?? 1);
@@ -117,7 +112,7 @@ export default function PlayerScreen({ colors }) {
       }
       return streamingServices.getVideasyTVUrl(content.id, s, e);
     },
-    [content, contentType],
+    [content, contentType]
   );
 
   const [currentUrl, setCurrentUrl] = useState(() => getUrl(season, episode));
@@ -131,7 +126,7 @@ export default function PlayerScreen({ colors }) {
       setCurrentUrl(getUrl(newSeason, 1));
       setLoading(true);
     },
-    [season, getUrl],
+    [season, getUrl]
   );
 
   const handleEpisodeChange = useCallback(
@@ -141,34 +136,31 @@ export default function PlayerScreen({ colors }) {
       setCurrentUrl(getUrl(season, newEpisode));
       setLoading(true);
     },
-    [episode, season, getUrl],
+    [episode, season, getUrl]
   );
 
-  const handleNavigationRequest = useCallback(
-    request => {
-      const { url, isTopFrame } = request;
+  const handleNavigationRequest = useCallback(request => {
+    const { url, isTopFrame } = request;
 
-      if (!url || url === 'about:blank') return true;
+    if (!url || url === 'about:blank') return true;
 
-      try {
-        const parsed = new URL(url);
-        const hostname = parsed.hostname;
+    try {
+      const parsed = new URL(url);
+      const hostname = parsed.hostname;
 
-        if (ALLOWED_DOMAINS.some(d => hostname === d || hostname.endsWith('.' + d))) {
-          return true;
-        }
+      if (ALLOWED_DOMAINS.some(d => hostname === d || hostname.endsWith('.' + d))) {
+        return true;
+      }
 
-        if (isTopFrame) {
-          return false;
-        }
-
-        return false;
-      } catch {
+      if (isTopFrame) {
         return false;
       }
-    },
-    [],
-  );
+
+      return false;
+    } catch {
+      return false;
+    }
+  }, []);
 
   const handleOpenWindow = useCallback(event => {
     // Block all popup windows — these are ad popups

@@ -14,9 +14,7 @@ export default function ContentRow({ title, items, onItemPress, colors }) {
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={item => String(item.id)}
-        renderItem={({ item }) => (
-          <ContentCard item={item} onPress={onItemPress} colors={colors} />
-        )}
+        renderItem={({ item }) => <ContentCard item={item} onPress={onItemPress} colors={colors} />}
         contentContainerStyle={styles.list}
       />
     </View>

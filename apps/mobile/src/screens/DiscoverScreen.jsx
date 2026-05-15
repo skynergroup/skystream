@@ -82,7 +82,7 @@ export default function DiscoverScreen({ colors }) {
       const screen = item.type === 'movie' ? 'MovieDetail' : 'TVDetail';
       navigation.navigate(screen, { content: item });
     },
-    [navigation],
+    [navigation]
   );
 
   const handleHeroPlay = useCallback(
@@ -90,7 +90,7 @@ export default function DiscoverScreen({ colors }) {
       const screen = item.type === 'movie' ? 'MovieDetail' : 'TVDetail';
       navigation.navigate(screen, { content: item });
     },
-    [navigation],
+    [navigation]
   );
 
   const handleHeroInfo = useCallback(
@@ -98,7 +98,7 @@ export default function DiscoverScreen({ colors }) {
       const screen = item.type === 'movie' ? 'MovieDetail' : 'TVDetail';
       navigation.navigate(screen, { content: item });
     },
-    [navigation],
+    [navigation]
   );
 
   if (loading) {

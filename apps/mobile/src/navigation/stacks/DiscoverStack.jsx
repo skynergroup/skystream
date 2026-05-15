@@ -15,9 +15,15 @@ export default function DiscoverStack({ colors }) {
         contentStyle: { backgroundColor: colors.bgPrimary },
       }}
     >
-      <Stack.Screen name="Discover">{props => <DiscoverScreen {...props} colors={colors} />}</Stack.Screen>
-      <Stack.Screen name="MovieDetail">{props => <MovieDetailScreen {...props} colors={colors} />}</Stack.Screen>
-      <Stack.Screen name="TVDetail">{props => <TVDetailScreen {...props} colors={colors} />}</Stack.Screen>
+      <Stack.Screen name="Discover">
+        {props => <DiscoverScreen {...props} colors={colors} />}
+      </Stack.Screen>
+      <Stack.Screen name="MovieDetail">
+        {props => <MovieDetailScreen {...props} colors={colors} />}
+      </Stack.Screen>
+      <Stack.Screen name="TVDetail">
+        {props => <TVDetailScreen {...props} colors={colors} />}
+      </Stack.Screen>
       <Stack.Screen
         name="Player"
         options={{

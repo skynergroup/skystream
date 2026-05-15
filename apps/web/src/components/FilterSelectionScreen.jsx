@@ -1,7 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, Search, Check } from 'lucide-react';
 import PropTypes from 'prop-types';
-import { COUNTRIES, getCountryName, getCountryFlag, CATEGORIES, getCategoryName, getCategoryIcon } from '@skystream/shared';
+import {
+  COUNTRIES,
+  getCountryName,
+  getCountryFlag,
+  CATEGORIES,
+  getCategoryName,
+  getCategoryIcon,
+} from '@skystream/shared';
 import './FilterSelectionScreen.css';
 
 const FilterSelectionScreen = ({ mode, selectedValue, onSelect, onBack }) => {

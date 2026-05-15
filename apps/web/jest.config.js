@@ -16,9 +16,7 @@ export default {
       },
     ],
   },
-  transformIgnorePatterns: [
-    'node_modules/(?!(lucide-react)/)',
-  ],
+  transformIgnorePatterns: ['node_modules/(?!(lucide-react)/)'],
   collectCoverageFrom: [
     'src/**/*.{js,jsx}',
     '!src/main.jsx',
@@ -49,4 +47,3 @@ export default {
     },
   },
 };
-

@@ -35,9 +35,7 @@ export default function BottomTabNavigator({ colors }) {
         name="SearchTab"
         options={{
           tabBarLabel: 'Search',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="search-outline" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Icon name="search-outline" size={size} color={color} />,
         }}
       >
         {() => <SearchStack colors={colors} />}
@@ -46,9 +44,7 @@ export default function BottomTabNavigator({ colors }) {
         name="LiveTVTab"
         options={{
           tabBarLabel: 'Live TV',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="tv-outline" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Icon name="tv-outline" size={size} color={color} />,
         }}
       >
         {() => <LiveTVStack colors={colors} />}

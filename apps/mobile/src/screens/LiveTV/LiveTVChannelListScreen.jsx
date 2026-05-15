@@ -69,9 +69,7 @@ export default function LiveTVChannelListScreen({ colors }) {
   const filteredChannels = useMemo(() => {
     const normalised = query.trim().toLowerCase();
     if (!normalised) return channels;
-    return channels.filter(ch =>
-      (ch.name ?? '').toLowerCase().includes(normalised)
-    );
+    return channels.filter(ch => (ch.name ?? '').toLowerCase().includes(normalised));
   }, [query, channels]);
 
   const handleSelectChannel = channel => {
@@ -137,9 +135,7 @@ export default function LiveTVChannelListScreen({ colors }) {
       {loading ? (
         <View style={styles.centeredState}>
           <ActivityIndicator size="large" color={colors.accent} />
-          <Text style={[styles.stateText, { color: colors.textSecondary }]}>
-            Loading channels…
-          </Text>
+          <Text style={[styles.stateText, { color: colors.textSecondary }]}>Loading channels…</Text>
         </View>
       ) : error ? (
         <View style={styles.centeredState}>

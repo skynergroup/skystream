@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import BrowseModeSelectionScreen from './BrowseModeSelectionScreen';
 import FilterSelectionScreen from './FilterSelectionScreen';
 import ChannelListScreen from './ChannelListScreen';
-import { DEFAULT_COUNTRY, getCountryName, DEFAULT_CATEGORY, getCategoryName } from '@skystream/shared';
+import {
+  DEFAULT_COUNTRY,
+  getCountryName,
+  DEFAULT_CATEGORY,
+  getCategoryName,
+} from '@skystream/shared';
 import './ChannelSelector.css';
 
 const ChannelSelector = ({
