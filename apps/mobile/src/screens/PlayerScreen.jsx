@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   StatusBar,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -14,9 +15,90 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { streamingServices } from '@skystream/api';
 import { spacing, fontSize, borderRadius } from '../theme';
 
+const ALLOWED_DOMAINS = [
+  'player.videasy.net',
+  'www.videasy.net',
+  'videasy.net',
+  'fonts.googleapis.com',
+  'fonts.gstatic.com',
+  'cdn.jsdelivr.net',
+  'cdnjs.cloudflare.com',
+  'vidplay.online',
+  'rabbitstream.net',
+  'megacloud.tv',
+  'dokicloud.one',
+  'rapid-cloud.co',
+  'mcloud.bz',
+  'filemoon.sx',
+  'streamtape.com',
+  'dood.wf',
+  'mp4upload.com',
+  'mixdrop.co',
+  'upstream.to',
+];
+
+const AD_BLOCK_JS = `
+(function() {
+  // Block window.open (ad popups)
+  window.open = function() { return null; };
+
+  // Block ad-related redirects
+  var origAssign = Object.getOwnPropertyDescriptor(Location.prototype, 'assign');
+  var origReplace = Object.getOwnPropertyDescriptor(Location.prototype, 'replace');
+
+  if (origAssign) {
+    Object.defineProperty(window.location, 'assign', {
+      value: function(url) {
+        if (url && url.includes && (url.includes('videasy') || url.includes('player.videasy'))) {
+          origAssign.value.call(this, url);
+        }
+      }
+    });
+  }
+
+  if (origReplace) {
+    Object.defineProperty(window.location, 'replace', {
+      value: function(url) {
+        if (url && url.includes && (url.includes('videasy') || url.includes('player.videasy'))) {
+          origReplace.value.call(this, url);
+        }
+      }
+    });
+  }
+
+  // Remove ad overlay elements periodically
+  function removeAds() {
+    var selectors = [
+      'iframe[src*="ad"]',
+      'iframe[src*="pop"]',
+      'div[class*="popup"]',
+      'div[class*="overlay"][onclick]',
+      'div[id*="ad-"]',
+      'a[target="_blank"][rel*="nofollow"]',
+    ];
+    selectors.forEach(function(sel) {
+      document.querySelectorAll(sel).forEach(function(el) {
+        el.remove();
+      });
+    });
+  }
+
+  // Run on load and periodically
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', removeAds);
+  } else {
+    removeAds();
+  }
+  setInterval(removeAds, 2000);
+
+  true;
+})();
+`;
+
 export default function PlayerScreen({ colors }) {
   const navigation = useNavigation();
   const route = useRoute();
+  const webViewRef = useRef(null);
   const {
     content,
     contentType,
@@ -61,6 +143,36 @@ export default function PlayerScreen({ colors }) {
     },
     [episode, season, getUrl],
   );
+
+  const handleNavigationRequest = useCallback(
+    request => {
+      const { url, isTopFrame } = request;
+
+      if (!url || url === 'about:blank') return true;
+
+      try {
+        const parsed = new URL(url);
+        const hostname = parsed.hostname;
+
+        if (ALLOWED_DOMAINS.some(d => hostname === d || hostname.endsWith('.' + d))) {
+          return true;
+        }
+
+        if (isTopFrame) {
+          return false;
+        }
+
+        return false;
+      } catch {
+        return false;
+      }
+    },
+    [],
+  );
+
+  const handleOpenWindow = useCallback(event => {
+    // Block all popup windows — these are ad popups
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -128,6 +240,7 @@ export default function PlayerScreen({ colors }) {
             </View>
           )}
           <WebView
+            ref={webViewRef}
             key={currentUrl}
             source={{ uri: currentUrl }}
             style={styles.webView}
@@ -136,10 +249,14 @@ export default function PlayerScreen({ colors }) {
             allowsInlineMediaPlayback
             javaScriptEnabled
             domStorageEnabled
-            scalesPageToFit
             bounces={false}
             scrollEnabled={false}
+            setSupportMultipleWindows={false}
+            javaScriptCanOpenWindowsAutomatically={false}
             onLoadEnd={() => setLoading(false)}
+            onShouldStartLoadWithRequest={handleNavigationRequest}
+            onOpenWindow={handleOpenWindow}
+            injectedJavaScript={AD_BLOCK_JS}
             userAgent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
           />
         </View>
