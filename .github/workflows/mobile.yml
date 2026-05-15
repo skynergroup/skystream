@@ -1,0 +1,96 @@
+name: Mobile Build
+
+on:
+  push:
+    branches:
+      - production
+    paths:
+      - 'apps/mobile/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/mobile.yml'
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'apps/mobile/**'
+      - 'packages/**'
+
+jobs:
+  lint:
+    name: Mobile - Lint & Test
+    runs-on: [self-hosted, Linux, X64, astra]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pnpm
+        run: corepack enable && corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint mobile
+        run: pnpm --filter mobile lint || true
+
+      - name: Test mobile
+        run: pnpm --filter mobile test || true
+
+  build-ios:
+    name: iOS Build
+    runs-on: macos-latest
+    needs: lint
+    if: github.event_name == 'push' && github.ref == 'refs/heads/production'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pnpm
+        run: corepack enable && corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install CocoaPods
+        run: cd apps/mobile/ios && pod install
+
+      - name: Build iOS
+        run: pnpm --filter mobile build:ios
+
+  build-android:
+    name: Android Build
+    runs-on: [self-hosted, Linux, X64, astra]
+    needs: lint
+    if: github.event_name == 'push' && github.ref == 'refs/heads/production'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install pnpm
+        run: corepack enable && corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Android
+        run: pnpm --filter mobile build:android

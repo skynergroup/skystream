@@ -37,6 +37,19 @@ coverage
 .vercel
 .env
 
+# Turborepo
+.turbo
+
+# React Native
+apps/mobile/ios/Pods/
+apps/mobile/ios/build/
+apps/mobile/android/.gradle/
+apps/mobile/android/app/build/
+apps/mobile/android/build/
+*.apk
+*.aab
+*.ipa
+
 # autonomous-dev (ephemeral pipeline state)
 .autonomous-dev/
 prd.json
