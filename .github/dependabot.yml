@@ -9,6 +9,7 @@ updates:
     reviewers:
       - "yashiels"
       - "MphoCodes"
+      - "skynergroup/senior"
     labels:
       - "dependencies"
     commit-message:
@@ -22,6 +23,7 @@ updates:
     reviewers:
       - "yashiels"
       - "MphoCodes"
+      - "skynergroup/senior"
     labels:
       - "ci"
     commit-message:
