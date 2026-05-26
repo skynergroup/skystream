@@ -10,6 +10,12 @@ import BackToTop from './BackToTop';
 import analytics from '../utils/analytics';
 import './Layout.css';
 
+const isInputFocused = target => {
+  if (!target) return false;
+  const tagName = target.tagName?.toLowerCase();
+  return tagName === 'input' || tagName === 'textarea' || target.isContentEditable;
+};
+
 const Layout = ({ children }) => {
   const pathname = usePathname();
   const router = useRouter();
@@ -37,12 +43,6 @@ const Layout = ({ children }) => {
     },
     [pathname, router]
   );
-
-  // Check if an element is an input field
-  const isInputFocused = target => {
-    const tagName = target.tagName.toLowerCase();
-    return tagName === 'input' || tagName === 'textarea' || target.isContentEditable;
-  };
 
   // Set up global keyboard listener
   useEffect(() => {
