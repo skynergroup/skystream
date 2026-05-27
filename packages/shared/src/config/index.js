@@ -20,14 +20,11 @@ export const PLAYER_DEFAULTS = {
   language: 'en',
 };
 
-// Official domains from https://vidsrc.domains (updated 2026-05-27)
+// Embed domains from VidSrc API docs at https://vidsrcme.ru/api/ (updated 2026-05-27)
 export const VIDSRC_MIRRORS = [
-  'https://vidsrcme.ru',
-  'https://vidsrcme.su',
-  'https://vidsrc-me.ru',
-  'https://vidsrc-me.su',
   'https://vidsrc-embed.ru',
   'https://vidsrc-embed.su',
+  'https://vidsrcme.su',
   'https://vsrc.su',
 ];
 
