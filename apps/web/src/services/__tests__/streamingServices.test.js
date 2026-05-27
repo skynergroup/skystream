@@ -5,7 +5,7 @@ describe('StreamingServices', () => {
     test('generates basic movie URL', () => {
       const url = streamingServices.getVidsrcMovieUrl(299534);
 
-      expect(url).toBe('https://vsembed.ru/embed/movie?tmdb=299534&autoplay=1');
+      expect(url).toBe('https://vidsrcme.ru/embed/movie?tmdb=299534&autoplay=1');
     });
 
     test('includes sub_url when provided', () => {
@@ -49,7 +49,7 @@ describe('StreamingServices', () => {
     test('generates basic TV URL without season/episode', () => {
       const url = streamingServices.getVidsrcTVUrl(1399);
 
-      expect(url).toBe('https://vsembed.ru/embed/tv?tmdb=1399&autoplay=1');
+      expect(url).toBe('https://vidsrcme.ru/embed/tv?tmdb=1399&autoplay=1');
     });
 
     test('includes season and episode when provided', () => {
@@ -204,7 +204,7 @@ describe('StreamingServices', () => {
 
       const urls = streamingServices.getAllStreamingUrls(content);
 
-      expect(urls.vidsrc).toContain('vsembed.ru/embed/movie');
+      expect(urls.vidsrc).toContain('vidsrcme.ru/embed/movie');
       expect(urls.vidsrc).toContain('tmdb=299534');
       expect(urls.videasy).toContain('videasy.net/movie/299534');
     });
@@ -217,7 +217,7 @@ describe('StreamingServices', () => {
 
       const urls = streamingServices.getAllStreamingUrls(content);
 
-      expect(urls.vidsrc).toContain('vsembed.ru/embed/tv');
+      expect(urls.vidsrc).toContain('vidsrcme.ru/embed/tv');
       expect(urls.vidsrc).toContain('tmdb=1399');
       expect(urls.videasy).toContain('videasy.net/tv/1399');
     });
