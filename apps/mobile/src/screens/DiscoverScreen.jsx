@@ -62,7 +62,7 @@ export default function DiscoverScreen({ colors }) {
     try {
       const data = await tmdbApi.getHomePageContent();
       setContent(data);
-    } catch (err) {
+    } catch {
       setError('Failed to load content. Pull down to retry.');
     }
   }, []);

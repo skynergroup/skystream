@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Git worktrees (linked agent/dev worktrees live here)
+.worktrees/
+
 # Test coverage
 coverage
 *.lcov

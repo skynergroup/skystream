@@ -162,7 +162,7 @@ export default function PlayerScreen({ colors }) {
     }
   }, []);
 
-  const handleOpenWindow = useCallback(event => {
+  const handleOpenWindow = useCallback(() => {
     // Block all popup windows — these are ad popups
   }, []);
 

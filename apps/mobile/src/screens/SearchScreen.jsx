@@ -61,7 +61,7 @@ export default function SearchScreen({ colors }) {
       );
       const transformed = filtered.map(item => tmdbApi.transformContent(item));
       setResults(transformed);
-    } catch (err) {
+    } catch {
       setError('Something went wrong. Please try again.');
       setResults([]);
     } finally {

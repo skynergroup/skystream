@@ -38,12 +38,4 @@ export default {
   moduleFileExtensions: ['js', 'jsx', 'json'],
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   coveragePathIgnorePatterns: ['/node_modules/', '/dist/'],
-  globals: {
-    'import.meta': {
-      env: {
-        VITE_TMDB_API_KEY: 'test-api-key',
-        VITE_APP_ENV: 'test',
-      },
-    },
-  },
 };
