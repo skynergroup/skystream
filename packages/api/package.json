@@ -8,5 +8,8 @@
     ".": "./src/index.js",
     "./tmdb": "./src/tmdb/index.js",
     "./streaming": "./src/streaming/index.js"
+  },
+  "scripts": {
+    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest"
   }
 }
