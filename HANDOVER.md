@@ -2,7 +2,7 @@
 
 ## What Was Done
 
-The SkyStream repo has been restructured from a flat Next.js app into a Turborepo monorepo. All 7 phases are complete except generating the native iOS/Android project folders.
+The SkyStream repo has been restructured from a flat Next.js app into a Turborepo monorepo. All 7 phases are complete, including the native iOS/Android project folders for the mobile app.
 
 ### Completed Phases
 
@@ -27,8 +27,9 @@ The SkyStream repo has been restructured from a flat Next.js app into a Turborep
 - 5 component files updated to import from `@skystream/shared` instead of local `../data/` paths
 - StreamingPlayerModal splits imports: `@skystream/shared` for pure routing, local for `updateBrowserUrl`
 
-**Phase 4+5 — React Native App** ✅ (source code only, no native folders yet)
+**Phase 4+5 — React Native App** ✅
 - Full app structure at `apps/mobile/`
+- Native `ios/` and `android/` project folders generated with `react-native init` (RN 0.83.9)
 - Navigation: 3-tab bottom tabs (Discover, Search, Live TV), each with stack navigators
 - 7 main screens: SearchScreen, DiscoverScreen, MovieDetailScreen, TVDetailScreen, PlayerScreen, LiveTVScreen + 4 LiveTV sub-screens
 - 5 components: ContentCard, ContentRow, FeaturedHero, ServerSelector, SkeletonLoader
@@ -75,12 +76,15 @@ skystream/                          # Monorepo root
 │   │   ├── src/components/         # All web components + CSS
 │   │   ├── src/services/           # tmdbApi.js shim, streamingServices.js shim, tmdbServer.js
 │   │   └── src/utils/              # web-only hooks and utils
-│   └── mobile/                     # React Native app (SOURCE ONLY — no ios/ or android/ yet)
+│   └── mobile/                     # React Native app (RN 0.83.9, native folders generated)
 │       ├── package.json
 │       ├── metro.config.js
 │       ├── babel.config.js
+│       ├── eslint.config.mjs       # flat ESLint config
 │       ├── App.jsx
 │       ├── index.js
+│       ├── ios/                     # native iOS project (Xcode workspace + Podfile)
+│       ├── android/                 # native Android project (Gradle)
 │       └── src/
 │           ├── navigation/         # RootNavigator, BottomTabNavigator, 3 stacks
 │           ├── screens/            # 7 screens + LiveTV/ sub-screens
@@ -92,36 +96,19 @@ skystream/                          # Monorepo root
 
 ## What Remains
 
-### 1. Generate Native iOS/Android Folders
-The `apps/mobile/` has all JS source code but NO `ios/` or `android/` native project folders. These need to be generated:
+> **Done since the original handover:** native `ios/` and `android/` project
+> folders were generated with `react-native init` (RN 0.83.9) and committed,
+> package unit tests were added for `@skystream/api` and `@skystream/shared`,
+> CI workflows are now strict (no `|| true`), and a flat ESLint config was added
+> for the mobile app.
 
+### 1. Install Native Dependencies
 ```bash
-cd apps/mobile
-npx @react-native-community/cli init SkyStream --directory . --skip-install
-```
-
-OR alternatively, init in a temp dir and copy the `ios/` and `android/` folders:
-
-```bash
-npx @react-native-community/cli init SkyStream --skip-install
-cp -r SkyStream/ios apps/mobile/ios
-cp -r SkyStream/android apps/mobile/android
-rm -rf SkyStream
-```
-
-After generating:
-- Update `ios/SkyStream/AppDelegate.mm` or `AppDelegate.swift` if needed
-- Update `android/app/src/main/java/.../MainActivity.java` to match package name
-- Copy `apps/mobile/index.js` registration name matches the native project name
-
-### 2. Install Native Dependencies
-```bash
-cd /Users/yashielsookdeo/Developer/yashiels/skynergroup/skystream
-pnpm install
+pnpm install            # from the repo root
 cd apps/mobile/ios && pod install
 ```
 
-### 3. Link Native Modules
+### 2. Link Native Modules
 These RN packages need native linking (should be auto-linked):
 - `react-native-screens`
 - `react-native-safe-area-context`
@@ -134,25 +121,26 @@ These RN packages need native linking (should be auto-linked):
 - **iOS**: Add fonts to `Info.plist` and Xcode build phases
 - **Android**: Add `apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")` to `android/app/build.gradle`
 
-### 4. Test on Simulators
+### 3. Test on Simulators
 ```bash
 pnpm --filter mobile ios     # iOS Simulator
 pnpm --filter mobile android # Android Emulator
 ```
 
-### 5. Fix Any Runtime Issues
+### 4. Fix Any Runtime Issues
 - Verify Metro resolves `@skystream/api` and `@skystream/shared` correctly
 - Test all screens: Search → results → detail → player
 - Test Live TV flow: mode → filter → channel list → player
 - Verify WebView embeds load (Vidsrc/Videasy URLs)
 - Verify react-native-video plays HLS streams
 
-### 6. Environment Variable Cleanup
-- Move TMDB API key from hardcoded in `apps/mobile/src/utils/api.js` to `react-native-config` `.env` file
-- Add `.env` to mobile `.gitignore`
-- Update CI workflows to inject `TMDB_API_KEY` secret as env var during build
+### 5. Environment Variable Cleanup
+- `apps/mobile/src/utils/api.js` already reads `react-native-config` (`Config.TMDB_API_KEY`)
+  with a hardcoded dev fallback; wire the production key through the build `.env`
+- Ensure `.env` is in mobile `.gitignore`
+- Update CI workflows to inject the `TMDB_API_KEY` secret as an env var during build
 
-### 7. App Store Preparation (Future)
+### 6. App Store Preparation (Future)
 - App icons and splash screen
 - iOS: Xcode signing, provisioning profiles
 - Android: Keystore for release signing
@@ -160,7 +148,7 @@ pnpm --filter mobile android # Android Emulator
 
 ## Key Technical Notes
 
-- **TMDB API Key**: `20aed25855723af6f6a4dcdad0f17b86` (also in GitHub secrets as `TMDB_API_KEY`)
+- **TMDB API Key**: stored in GitHub repo secrets as `TMDB_API_KEY` and in the Vercel project env (`NEXT_PUBLIC_TMDB_API_KEY`); not committed to the repo
 - **Web app verification**: `pnpm --filter web build` must always pass — this is the invariant
 - **Pre-existing test failures**: 2 tests in `StreamingResultCard.test.jsx` fail due to Next.js Image component URL transformation — not caused by restructuring
 - **Metro monorepo config**: `metro.config.js` uses `watchFolders` pointing to workspace root and `disableHierarchicalLookup: true`
@@ -170,16 +158,14 @@ pnpm --filter mobile android # Android Emulator
 ## Prompt for Next Session
 
 ```
-Continue the SkyStream monorepo restructuring. Read HANDOVER.md at the repo root for full context.
+Continue the SkyStream monorepo work. Read HANDOVER.md at the repo root for full context.
 
-The monorepo is at /Users/yashielsookdeo/Developer/yashiels/skynergroup/skystream
+The monorepo (web + mobile) is fully scaffolded and the native ios/ and android/
+folders now exist. Everything is done EXCEPT bringing the mobile app up on devices:
+1. pnpm install, then `cd apps/mobile/ios && pod install`
+2. Link native modules (especially react-native-vector-icons fonts)
+3. Test on iOS simulator / Android emulator and fix any runtime issues
+4. Wire the production TMDB key through the mobile build .env (react-native-config)
 
-Everything is done EXCEPT:
-1. Generate the native ios/ and android/ folders for apps/mobile/ (React Native CLI init)
-2. Install dependencies and pod install
-3. Link native modules (especially react-native-vector-icons fonts)
-4. Test on iOS simulator and fix any runtime issues
-5. Move TMDB API key to react-native-config
-
-Use subagents to parallelize where possible. The web app must continue building — verify with `pnpm --filter web build` after any changes.
+The web app must continue building — verify with `pnpm --filter web build` after any changes.
 ```
