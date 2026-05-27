@@ -55,7 +55,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={false}
         onClose={jest.fn()}
         content={mockContent}
-        platform="vidsrc"
+        platform="videasy"
         embedUrl="https://test.com"
       />
     );
@@ -69,7 +69,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockContent}
-        platform="vidsrc"
+        platform="videasy"
         embedUrl="https://test.com"
       />
     );
@@ -83,7 +83,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockContent}
-        platform="vidsrc"
+        platform="videasy"
         embedUrl="https://test.com"
       />
     );
@@ -99,7 +99,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={onClose}
         content={mockContent}
-        platform="vidsrc"
+        platform="videasy"
         embedUrl="https://test.com"
       />
     );
@@ -114,7 +114,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockContent}
-        platform="vidsrc"
+        platform="videasy"
         embedUrl="https://test.com"
       />
     );
@@ -123,45 +123,13 @@ describe('StreamingPlayerModal', () => {
     expect(iframes.length).toBeGreaterThan(0);
   });
 
-  test('shows platform selector with Server 1 and Server 2', () => {
-    render(
-      <StreamingPlayerModal
-        isOpen={true}
-        onClose={jest.fn()}
-        content={mockContent}
-        platform="vidsrc"
-        embedUrl="https://test.com"
-      />
-    );
-
-    expect(screen.getByText('Server 1')).toBeInTheDocument();
-    expect(screen.getByText('Server 2')).toBeInTheDocument();
-  });
-
-  test('switches platform when Server 2 is clicked', () => {
-    render(
-      <StreamingPlayerModal
-        isOpen={true}
-        onClose={jest.fn()}
-        content={mockContent}
-        platform="vidsrc"
-        embedUrl="https://test.com"
-      />
-    );
-
-    const server2Button = screen.getByText('Server 2');
-    fireEvent.click(server2Button);
-
-    expect(streamingServices.getAllStreamingUrls).toHaveBeenCalled();
-  });
-
   test('fetches seasons data for TV content', async () => {
     render(
       <StreamingPlayerModal
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="vidsrc"
+        platform="videasy"
         embedUrl="https://test.com"
         contentType="tv"
       />
@@ -178,7 +146,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="vidsrc"
+        platform="videasy"
         embedUrl="https://test.com"
         contentType="tv"
       />
@@ -196,7 +164,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="vidsrc"
+        platform="videasy"
         embedUrl="https://test.com"
         contentType="tv"
         season={1}
@@ -212,7 +180,7 @@ describe('StreamingPlayerModal', () => {
     const seasonSelects = screen.getAllByRole('combobox');
     if (seasonSelects.length > 0) {
       fireEvent.change(seasonSelects[0], { target: { value: '2' } });
-      expect(streamingServices.getAllStreamingUrls).toHaveBeenCalled();
+      expect(streamingServices.getStreamingUrl).toHaveBeenCalled();
     }
   });
 
@@ -222,7 +190,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="vidsrc"
+        platform="videasy"
         embedUrl="https://test.com"
         contentType="tv"
         season={1}
@@ -238,7 +206,7 @@ describe('StreamingPlayerModal', () => {
     const episodeSelects = screen.getAllByRole('combobox');
     if (episodeSelects.length > 1) {
       fireEvent.change(episodeSelects[1], { target: { value: '5' } });
-      expect(streamingServices.getAllStreamingUrls).toHaveBeenCalled();
+      expect(streamingServices.getStreamingUrl).toHaveBeenCalled();
     }
   });
 
@@ -250,7 +218,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="vidsrc"
+        platform="videasy"
         embedUrl="https://test.com"
         contentType="tv"
       />
@@ -270,7 +238,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={false}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="vidsrc"
+        platform="videasy"
         embedUrl="https://test.com"
         contentType="tv"
         season={2}
@@ -283,7 +251,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={mockTVContent}
-        platform="vidsrc"
+        platform="videasy"
         embedUrl="https://test.com"
         contentType="tv"
         season={2}
@@ -291,7 +259,7 @@ describe('StreamingPlayerModal', () => {
       />
     );
 
-    expect(streamingServices.getAllStreamingUrls).toHaveBeenCalled();
+    expect(streamingServices.getStreamingUrl).toHaveBeenCalled();
   });
 
   test('renders with null content', () => {
@@ -300,7 +268,7 @@ describe('StreamingPlayerModal', () => {
         isOpen={true}
         onClose={jest.fn()}
         content={null}
-        platform="vidsrc"
+        platform="videasy"
         embedUrl="https://fallback.com"
       />
     );
@@ -338,43 +306,6 @@ describe('StreamingPlayerModal', () => {
     });
   });
 
-  describe('Server Selection Coverage', () => {
-    test('should render all 7 server options', () => {
-      render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
-      expect(screen.getByText('Server 1')).toBeInTheDocument();
-      expect(screen.getByText('Server 2')).toBeInTheDocument();
-      expect(screen.getByText('Server 3')).toBeInTheDocument();
-      expect(screen.getByText('Server 4')).toBeInTheDocument();
-      expect(screen.getByText('Server 5')).toBeInTheDocument();
-      expect(screen.getByText('Server 6')).toBeInTheDocument();
-      expect(screen.getByText('Videasy')).toBeInTheDocument();
-    });
-
-    test('should update iframe when server changes', async () => {
-      streamingServices.getAllStreamingUrls = jest.fn(() => ({
-        server1: 'https://vsembed.ru/embed/movie?tmdb=1',
-        server2: 'https://vsembed.su/embed/movie?tmdb=1',
-        server3: 'https://vidsrc-embed.ru/embed/movie?tmdb=1',
-        server4: 'https://vidsrc-embed.su/embed/movie?tmdb=1',
-        server5: 'https://vidsrcme.su/embed/movie?tmdb=1',
-        server6: 'https://vsrc.su/embed/movie?tmdb=1',
-        server7: 'https://player.videasy.net/movie/1',
-      }));
-
-      render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
-
-      // Click Server 2 button to switch
-      const server2Button = screen.getByText('Server 2');
-      fireEvent.click(server2Button);
-
-      await waitFor(() => {
-        const iframes = document.querySelectorAll('iframe');
-        const playerIframe = Array.from(iframes).find(f => f.src.includes('vsembed'));
-        expect(playerIframe).toBeTruthy();
-      });
-    });
-  });
-
   describe('Referrer Policy Coverage', () => {
     test('should have referrerPolicy attribute on iframe', () => {
       const { container } = render(
@@ -398,13 +329,6 @@ describe('StreamingPlayerModal', () => {
       render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
       const heading = screen.getByRole('heading', { level: 2 });
       expect(heading).toBeInTheDocument();
-    });
-
-    test('should have accessible server selector', () => {
-      render(<StreamingPlayerModal isOpen={true} onClose={jest.fn()} content={mockContent} />);
-      // Server selector uses pill buttons with role=button
-      expect(screen.getByText('Server 1')).toBeInTheDocument();
-      expect(screen.getByText('Videasy')).toBeInTheDocument();
     });
 
     test('should have accessible season selector for TV shows', async () => {

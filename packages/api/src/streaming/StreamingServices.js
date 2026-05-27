@@ -1,98 +1,30 @@
 /**
  * Streaming Services API
- * Handles embed URL generation for Vidsrc and Videasy platforms
+ * Handles embed URL generation for Videasy player
+ * Docs: https://www.videasy.net/docs
  */
 
 class StreamingServices {
-  // Vidsrc embed domains — from API docs at https://vidsrcme.ru/api/ (updated 2026-05-27)
-  // Homepage/API domain is vidsrcme.ru but embed URLs use these 4 domains:
-  vidsrcDomain = 'https://vidsrc-embed.ru';
-
-  vidsrcMirrors = [
-    'https://vidsrc-embed.ru',
-    'https://vidsrc-embed.su',
-    'https://vidsrcme.su',
-    'https://vsrc.su',
-  ];
-
-  currentVidsrcMirrorIndex = 0;
-
-  // Videasy domain
   videasyDomain = 'https://player.videasy.net';
 
-  constructor() {
-    // Constructor is now empty but kept for future initialization if needed
-  }
-
-  /**
-   * Generate Vidsrc embed URL for movies
-   */
-  getVidsrcMovieUrl(tmdbId, options = {}) {
-    const { sub_url, ds_lang, autoplay = 1 } = options;
-
-    let url = `${this.vidsrcDomain}/embed/movie?tmdb=${tmdbId}`;
-
-    if (sub_url) {
-      url += `&sub_url=${encodeURIComponent(sub_url)}`;
-    }
-
-    if (ds_lang) {
-      url += `&ds_lang=${ds_lang}`;
-    }
-
-    url += `&autoplay=${autoplay}`;
-
-    return url;
-  }
-
-  /**
-   * Generate Vidsrc embed URL for TV shows
-   */
-  getVidsrcTVUrl(tmdbId, season = null, episode = null, options = {}) {
-    const { sub_url, ds_lang, autoplay = 1, autonext = 0 } = options;
-
-    let url = `${this.vidsrcDomain}/embed/tv?tmdb=${tmdbId}`;
-
-    if (season && episode) {
-      url += `&season=${season}&episode=${episode}`;
-    }
-
-    if (sub_url) {
-      url += `&sub_url=${encodeURIComponent(sub_url)}`;
-    }
-
-    if (ds_lang) {
-      url += `&ds_lang=${ds_lang}`;
-    }
-
-    url += `&autoplay=${autoplay}`;
-
-    if (season && episode) {
-      url += `&autonext=${autonext}`;
-    }
-
-    return url;
-  }
+  constructor() {}
 
   /**
    * Generate Videasy embed URL for movies
    */
-  getVideasyMovieUrl(tmdbId, options = {}) {
-    const { color = '8B5CF6', progress, overlay = true, autoplay = 1 } = options;
+  getMovieUrl(tmdbId, options = {}) {
+    const { color = 'e50914', progress, overlay = true, autoplay = 1 } = options;
 
     let url = `${this.videasyDomain}/movie/${tmdbId}`;
 
     const params = new URLSearchParams();
-
     if (color) params.append('color', color);
     if (progress) params.append('progress', progress);
     if (overlay) params.append('overlay', 'true');
     if (autoplay !== undefined) params.append('autoplay', autoplay);
 
     const queryString = params.toString();
-    if (queryString) {
-      url += `?${queryString}`;
-    }
+    if (queryString) url += `?${queryString}`;
 
     return url;
   }
@@ -100,9 +32,9 @@ class StreamingServices {
   /**
    * Generate Videasy embed URL for TV shows
    */
-  getVideasyTVUrl(tmdbId, season = 1, episode = 1, options = {}) {
+  getTVUrl(tmdbId, season = 1, episode = 1, options = {}) {
     const {
-      color = '8B5CF6',
+      color = 'e50914',
       progress,
       nextEpisode = true,
       episodeSelector = true,
@@ -113,7 +45,6 @@ class StreamingServices {
     let url = `${this.videasyDomain}/tv/${tmdbId}/${season}/${episode}`;
 
     const params = new URLSearchParams();
-
     if (color) params.append('color', color);
     if (progress) params.append('progress', progress);
     if (nextEpisode) params.append('nextEpisode', 'true');
@@ -122,9 +53,7 @@ class StreamingServices {
     if (overlay) params.append('overlay', 'true');
 
     const queryString = params.toString();
-    if (queryString) {
-      url += `?${queryString}`;
-    }
+    if (queryString) url += `?${queryString}`;
 
     return url;
   }
@@ -132,10 +61,10 @@ class StreamingServices {
   /**
    * Generate Videasy embed URL for anime
    */
-  getVideasyAnimeUrl(anilistId, episode = 1, options = {}) {
+  getAnimeUrl(anilistId, episode = 1, options = {}) {
     const {
       dub = false,
-      color = '8B5CF6',
+      color = 'e50914',
       progress,
       nextEpisode = true,
       episodeSelector = true,
@@ -144,14 +73,9 @@ class StreamingServices {
     } = options;
 
     let url = `${this.videasyDomain}/anime/${anilistId}`;
-
-    // For anime shows, add episode number
-    if (episode > 0) {
-      url += `/${episode}`;
-    }
+    if (episode > 0) url += `/${episode}`;
 
     const params = new URLSearchParams();
-
     if (dub) params.append('dub', 'true');
     if (color) params.append('color', color);
     if (progress) params.append('progress', progress);
@@ -161,143 +85,55 @@ class StreamingServices {
     if (overlay) params.append('overlay', 'true');
 
     const queryString = params.toString();
-    if (queryString) {
-      url += `?${queryString}`;
-    }
+    if (queryString) url += `?${queryString}`;
 
     return url;
   }
 
   /**
-   * Get Vidsrc URL for a specific mirror (0-3)
-   * Server 1 = vidsrc-embed.ru (index 0) — primary
-   * Server 2 = vidsrc-embed.su (index 1)
-   * Server 3 = vidsrcme.su (index 2)
-   * Server 4 = vsrc.su (index 3)
+   * Get the streaming URL for a content item
    */
-  getVidsrcMirrorUrl(
-    mirrorIndex,
-    tmdbId,
-    contentType = 'movie',
-    season = null,
-    episode = null,
-    options = {}
-  ) {
-    if (mirrorIndex < 0 || mirrorIndex >= this.vidsrcMirrors.length) {
-      console.warn(`Invalid mirror index: ${mirrorIndex}, using default`);
-      mirrorIndex = 0;
-    }
-
-    const domain = this.vidsrcMirrors[mirrorIndex];
-    const { sub_url, ds_lang, autoplay = 1, autonext = 0 } = options;
-
-    let url = `${domain}/embed/${contentType}?tmdb=${tmdbId}`;
-
-    if (contentType === 'tv' && season && episode) {
-      url += `&season=${season}&episode=${episode}`;
-    }
-
-    if (sub_url) {
-      url += `&sub_url=${encodeURIComponent(sub_url)}`;
-    }
-
-    if (ds_lang) {
-      url += `&ds_lang=${ds_lang}`;
-    }
-
-    url += `&autoplay=${autoplay}`;
-
-    if (contentType === 'tv' && season && episode) {
-      url += `&autonext=${autonext}`;
-    }
-
-    return url;
-  }
-
-  /**
-   * Get all available streaming URLs for a content item (5 servers)
-   * Servers 1-4: Vidsrc embed mirrors (from API docs)
-   * Server 5: Videasy
-   */
-  getAllStreamingUrls(content, options = {}) {
+  getStreamingUrl(content, options = {}) {
     const { season, episode } = options;
-    const urls = {};
 
     if (content.type === 'movie') {
-      // Servers 1-4: Vidsrc mirrors
-      urls.server1 = this.getVidsrcMirrorUrl(0, content.id, 'movie', null, null, options);
-      urls.server2 = this.getVidsrcMirrorUrl(1, content.id, 'movie', null, null, options);
-      urls.server3 = this.getVidsrcMirrorUrl(2, content.id, 'movie', null, null, options);
-      urls.server4 = this.getVidsrcMirrorUrl(3, content.id, 'movie', null, null, options);
-      // Server 5: Videasy
-      urls.server5 = this.getVideasyMovieUrl(content.id, options);
-
-      // Keep backward compatibility
-      urls.vidsrc = urls.server1;
-      urls.videasy = urls.server5;
+      return this.getMovieUrl(content.id, options);
     } else if (content.type === 'tv') {
-      // Servers 1-4: Vidsrc mirrors
-      urls.server1 = this.getVidsrcMirrorUrl(0, content.id, 'tv', season, episode, options);
-      urls.server2 = this.getVidsrcMirrorUrl(1, content.id, 'tv', season, episode, options);
-      urls.server3 = this.getVidsrcMirrorUrl(2, content.id, 'tv', season, episode, options);
-      urls.server4 = this.getVidsrcMirrorUrl(3, content.id, 'tv', season, episode, options);
-      // Server 5: Videasy
-      urls.server5 = this.getVideasyTVUrl(content.id, season, episode, options);
-
-      // Keep backward compatibility
-      urls.vidsrc = urls.server1;
-      urls.videasy = urls.server5;
+      return this.getTVUrl(content.id, season, episode, options);
     }
 
-    return urls;
+    return null;
+  }
+
+  // ---- Legacy compatibility aliases ----
+  // These map old method names to the Videasy equivalents so existing
+  // callers (web components, mobile screens) keep working without changes.
+
+  getVideasyMovieUrl(tmdbId, options = {}) {
+    return this.getMovieUrl(tmdbId, options);
+  }
+
+  getVideasyTVUrl(tmdbId, season = 1, episode = 1, options = {}) {
+    return this.getTVUrl(tmdbId, season, episode, options);
+  }
+
+  getVideasyAnimeUrl(anilistId, episode = 1, options = {}) {
+    return this.getAnimeUrl(anilistId, episode, options);
   }
 
   /**
-   * Get latest content from Vidsrc API
+   * Get all available streaming URLs for a content item
+   * Returns a single Videasy URL with legacy key aliases for backward compat
    */
-  async getVidsrcLatestMovies(page = 1) {
-    try {
-      const response = await fetch(`${this.vidsrcDomain}/movies/latest/page-${page}.json`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch latest movies: ${response.statusText}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Failed to fetch Vidsrc latest movies:', error);
-      throw error;
-    }
-  }
+  getAllStreamingUrls(content, options = {}) {
+    const url = this.getStreamingUrl(content, options);
 
-  /**
-   * Get latest TV shows from Vidsrc API
-   */
-  async getVidsrcLatestTVShows(page = 1) {
-    try {
-      const response = await fetch(`${this.vidsrcDomain}/tvshows/latest/page-${page}.json`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch latest TV shows: ${response.statusText}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Failed to fetch Vidsrc latest TV shows:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get latest episodes from Vidsrc API
-   */
-  async getVidsrcLatestEpisodes(page = 1) {
-    try {
-      const response = await fetch(`${this.vidsrcDomain}/episodes/latest/page-${page}.json`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch latest episodes: ${response.statusText}`);
-      }
-      return await response.json();
-    } catch (error) {
-      console.error('Failed to fetch Vidsrc latest episodes:', error);
-      throw error;
-    }
+    return {
+      server1: url,
+      videasy: url,
+      // Legacy aliases
+      vidsrc: url,
+    };
   }
 }
 

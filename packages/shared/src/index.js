@@ -2,11 +2,9 @@ export {
   APP_CONFIG,
   TMDB_DEFAULTS,
   PLAYER_DEFAULTS,
-  VIDSRC_MIRRORS,
   getTMDBImageUrl,
   getPosterUrl,
   getBackdropUrl,
-  getDownloadUrl,
 } from './config/index.js';
 
 export {

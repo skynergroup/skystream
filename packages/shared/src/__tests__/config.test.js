@@ -6,7 +6,6 @@ import {
   getTMDBImageUrl,
   getPosterUrl,
   getBackdropUrl,
-  getDownloadUrl,
 } from '../config/index.js';
 
 describe('shared config', () => {
@@ -43,20 +42,6 @@ describe('shared config', () => {
     });
   });
 
-  describe('getDownloadUrl', () => {
-    it('builds a movie download URL by default', () => {
-      expect(getDownloadUrl(550)).toBe('https://dl.vidsrc.vip/movie/550');
-    });
-
-    it('builds a TV download URL without season/episode', () => {
-      expect(getDownloadUrl(1399, 'tv')).toBe('https://dl.vidsrc.vip/tv/1399');
-    });
-
-    it('builds a TV download URL with season and episode', () => {
-      expect(getDownloadUrl(1399, 'tv', 2, 3)).toBe('https://dl.vidsrc.vip/tv/1399/2/3');
-    });
-  });
-
   describe('config constants', () => {
     it('APP_CONFIG exposes name, version, and description', () => {
       expect(APP_CONFIG.name).toBe('SkyStream');
@@ -71,10 +56,10 @@ describe('shared config', () => {
       expect(TMDB_DEFAULTS.defaultBackdropSize).toBe('w1280');
     });
 
-    it('PLAYER_DEFAULTS exposes the player and download URLs', () => {
+    it('PLAYER_DEFAULTS exposes the Videasy URL and defaults', () => {
       expect(PLAYER_DEFAULTS.videasyBaseUrl).toMatch(/videasy/);
-      expect(PLAYER_DEFAULTS.vidsrcDownloadUrl).toMatch(/dl\.vidsrc/);
       expect(PLAYER_DEFAULTS.defaultPlayer).toBe('videasy');
+      expect(PLAYER_DEFAULTS.defaultColor).toBe('e50914');
     });
   });
 });

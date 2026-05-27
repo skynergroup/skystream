@@ -1,48 +1,15 @@
 import { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { X, ExternalLink, Download } from 'lucide-react';
+import { X, ExternalLink } from 'lucide-react';
 import streamingServices from '../services/streamingServices';
 import tmdbApi from '../services/tmdbApi';
 import { generateMovieUrl, generateTVUrl } from '@skystream/shared';
 import { updateBrowserUrl } from '../utils/urlRouting';
-import { PLAYER_CONFIG } from '../utils/config';
+
 import './StreamingPlayerModal.css';
 
-const STORAGE_KEY = 'skystream-preferred-server';
-
-const SERVER_OPTIONS = [
-  { key: 'server1', label: 'Server 1' },
-  { key: 'server2', label: 'Server 2' },
-  { key: 'server3', label: 'Server 3' },
-  { key: 'server4', label: 'Server 4' },
-  { key: 'server5', label: 'Server 5' },
-  { key: 'server6', label: 'Server 6' },
-  { key: 'server7', label: 'Videasy' },
-];
-
-const getPreferredServer = fallbackKey => {
-  if (typeof window === 'undefined') return fallbackKey || 'server1';
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved && SERVER_OPTIONS.some(s => s.key === saved)) return saved;
-  } catch (e) {
-    console.warn('Failed to read server preference from localStorage:', e);
-  }
-  if (fallbackKey) {
-    if (SERVER_OPTIONS.some(s => s.key === fallbackKey)) return fallbackKey;
-    if (fallbackKey === 'videasy') return 'server7';
-    if (fallbackKey === 'vidsrc') return 'server1';
-  }
-  return 'server1';
-};
-
-const savePreferredServer = key => {
-  try {
-    localStorage.setItem(STORAGE_KEY, key);
-  } catch (e) {
-    console.warn('Failed to save server preference to localStorage:', e);
-  }
-};
+// Single player — Videasy handles all streaming
+const DEFAULT_SERVER = 'videasy';
 
 const StreamingPlayerModal = ({
   isOpen,
@@ -58,10 +25,10 @@ const StreamingPlayerModal = ({
   const [selectedSeason, setSelectedSeason] = useState(season || 1);
   const [selectedEpisode, setSelectedEpisode] = useState(episode || 1);
   const [currentEmbedUrl, setCurrentEmbedUrl] = useState(embedUrl);
-  const [selectedPlatform, setSelectedPlatform] = useState(() => getPreferredServer(_platform));
+
   const [seasonsData, setSeasonsData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [iframeSwitching, setIframeSwitching] = useState(false);
+  const [iframeSwitching] = useState(false);
 
   // Sync state with props when they change (e.g., from deep linking)
   useEffect(() => {
@@ -90,48 +57,18 @@ const StreamingPlayerModal = ({
     }
   };
 
-  // Handle server switch with loading transition
-  const handleServerSwitch = serverKey => {
-    if (serverKey === selectedPlatform) return;
-    setIframeSwitching(true);
-    setSelectedPlatform(serverKey);
-    savePreferredServer(serverKey);
-  };
-
-  // Update embed URL when season/episode/platform changes
+  // Update embed URL when season/episode changes
   useEffect(() => {
-    if (content?.id && selectedPlatform) {
-      const urls = streamingServices.getAllStreamingUrls(content, {
+    if (content?.id) {
+      const url = streamingServices.getStreamingUrl(content, {
         season: selectedSeason,
         episode: selectedEpisode,
       });
-
-      // Support both new format (server1-7) and legacy keys
-      if (urls[selectedPlatform]) {
-        setCurrentEmbedUrl(urls[selectedPlatform]);
-      } else if (selectedPlatform === 'vidsrc') {
-        setCurrentEmbedUrl(urls.server1);
-      } else if (selectedPlatform === 'videasy') {
-        setCurrentEmbedUrl(urls.server7);
-      }
+      if (url) setCurrentEmbedUrl(url);
     } else {
       setCurrentEmbedUrl(embedUrl);
     }
-
-    // Clear switching state after a brief delay
-    if (iframeSwitching) {
-      const timer = setTimeout(() => setIframeSwitching(false), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [
-    selectedSeason,
-    selectedEpisode,
-    selectedPlatform,
-    contentType,
-    content,
-    embedUrl,
-    iframeSwitching,
-  ]);
+  }, [selectedSeason, selectedEpisode, contentType, content, embedUrl]);
 
   // Fetch seasons data from TMDB when modal opens for TV content
   useEffect(() => {
@@ -185,7 +122,7 @@ const StreamingPlayerModal = ({
 
   // Listen for episode changes from Server 2 navigation
   useEffect(() => {
-    if (!isOpen || selectedPlatform !== 'videasy' || contentType !== 'tv') return;
+    if (!isOpen || contentType !== 'tv') return;
 
     // Listen for postMessage from iframe about navigation
     const handleMessage = event => {
@@ -211,7 +148,7 @@ const StreamingPlayerModal = ({
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-  }, [isOpen, selectedPlatform, contentType, selectedSeason, selectedEpisode]);
+  }, [isOpen, contentType, selectedSeason, selectedEpisode]);
 
   // Handle escape key
   useEffect(() => {
@@ -242,76 +179,6 @@ const StreamingPlayerModal = ({
   // Open in new tab
   const handleOpenInNewTab = () => {
     window.open(currentEmbedUrl, '_blank', 'noopener,noreferrer');
-  };
-
-  // Extract season and episode from selected values or embed URL
-  const extractSeasonEpisode = () => {
-    // Use selected values if available
-    if (selectedSeason && selectedEpisode) {
-      return { season: selectedSeason, episode: selectedEpisode };
-    }
-
-    // Fall back to props
-    if (season && episode) {
-      return { season, episode };
-    }
-
-    if (embedUrl && contentType === 'tv') {
-      try {
-        const url = new URL(embedUrl);
-        const urlSeason = url.searchParams.get('season');
-        const urlEpisode = url.searchParams.get('episode');
-
-        if (urlSeason && urlEpisode) {
-          return {
-            season: Number.parseInt(urlSeason, 10),
-            episode: Number.parseInt(urlEpisode, 10),
-          };
-        }
-      } catch (e) {
-        console.warn('Failed to parse embed URL:', e);
-      }
-    }
-
-    // Default to season 1, episode 1 for TV series
-    return { season: 1, episode: 1 };
-  };
-
-  // Generate download URL
-  const generateDownloadUrl = () => {
-    if (!content?.id) return null;
-
-    const baseUrl = PLAYER_CONFIG.vidsrc.downloadUrl;
-
-    if (contentType === 'movie') {
-      // Movie format: https://dl.vidsrc.vip/movie/986056
-      return `${baseUrl}/movie/${content.id}`;
-    } else if (contentType === 'tv') {
-      // TV format: https://dl.vidsrc.vip/tv/60572/1/1
-      const { season: extractedSeason, episode: extractedEpisode } = extractSeasonEpisode();
-      return `${baseUrl}/tv/${content.id}/${extractedSeason}/${extractedEpisode}`;
-    }
-
-    return null;
-  };
-
-  // Handle download
-  const handleDownload = () => {
-    const downloadUrl = generateDownloadUrl();
-    if (downloadUrl) {
-      window.open(downloadUrl, '_blank', 'noopener,noreferrer');
-    }
-  };
-
-  // Get download button title
-  const getDownloadTitle = () => {
-    if (contentType === 'movie') {
-      return 'Download movie';
-    } else if (contentType === 'tv') {
-      const { season: extractedSeason, episode: extractedEpisode } = extractSeasonEpisode();
-      return `Download S${extractedSeason}E${extractedEpisode}`;
-    }
-    return 'Download content';
   };
 
   if (!isOpen) return null;
@@ -399,15 +266,6 @@ const StreamingPlayerModal = ({
           )}
 
           <div className="streaming-player-modal__controls">
-            {generateDownloadUrl() && (
-              <button
-                className="streaming-player-modal__control-btn"
-                onClick={handleDownload}
-                title={getDownloadTitle()}
-              >
-                <Download size={18} />
-              </button>
-            )}
             <button
               className="streaming-player-modal__control-btn"
               onClick={handleOpenInNewTab}
@@ -425,28 +283,10 @@ const StreamingPlayerModal = ({
           </div>
         </div>
 
-        <div className="streaming-player-modal__server-bar">
-          <div className="streaming-player-modal__server-pills">
-            {SERVER_OPTIONS.map(({ key, label }) => (
-              <button
-                key={key}
-                type="button"
-                className={`streaming-player-modal__server-pill${selectedPlatform === key ? ' streaming-player-modal__server-pill--active' : ''}`}
-                onClick={() => handleServerSwitch(key)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          <span className="streaming-player-modal__server-hint">
-            Video not loading? Try another server
-          </span>
-        </div>
-
         <div className="streaming-player-modal__player">
           <iframe
             src={currentEmbedUrl}
-            title={`${content?.title} - ${selectedPlatform}`}
+            title={`${content?.title} - Videasy`}
             className={`streaming-player-modal__iframe ${iframeSwitching ? 'streaming-player-modal__iframe--loading' : 'streaming-player-modal__iframe--loaded'}`}
             allow="encrypted-media; autoplay; fullscreen"
             referrerPolicy="origin"
@@ -473,17 +313,7 @@ StreamingPlayerModal.propTypes = {
     id: PropTypes.number.isRequired,
     title: PropTypes.string,
   }),
-  platform: PropTypes.oneOf([
-    'server1',
-    'server2',
-    'server3',
-    'server4',
-    'server5',
-    'server6',
-    'server7',
-    'vidsrc',
-    'videasy',
-  ]).isRequired,
+  platform: PropTypes.oneOf(['server1', 'server2', 'server3', 'videasy']),
   embedUrl: PropTypes.string,
   contentType: PropTypes.oneOf(['movie', 'tv']),
   season: PropTypes.number,

@@ -13,20 +13,11 @@ export const TMDB_DEFAULTS = {
 
 export const PLAYER_DEFAULTS = {
   videasyBaseUrl: 'https://player.videasy.net',
-  vidsrcDownloadUrl: 'https://dl.vidsrc.vip',
   defaultPlayer: 'videasy',
   defaultColor: 'e50914',
   autoPlay: true,
   language: 'en',
 };
-
-// Embed domains from VidSrc API docs at https://vidsrcme.ru/api/ (updated 2026-05-27)
-export const VIDSRC_MIRRORS = [
-  'https://vidsrc-embed.ru',
-  'https://vidsrc-embed.su',
-  'https://vidsrcme.su',
-  'https://vsrc.su',
-];
 
 export const getTMDBImageUrl = (path, size = TMDB_DEFAULTS.defaultPosterSize) => {
   if (!path) return null;
@@ -36,14 +27,3 @@ export const getTMDBImageUrl = (path, size = TMDB_DEFAULTS.defaultPosterSize) =>
 export const getPosterUrl = path => getTMDBImageUrl(path, TMDB_DEFAULTS.defaultPosterSize);
 
 export const getBackdropUrl = path => getTMDBImageUrl(path, TMDB_DEFAULTS.defaultBackdropSize);
-
-export const getDownloadUrl = (contentId, contentType = 'movie', season = null, episode = null) => {
-  const baseUrl = PLAYER_DEFAULTS.vidsrcDownloadUrl;
-  if (contentType === 'movie') {
-    return `${baseUrl}/movie/${contentId}`;
-  }
-  if (season && episode) {
-    return `${baseUrl}/tv/${contentId}/${season}/${episode}`;
-  }
-  return `${baseUrl}/tv/${contentId}`;
-};

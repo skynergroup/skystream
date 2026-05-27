@@ -42,17 +42,6 @@ export const PLAYER_CONFIG = {
   videasy: {
     baseUrl: process.env.NEXT_PUBLIC_VIDEASY_BASE_URL || 'https://player.videasy.net',
   },
-  vidsrc: {
-    baseUrl: process.env.NEXT_PUBLIC_VIDSRC_BASE_URL || 'https://vidsrc-embed.ru/embed',
-    mirrors: [
-      process.env.NEXT_PUBLIC_VIDSRC_MIRROR_1 || 'https://vidsrc-embed.ru/embed',
-      process.env.NEXT_PUBLIC_VIDSRC_MIRROR_2 || 'https://vidsrc-embed.su/embed',
-      process.env.NEXT_PUBLIC_VIDSRC_MIRROR_3 || 'https://vidsrcme.su/embed',
-      process.env.NEXT_PUBLIC_VIDSRC_MIRROR_4 || 'https://vsrc.su/embed',
-    ],
-    downloadUrl: process.env.NEXT_PUBLIC_VIDSRC_DOWNLOAD_URL || 'https://dl.vidsrc.vip',
-  },
-
   defaults: {
     player: process.env.NEXT_PUBLIC_DEFAULT_PLAYER || 'videasy',
     color: process.env.NEXT_PUBLIC_PLAYER_COLOR || 'e50914',
@@ -145,31 +134,6 @@ export const utils = {
       return `${url}?${params}`;
     }
 
-    if (player === 'vidsrc') {
-      let url = '';
-
-      if (contentType === 'movie') {
-        // VidSrc movie format: https://vidsrc.xyz/embed/movie?tmdb=TMDB_ID
-        url = `${PLAYER_CONFIG.vidsrc.baseUrl}/movie?tmdb=${contentId}`;
-      } else if (contentType === 'tv' || contentType === 'anime') {
-        // VidSrc TV format: https://vidsrc.xyz/embed/tv?tmdb=TMDB_ID&season=SEASON&episode=EPISODE
-        url = `${PLAYER_CONFIG.vidsrc.baseUrl}/tv?tmdb=${contentId}&season=${season}&episode=${episode}`;
-
-        // Add VidSrc specific options for TV shows
-        if (playerOptions.autoplay !== 'false') {
-          url += '&autoplay=1';
-        }
-        url += '&autonext=1'; // Enable auto next episode
-      }
-
-      // Add subtitle language if specified
-      if (playerOptions.language && playerOptions.language !== 'en') {
-        url += `&ds_lang=${playerOptions.language}`;
-      }
-
-      return url;
-    }
-
     return '';
   },
 
@@ -198,22 +162,8 @@ export const utils = {
     }
   },
 
-  // Generate download URL
-  getDownloadUrl: (contentId, contentType = 'movie', season = null, episode = null) => {
-    const baseUrl = PLAYER_CONFIG.vidsrc.downloadUrl;
-    if (contentType === 'movie') {
-      return `${baseUrl}/movie/${contentId}`;
-    } else if (contentType === 'tv' || contentType === 'anime') {
-      // For TV shows and anime, include season and episode in the URL
-      if (season && episode) {
-        return `${baseUrl}/tv/${contentId}/${season}/${episode}`;
-      } else {
-        // Fallback to generic TV URL if season/episode not provided
-        return `${baseUrl}/tv/${contentId}`;
-      }
-    }
-    return `${baseUrl}/movie/${contentId}`; // Default fallback
-  },
+  // Download URL — removed with VidSrc, Videasy does not provide download links
+  getDownloadUrl: () => null,
 
   // Log function that respects environment settings
   log: (...args) => {

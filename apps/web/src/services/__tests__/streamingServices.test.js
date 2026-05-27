@@ -1,452 +1,145 @@
 import streamingServices from '../streamingServices';
 
-describe('StreamingServices', () => {
-  describe('getVidsrcMovieUrl', () => {
-    test('generates basic movie URL', () => {
-      const url = streamingServices.getVidsrcMovieUrl(299534);
-
-      expect(url).toBe('https://vidsrc-embed.ru/embed/movie?tmdb=299534&autoplay=1');
+describe('StreamingServices (Videasy)', () => {
+  describe('getMovieUrl', () => {
+    it('generates basic movie URL', () => {
+      const url = streamingServices.getMovieUrl(299534);
+      expect(url).toContain('player.videasy.net/movie/299534');
     });
 
-    test('includes sub_url when provided', () => {
-      const url = streamingServices.getVidsrcMovieUrl(299534, {
-        sub_url: 'https://example.com/subs.vtt',
-      });
-
-      expect(url).toContain('sub_url=https%3A%2F%2Fexample.com%2Fsubs.vtt');
-    });
-
-    test('includes ds_lang when provided', () => {
-      const url = streamingServices.getVidsrcMovieUrl(299534, {
-        ds_lang: 'en',
-      });
-
-      expect(url).toContain('ds_lang=en');
-    });
-
-    test('respects custom autoplay setting', () => {
-      const url = streamingServices.getVidsrcMovieUrl(299534, {
-        autoplay: 0,
-      });
-
-      expect(url).toContain('autoplay=0');
-    });
-
-    test('includes all options when provided', () => {
-      const url = streamingServices.getVidsrcMovieUrl(299534, {
-        sub_url: 'https://example.com/subs.vtt',
-        ds_lang: 'en',
-        autoplay: 0,
-      });
-
-      expect(url).toContain('sub_url=');
-      expect(url).toContain('ds_lang=en');
-      expect(url).toContain('autoplay=0');
-    });
-  });
-
-  describe('getVidsrcTVUrl', () => {
-    test('generates basic TV URL without season/episode', () => {
-      const url = streamingServices.getVidsrcTVUrl(1399);
-
-      expect(url).toBe('https://vidsrc-embed.ru/embed/tv?tmdb=1399&autoplay=1');
-    });
-
-    test('includes season and episode when provided', () => {
-      const url = streamingServices.getVidsrcTVUrl(1399, 1, 1);
-
-      expect(url).toContain('season=1');
-      expect(url).toContain('episode=1');
-      expect(url).toContain('autonext=0');
-    });
-
-    test('includes sub_url when provided', () => {
-      const url = streamingServices.getVidsrcTVUrl(1399, 1, 1, {
-        sub_url: 'https://example.com/subs.vtt',
-      });
-
-      expect(url).toContain('sub_url=https%3A%2F%2Fexample.com%2Fsubs.vtt');
-    });
-
-    test('includes ds_lang when provided', () => {
-      const url = streamingServices.getVidsrcTVUrl(1399, 1, 1, {
-        ds_lang: 'en',
-      });
-
-      expect(url).toContain('ds_lang=en');
-    });
-
-    test('respects custom autoplay setting', () => {
-      const url = streamingServices.getVidsrcTVUrl(1399, 1, 1, {
-        autoplay: 0,
-      });
-
-      expect(url).toContain('autoplay=0');
-    });
-
-    test('respects custom autonext setting', () => {
-      const url = streamingServices.getVidsrcTVUrl(1399, 1, 1, {
-        autonext: 1,
-      });
-
-      expect(url).toContain('autonext=1');
-    });
-
-    test('does not include autonext without season/episode', () => {
-      const url = streamingServices.getVidsrcTVUrl(1399);
-
-      expect(url).not.toContain('autonext');
-    });
-  });
-
-  describe('getVideasyMovieUrl', () => {
-    test('generates basic movie URL', () => {
-      const url = streamingServices.getVideasyMovieUrl(299534);
-
-      expect(url).toContain('https://player.videasy.net/movie/299534');
-      expect(url).toContain('color=8B5CF6');
+    it('includes default color and overlay', () => {
+      const url = streamingServices.getMovieUrl(299534);
+      expect(url).toContain('color=e50914');
       expect(url).toContain('overlay=true');
-      expect(url).toContain('autoplay=1');
     });
 
-    test('includes custom color', () => {
-      const url = streamingServices.getVideasyMovieUrl(299534, {
-        color: 'FF0000',
+    it('accepts custom options', () => {
+      const url = streamingServices.getMovieUrl(299534, {
+        color: '3B82F6',
+        progress: 60,
       });
-
-      expect(url).toContain('color=FF0000');
-    });
-
-    test('includes progress when provided', () => {
-      const url = streamingServices.getVideasyMovieUrl(299534, {
-        progress: 50,
-      });
-
-      expect(url).toContain('progress=50');
-    });
-
-    test('respects overlay setting', () => {
-      const url = streamingServices.getVideasyMovieUrl(299534, {
-        overlay: false,
-      });
-
-      expect(url).not.toContain('overlay=true');
-    });
-
-    test('respects autoplay setting', () => {
-      const url = streamingServices.getVideasyMovieUrl(299534, {
-        autoplay: 0,
-      });
-
-      expect(url).toContain('autoplay=0');
+      expect(url).toContain('color=3B82F6');
+      expect(url).toContain('progress=60');
     });
   });
 
-  describe('getVideasyTVUrl', () => {
-    test('generates basic TV URL', () => {
-      const url = streamingServices.getVideasyTVUrl(1399, 1, 1);
+  describe('getTVUrl', () => {
+    it('generates TV URL with season and episode', () => {
+      const url = streamingServices.getTVUrl(1399, 2, 5);
+      expect(url).toContain('player.videasy.net/tv/1399/2/5');
+    });
 
-      expect(url).toContain('https://player.videasy.net/tv/1399/1/1');
-      expect(url).toContain('color=8B5CF6');
+    it('includes episode navigation features by default', () => {
+      const url = streamingServices.getTVUrl(1399, 1, 1);
       expect(url).toContain('nextEpisode=true');
       expect(url).toContain('episodeSelector=true');
       expect(url).toContain('autoplayNextEpisode=true');
-      expect(url).toContain('overlay=true');
     });
 
-    test('includes custom color', () => {
-      const url = streamingServices.getVideasyTVUrl(1399, 1, 1, {
-        color: 'FF0000',
-      });
+    it('defaults to season 1 episode 1', () => {
+      const url = streamingServices.getTVUrl(1399);
+      expect(url).toContain('/tv/1399/1/1');
+    });
+  });
 
-      expect(url).toContain('color=FF0000');
+  describe('getAnimeUrl', () => {
+    it('generates anime URL with episode', () => {
+      const url = streamingServices.getAnimeUrl(21, 5);
+      expect(url).toContain('player.videasy.net/anime/21/5');
     });
 
-    test('includes progress when provided', () => {
-      const url = streamingServices.getVideasyTVUrl(1399, 1, 1, {
-        progress: 50,
-      });
+    it('supports dub option', () => {
+      const url = streamingServices.getAnimeUrl(21, 1, { dub: true });
+      expect(url).toContain('dub=true');
+    });
+  });
 
-      expect(url).toContain('progress=50');
+  describe('getStreamingUrl', () => {
+    it('returns movie URL for movie type', () => {
+      const url = streamingServices.getStreamingUrl({ id: 299534, type: 'movie' });
+      expect(url).toContain('/movie/299534');
     });
 
-    test('respects nextEpisode setting', () => {
-      const url = streamingServices.getVideasyTVUrl(1399, 1, 1, {
-        nextEpisode: false,
-      });
-
-      expect(url).not.toContain('nextEpisode=');
-    });
-
-    test('respects episodeSelector setting', () => {
-      const url = streamingServices.getVideasyTVUrl(1399, 1, 1, {
-        episodeSelector: false,
-      });
-
-      expect(url).not.toContain('episodeSelector=');
-    });
-
-    test('respects autoplayNextEpisode setting', () => {
-      const url = streamingServices.getVideasyTVUrl(1399, 1, 1, {
-        autoplayNextEpisode: false,
-      });
-
-      expect(url).not.toContain('autoplayNextEpisode=');
+    it('returns TV URL for tv type', () => {
+      const url = streamingServices.getStreamingUrl(
+        { id: 1399, type: 'tv' },
+        { season: 1, episode: 1 }
+      );
+      expect(url).toContain('/tv/1399/1/1');
     });
   });
 
   describe('getAllStreamingUrls', () => {
-    test('generates URLs for movie content', () => {
-      const content = {
-        id: 299534,
-        type: 'movie',
-      };
-
-      const urls = streamingServices.getAllStreamingUrls(content);
-
-      expect(urls.vidsrc).toContain('vidsrc-embed.ru/embed/movie');
-      expect(urls.vidsrc).toContain('tmdb=299534');
-      expect(urls.videasy).toContain('videasy.net/movie/299534');
+    it('returns Videasy URL with legacy aliases for movies', () => {
+      const urls = streamingServices.getAllStreamingUrls({ id: 299534, type: 'movie' });
+      expect(urls.videasy).toContain('player.videasy.net/movie/299534');
+      expect(urls.server1).toBe(urls.videasy);
+      expect(urls.vidsrc).toBe(urls.videasy);
     });
 
-    test('generates URLs for TV content', () => {
-      const content = {
-        id: 1399,
-        type: 'tv',
-      };
-
-      const urls = streamingServices.getAllStreamingUrls(content);
-
-      expect(urls.vidsrc).toContain('vidsrc-embed.ru/embed/tv');
-      expect(urls.vidsrc).toContain('tmdb=1399');
-      expect(urls.videasy).toContain('videasy.net/tv/1399');
-    });
-
-    test('includes season and episode for TV content', () => {
-      const content = {
-        id: 1399,
-        type: 'tv',
-      };
-
-      const urls = streamingServices.getAllStreamingUrls(content, {
-        season: 2,
-        episode: 5,
-      });
-
-      expect(urls.vidsrc).toContain('season=2');
-      expect(urls.vidsrc).toContain('episode=5');
-      expect(urls.videasy).toContain('/tv/1399/2/5');
-    });
-
-    test('returns empty object for unknown content type', () => {
-      const content = { id: 1, type: 'unknown' };
-      const urls = streamingServices.getAllStreamingUrls(content);
-
-      expect(urls).toEqual({});
+    it('returns Videasy URL with legacy aliases for TV', () => {
+      const urls = streamingServices.getAllStreamingUrls(
+        { id: 1399, type: 'tv' },
+        { season: 1, episode: 1 }
+      );
+      expect(urls.videasy).toContain('player.videasy.net/tv/1399/1/1');
+      expect(urls.server1).toBe(urls.videasy);
     });
   });
 
-  describe('getVideasyAnimeUrl', () => {
-    test('generates anime URL with episode', () => {
-      const url = streamingServices.getVideasyAnimeUrl(12345, 5);
-
-      expect(url).toContain('/anime/12345/5');
+  describe('legacy method aliases', () => {
+    it('getVideasyMovieUrl works', () => {
+      const url = streamingServices.getVideasyMovieUrl(299534);
+      expect(url).toContain('/movie/299534');
     });
 
-    test('generates anime URL without episode', () => {
-      const url = streamingServices.getVideasyAnimeUrl(12345, 0);
-
-      expect(url).toContain('/anime/12345');
-      expect(url).not.toContain('/0');
-    });
-
-    test('includes dub parameter when specified', () => {
-      const url = streamingServices.getVideasyAnimeUrl(12345, 1, { dub: true });
-
-      expect(url).toContain('dub=true');
-    });
-
-    test('includes color parameter when specified', () => {
-      const url = streamingServices.getVideasyAnimeUrl(12345, 1, { color: 'red' });
-
-      expect(url).toContain('color=red');
-    });
-
-    test('includes progress parameter when specified', () => {
-      const url = streamingServices.getVideasyAnimeUrl(12345, 1, { progress: 50 });
-
-      expect(url).toContain('progress=50');
-    });
-
-    test('includes nextEpisode parameter by default', () => {
-      const url = streamingServices.getVideasyAnimeUrl(12345, 1);
-
-      expect(url).toContain('nextEpisode=true');
-    });
-
-    test('includes episodeSelector parameter by default', () => {
-      const url = streamingServices.getVideasyAnimeUrl(12345, 1);
-
-      expect(url).toContain('episodeSelector=true');
-    });
-
-    test('includes autoplayNextEpisode parameter by default', () => {
-      const url = streamingServices.getVideasyAnimeUrl(12345, 1);
-
-      expect(url).toContain('autoplayNextEpisode=true');
-    });
-
-    test('includes overlay parameter by default', () => {
-      const url = streamingServices.getVideasyAnimeUrl(12345, 1);
-
-      expect(url).toContain('overlay=true');
-    });
-
-    test('excludes autoplayNextEpisode when set to false', () => {
-      const url = streamingServices.getVideasyAnimeUrl(12345, 1, { autoplayNextEpisode: false });
-
-      expect(url).not.toContain('autoplayNextEpisode');
-    });
-
-    test('excludes overlay when set to false', () => {
-      const url = streamingServices.getVideasyAnimeUrl(12345, 1, { overlay: false });
-
-      expect(url).not.toContain('overlay');
+    it('getVideasyTVUrl works', () => {
+      const url = streamingServices.getVideasyTVUrl(1399, 1, 1);
+      expect(url).toContain('/tv/1399/1/1');
     });
   });
+});
 
-  describe('getVidsrcLatestMovies', () => {
+describe('TMDBApi', () => {
+  // Re-export the TMDB tests that were in this file
+  const tmdbApi = require('../tmdbApi').default;
+
+  describe('makeRequest', () => {
     beforeEach(() => {
-      jest.spyOn(console, 'error').mockImplementation(() => {});
-    });
-
-    afterEach(() => {
-      console.error.mockRestore();
-    });
-
-    test('fetches latest movies from Vidsrc API', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ results: [] }),
-      });
-
-      await streamingServices.getVidsrcLatestMovies();
-
-      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/movies/latest/page-1.json'));
-    });
-
-    test('includes page parameter', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ results: [] }),
-      });
-
-      await streamingServices.getVidsrcLatestMovies(2);
-
-      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/movies/latest/page-2.json'));
-    });
-
-    test('handles fetch errors', async () => {
-      global.fetch = jest.fn().mockRejectedValue(new Error('Network error'));
-
-      await expect(streamingServices.getVidsrcLatestMovies()).rejects.toThrow('Network error');
-    });
-
-    test('handles non-ok response', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: false,
-        statusText: 'Not Found',
-      });
-
-      await expect(streamingServices.getVidsrcLatestMovies()).rejects.toThrow(
-        'Failed to fetch latest movies'
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ results: [] }),
+        })
       );
     });
-  });
 
-  describe('getVidsrcLatestTVShows', () => {
-    beforeEach(() => {
-      jest.spyOn(console, 'error').mockImplementation(() => {});
+    it('makes successful API request', async () => {
+      const result = await tmdbApi.makeRequest('/test');
+      expect(result).toEqual({ results: [] });
     });
 
-    afterEach(() => {
-      console.error.mockRestore();
+    it('includes API key in request', async () => {
+      await tmdbApi.makeRequest('/test');
+      const callUrl = global.fetch.mock.calls[0][0];
+      expect(callUrl).toContain('api_key=');
     });
 
-    test('fetches latest TV shows from Vidsrc API', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ results: [] }),
-      });
-
-      await streamingServices.getVidsrcLatestTVShows();
-
-      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/tvshows/latest/page-1.json'));
+    it('includes additional parameters', async () => {
+      await tmdbApi.makeRequest('/test', { page: 2 });
+      const callUrl = global.fetch.mock.calls[0][0];
+      expect(callUrl).toContain('page=2');
     });
 
-    test('includes page parameter', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ results: [] }),
-      });
-
-      await streamingServices.getVidsrcLatestTVShows(3);
-
-      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/tvshows/latest/page-3.json'));
-    });
-
-    test('handles non-ok response', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: false,
-        statusText: 'Not Found',
-      });
-
-      await expect(streamingServices.getVidsrcLatestTVShows()).rejects.toThrow(
-        'Failed to fetch latest TV shows'
+    it('handles non-ok response', async () => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          ok: false,
+          status: 404,
+          statusText: 'Not Found',
+        })
       );
-    });
-  });
-
-  describe('getVidsrcLatestEpisodes', () => {
-    beforeEach(() => {
-      jest.spyOn(console, 'error').mockImplementation(() => {});
-    });
-
-    afterEach(() => {
-      console.error.mockRestore();
-    });
-
-    test('fetches latest episodes from Vidsrc API', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ results: [] }),
-      });
-
-      await streamingServices.getVidsrcLatestEpisodes();
-
-      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/episodes/latest/page-1.json'));
-    });
-
-    test('includes page parameter', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ results: [] }),
-      });
-
-      await streamingServices.getVidsrcLatestEpisodes(4);
-
-      expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/episodes/latest/page-4.json'));
-    });
-
-    test('handles non-ok response', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        ok: false,
-        statusText: 'Not Found',
-      });
-
-      await expect(streamingServices.getVidsrcLatestEpisodes()).rejects.toThrow(
-        'Failed to fetch latest episodes'
-      );
+      await expect(tmdbApi.makeRequest('/test')).rejects.toThrow('TMDB API Error: 404 Not Found');
     });
   });
 });
