@@ -448,7 +448,6 @@ const StreamingPlayerModal = ({
             src={currentEmbedUrl}
             title={`${content?.title} - ${selectedPlatform}`}
             className={`streaming-player-modal__iframe ${iframeSwitching ? 'streaming-player-modal__iframe--loading' : 'streaming-player-modal__iframe--loaded'}`}
-            allowFullScreen
             allow="encrypted-media; autoplay; fullscreen"
             referrerPolicy="origin"
             style={{ border: 'none' }}
