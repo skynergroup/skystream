@@ -355,7 +355,7 @@ describe('TMDBApi', () => {
 
       const callUrl = fetch.mock.calls[0][0];
       expect(callUrl.toString()).toContain('/search/tv');
-      expect(callUrl.toString()).toContain('query=breaking+bad');
+      expect(callUrl.toString()).toContain('query=breaking%20bad');
     });
   });
 

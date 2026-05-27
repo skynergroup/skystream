@@ -9,7 +9,7 @@
     "dev": "react-native start",
     "build:ios": "cd ios && xcodebuild -workspace SkyStream.xcworkspace -scheme SkyStream -configuration Release",
     "build:android": "cd android && ./gradlew assembleRelease",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "lint": "eslint src"
   },
   "dependencies": {

@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import StreamingResultCard from '../StreamingResultCard';
 
 // Mock streamingServices
@@ -64,7 +64,8 @@ describe('StreamingResultCard', () => {
 
     const image = screen.getByAltText('Test Movie');
     expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute('src', 'https://image.tmdb.org/t/p/w500/test-poster.jpg');
+    // Next.js Image rewrites src through its optimizer
+    expect(image.getAttribute('src')).toContain('test-poster.jpg');
   });
 
   test('renders placeholder when poster_path is null', () => {
@@ -83,27 +84,32 @@ describe('StreamingResultCard', () => {
     expect(placeholder).toBeInTheDocument();
   });
 
-  test('handles image load event', () => {
+  test('handles image load event', async () => {
     render(<StreamingResultCard content={mockMovieContent} onPlay={mockOnPlay} />);
 
     const image = screen.getByAltText('Test Movie');
     fireEvent.load(image);
 
-    expect(image).toHaveClass('loaded');
+    // State update triggers re-render — wait for the class to appear
+    await waitFor(() => {
+      expect(image).toHaveClass('loaded');
+    });
   });
 
-  test('handles image error event', () => {
+  test('handles image error event', async () => {
     render(<StreamingResultCard content={mockMovieContent} onPlay={mockOnPlay} />);
 
     const image = screen.getByAltText('Test Movie');
     fireEvent.error(image);
 
     // After error, placeholder should be shown
-    const placeholder = screen
-      .getByText('Test Movie')
-      .closest('.streaming-result-card')
-      .querySelector('.streaming-result-card__placeholder');
-    expect(placeholder).toBeInTheDocument();
+    await waitFor(() => {
+      const placeholder = screen
+        .getByText('Test Movie')
+        .closest('.streaming-result-card')
+        .querySelector('.streaming-result-card__placeholder');
+      expect(placeholder).toBeInTheDocument();
+    });
   });
 
   test('truncates long overview text', () => {
