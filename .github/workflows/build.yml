@@ -43,10 +43,10 @@ jobs:
         run: pnpm format:check
 
       - name: Test packages
-        run: pnpm test:packages || true
+        run: pnpm test:packages
 
       - name: Test web
-        run: pnpm --filter web test || true
+        run: pnpm --filter web test
 
       - name: Build web
         run: pnpm --filter web build

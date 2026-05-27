@@ -3,7 +3,7 @@ name: Mobile Build
 on:
   push:
     branches:
-      - production
+      - main
     paths:
       - 'apps/mobile/**'
       - 'packages/**'
@@ -15,16 +15,21 @@ on:
       - 'apps/mobile/**'
       - 'packages/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     name: Mobile - Lint & Test
     runs-on: [self-hosted, Linux, X64, astra]
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft != true
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
 
@@ -35,22 +40,22 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Lint mobile
-        run: pnpm --filter mobile lint || true
+        run: pnpm --filter mobile lint
 
       - name: Test mobile
-        run: pnpm --filter mobile test || true
+        run: pnpm --filter mobile test
 
   build-ios:
     name: iOS Build
     runs-on: macos-latest
     needs: lint
-    if: github.event_name == 'push' && github.ref == 'refs/heads/production'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
 
@@ -70,13 +75,13 @@ jobs:
     name: Android Build
     runs-on: [self-hosted, Linux, X64, astra]
     needs: lint
-    if: github.event_name == 'push' && github.ref == 'refs/heads/production'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
 
