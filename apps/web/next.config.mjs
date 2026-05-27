@@ -39,12 +39,12 @@ const nextConfig = {
           {
             key: 'Content-Security-Policy',
             value: [
-              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com`,
+              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com https://vercel.live`,
               "worker-src 'self'",
               "manifest-src 'self'",
-              "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com",
+              "script-src-elem 'self' 'unsafe-inline' https://www.googletagmanager.com https://va.vercel-scripts.com https://*.vercel-scripts.com https://vercel.live",
               "connect-src 'self' https:",
-              "frame-src 'self' https://player.videasy.net https://vsembed.ru https://vsembed.su https://vidsrc-embed.ru https://vidsrc-embed.su https://vidsrcme.su https://vsrc.su https:",
+              "frame-src 'self' https://player.videasy.net https://vidsrcme.ru https://vidsrcme.su https://vidsrc-me.ru https://vidsrc-me.su https://vidsrc-embed.ru https://vidsrc-embed.su https://vsrc.su https:",
               "img-src 'self' data: https: blob:",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com",

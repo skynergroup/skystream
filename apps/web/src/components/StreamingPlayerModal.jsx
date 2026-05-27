@@ -453,7 +453,7 @@ const StreamingPlayerModal = ({
             referrerPolicy="origin"
             style={{ border: 'none' }}
             loading="lazy"
-            sandbox="allow-scripts allow-same-origin allow-presentation allow-fullscreen allow-popups"
+            sandbox="allow-scripts allow-same-origin allow-presentation allow-popups allow-forms"
           />
         </div>
 
