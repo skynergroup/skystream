@@ -288,11 +288,12 @@ const StreamingPlayerModal = ({
             src={currentEmbedUrl}
             title={`${content?.title} - Videasy`}
             className={`streaming-player-modal__iframe ${iframeSwitching ? 'streaming-player-modal__iframe--loading' : 'streaming-player-modal__iframe--loaded'}`}
+            allowFullScreen
             allow="encrypted-media; autoplay; fullscreen"
             referrerPolicy="origin"
             style={{ border: 'none' }}
             loading="lazy"
-            sandbox="allow-scripts allow-same-origin allow-presentation allow-popups allow-forms"
+            sandbox="allow-scripts allow-same-origin allow-presentation allow-fullscreen allow-popups"
           />
         </div>
 
