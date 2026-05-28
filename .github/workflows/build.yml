@@ -1,27 +1,52 @@
-name: CI
+name: Web Build
 
 on:
   push:
     branches: [main]
+    paths:
+      - 'apps/web/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/build.yml'
   pull_request:
+    types: [opened, synchronize, reopened]
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
+    name: Web - Lint, Test & Build
+    runs-on: [self-hosted, Linux, X64, astra]
+    timeout-minutes: 15
     if: github.event_name != 'pull_request' || github.event.pull_request.draft != true
-    name: Build & Test
-    runs-on: cosmos
-    timeout-minutes: 10
+
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run format:check
-      - run: npm run build
+          node-version: '22'
+
+      - name: Install pnpm
+        run: corepack enable && corepack prepare pnpm@latest --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm --filter web lint
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Test packages
+        run: pnpm test:packages
+
+      - name: Test web
+        run: pnpm --filter web test
+
+      - name: Build web
+        run: pnpm --filter web build

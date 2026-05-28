@@ -1,0 +1,16 @@
+{
+  "name": "SkyStream",
+  "short_name": "SkyStream",
+  "description": "Watch Free Movies & TV Shows Online - No Sign Up",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0a0a0f",
+  "background_color": "#0a0a0f",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "28x28",
+      "type": "image/png"
+    }
+  ]
+}
